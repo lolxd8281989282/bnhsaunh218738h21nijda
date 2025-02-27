@@ -7,49 +7,33 @@ local ESP = {
     Boxes = {},
 }
 
--- Function to create a box for each player
 local function CreateBox(player)
     local box = Drawing.new("Square")
     box.Visible = false
-    box.Color = Color3.fromRGB(255, 255, 255) -- Modern white box color
+    box.Color = Color3.fromRGB(255, 0, 0)
     box.Thickness = 2
     box.Transparency = 1
     box.Filled = false
     ESP.Boxes[player] = box
 end
 
--- Function to update ESP (create box sizes and positions)
 local function UpdateESP()
-    if not ESP.Enabled then
-        -- If ESP is disabled, hide all boxes
-        for _, box in pairs(ESP.Boxes) do
-            box.Visible = false
-        end
-        return
-    end
-
     for player, box in pairs(ESP.Boxes) do
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= Players.LocalPlayer then
-            local character = player.Character
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            local head = character:FindFirstChild("Head")
-            local humanoid = character:FindFirstChild("Humanoid")
-
-            if head and humanoidRootPart then
-                -- Get the screen positions of the head and humanoid root part
-                local headPos, onScreenHead = Camera:WorldToViewportPoint(head.Position)
-                local footPos, onScreenFoot = Camera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, humanoid.HipWidth, 0)) -- Foot position
-
-                if onScreenHead and onScreenFoot then
-                    -- Calculate the size of the box to fit the player, based on their height and width
-                    local height = (head.Position - humanoidRootPart.Position).Magnitude
-                    local width = humanoid.HipWidth * 2
-
-                    -- Adjust size and position to create the box around the player
-                    local boxPos = Vector2.new((headPos.X + footPos.X) / 2, (headPos.Y + footPos.Y) / 2)
-                    local boxSize = Vector2.new(width * 1000 / footPos.Z, height * 1500 / footPos.Z)
-                    box.Position = Vector2.new(boxPos.X - boxSize.X / 2, boxPos.Y - boxSize.Y / 2)
-                    box.Size = boxSize
+            local pos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+            if onScreen and ESP.Enabled then
+                local rootPart = player.Character.HumanoidRootPart
+                local head = player.Character.Head
+                local rootPos = rootPart.Position
+                local headPos = head.Position
+                
+                local boxSize = (headPos - rootPos).Magnitude
+                local boxCenter = rootPos + Vector3.new(0, boxSize / 2, 0)
+                
+                local boxPos, onScreen = Camera:WorldToViewportPoint(boxCenter)
+                if onScreen then
+                    box.Size = Vector2.new(boxSize * 1000 / pos.Z, boxSize * 1500 / pos.Z)
+                    box.Position = Vector2.new(boxPos.X - box.Size.X / 2, boxPos.Y - box.Size.Y / 2)
                     box.Visible = true
                 else
                     box.Visible = false
@@ -63,33 +47,23 @@ local function UpdateESP()
     end
 end
 
--- Toggle function to enable/disable ESP
 function ESP:Toggle(state)
     self.Enabled = state
-    print("ESP Toggled:", state) -- Debugging
-    if not state then
-        -- Hide all boxes if ESP is disabled
-        for _, box in pairs(ESP.Boxes) do
-            box.Visible = false
-        end
-    end
 end
 
--- Initialize ESP for existing players
+-- Initialize boxes for existing players
 for _, player in ipairs(Players:GetPlayers()) do
     if player ~= Players.LocalPlayer then
         CreateBox(player)
     end
 end
 
--- Add boxes for new players joining
+-- Create boxes for new players
 Players.PlayerAdded:Connect(function(player)
-    if player ~= Players.LocalPlayer then
-        CreateBox(player)
-    end
+    CreateBox(player)
 end)
 
--- Clean up boxes for players leaving
+-- Remove boxes for players who leave
 Players.PlayerRemoving:Connect(function(player)
     if ESP.Boxes[player] then
         ESP.Boxes[player]:Remove()
@@ -97,7 +71,7 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- Update ESP each frame
+-- Update ESP
 RunService.RenderStepped:Connect(UpdateESP)
 
 return ESP
