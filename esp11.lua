@@ -30,18 +30,19 @@ local function UpdateESP()
 
     for player, box in pairs(ESP.Boxes) do
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= Players.LocalPlayer then
-            local rootPart = player.Character.HumanoidRootPart
-            local head = player.Character:FindFirstChild("Head")
-            local humanoid = player.Character:FindFirstChild("Humanoid")
+            local character = player.Character
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            local head = character:FindFirstChild("Head")
+            local humanoid = character:FindFirstChild("Humanoid")
 
-            if head and humanoid then
-                -- Get the positions of the character's head and feet
+            if head and humanoidRootPart then
+                -- Get the screen positions of the head and humanoid root part
                 local headPos, onScreenHead = Camera:WorldToViewportPoint(head.Position)
-                local footPos, onScreenFoot = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, humanoid.HipWidth, 0)) -- Foot position
-                
+                local footPos, onScreenFoot = Camera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, humanoid.HipWidth, 0)) -- Foot position
+
                 if onScreenHead and onScreenFoot then
-                    -- Calculate the size of the box to fit the player, based on their height
-                    local height = (head.Position - rootPart.Position).Magnitude
+                    -- Calculate the size of the box to fit the player, based on their height and width
+                    local height = (head.Position - humanoidRootPart.Position).Magnitude
                     local width = humanoid.HipWidth * 2
 
                     -- Adjust size and position to create the box around the player
