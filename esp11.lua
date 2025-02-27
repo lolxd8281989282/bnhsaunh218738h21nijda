@@ -10,7 +10,7 @@ local ESP = {
 local function CreateBox(player)
     local box = Drawing.new("Square")
     box.Visible = false
-    box.Color = Color3.fromRGB(255, 255, 255)  -- White box for ESP
+    box.Color = Color3.fromRGB(255, 255, 255)  -- Set box color to white
     box.Thickness = 2
     box.Transparency = 1
     box.Filled = false
