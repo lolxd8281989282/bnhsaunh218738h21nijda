@@ -10,7 +10,7 @@ local ESP = {
 local function CreateBox(player)
     local box = Drawing.new("Square")
     box.Visible = false
-    box.Color = Color3.fromRGB(255, 0, 0)
+    box.Color = Color3.fromRGB(255, 255, 255)  -- Modern white color
     box.Thickness = 2
     box.Transparency = 1
     box.Filled = false
@@ -19,6 +19,7 @@ end
 
 local function UpdateESP()
     if not ESP.Enabled then
+        -- If ESP is disabled, hide all boxes
         for _, box in pairs(ESP.Boxes) do
             box.Visible = false
         end
@@ -27,23 +28,27 @@ local function UpdateESP()
 
     for player, box in pairs(ESP.Boxes) do
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= Players.LocalPlayer then
-            local rootPart = player.Character.HumanoidRootPart
-            local head = player.Character:FindFirstChild("Head")
-            
-            if head then
-                local pos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
-                if onScreen then
-                    local boxSize = (head.Position - rootPart.Position).Magnitude
-                    local boxCenter = rootPart.Position + Vector3.new(0, boxSize / 2, 0)
-                    
-                    local boxPos, onScreen = Camera:WorldToViewportPoint(boxCenter)
-                    if onScreen then
-                        box.Size = Vector2.new(boxSize * 1000 / pos.Z, boxSize * 1500 / pos.Z)
-                        box.Position = Vector2.new(boxPos.X - box.Size.X / 2, boxPos.Y - box.Size.Y / 2)
-                        box.Visible = true
-                    else
-                        box.Visible = false
-                    end
+            local character = player.Character
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            local head = character:FindFirstChild("Head")
+            local humanoid = character:FindFirstChild("Humanoid")
+
+            if head and humanoidRootPart then
+                -- Get the screen position of the head and the humanoid root part
+                local headPos, onScreenHead = Camera:WorldToViewportPoint(head.Position)
+                local footPos, onScreenFoot = Camera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, humanoid.HipWidth, 0))  -- Position of feet
+
+                if onScreenHead and onScreenFoot then
+                    -- Calculate the size of the box based on the player's height and width
+                    local height = (head.Position - humanoidRootPart.Position).Magnitude
+                    local width = humanoid.HipWidth * 2
+
+                    -- Create box size and position on the screen
+                    local boxPos = Vector2.new((headPos.X + footPos.X) / 2, (headPos.Y + footPos.Y) / 2)
+                    local boxSize = Vector2.new(width * 1000 / footPos.Z, height * 1500 / footPos.Z)
+                    box.Position = Vector2.new(boxPos.X - boxSize.X / 2, boxPos.Y - boxSize.Y / 2)
+                    box.Size = boxSize
+                    box.Visible = true
                 else
                     box.Visible = false
                 end
@@ -58,27 +63,29 @@ end
 
 function ESP:Toggle(state)
     self.Enabled = state
-    print("ESP Toggled:", state) -- Debugging
     if not state then
+        -- Hide all boxes if ESP is disabled
         for _, box in pairs(ESP.Boxes) do
             box.Visible = false
         end
     end
 end
 
--- Initialize ESP for existing players
+-- Initialize ESP for players already in the game
 for _, player in ipairs(Players:GetPlayers()) do
     if player ~= Players.LocalPlayer then
         CreateBox(player)
     end
 end
 
+-- Create boxes for players who join the game
 Players.PlayerAdded:Connect(function(player)
     if player ~= Players.LocalPlayer then
         CreateBox(player)
     end
 end)
 
+-- Clean up when a player leaves
 Players.PlayerRemoving:Connect(function(player)
     if ESP.Boxes[player] then
         ESP.Boxes[player]:Remove()
@@ -86,6 +93,7 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
+-- Call the UpdateESP function every frame to keep the ESP up-to-date
 RunService.RenderStepped:Connect(UpdateESP)
 
 return ESP
