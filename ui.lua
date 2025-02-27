@@ -72,6 +72,10 @@ local VisualsSection = VisualPage:Section({
 
 VisualsSection:Toggle({
     Name = "ESP",
+    Default = false,
+    Callback = function(state)
+        ESP:Toggle(state)
+    end
 })
 
 VisualsSection:Toggle({
