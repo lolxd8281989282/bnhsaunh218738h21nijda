@@ -10,7 +10,7 @@ local ESP = {
 local function CreateBox(player)
     local box = Drawing.new("Square")
     box.Visible = false
-    box.Color = Color3.fromRGB(255, 255, 255)  -- Set box color to white
+    box.Color = Color3.fromRGB(255, 255, 255)  -- Set the box color to white
     box.Thickness = 2
     box.Transparency = 1
     box.Filled = false
@@ -34,16 +34,16 @@ local function UpdateESP()
             local humanoid = character:FindFirstChild("Humanoid")
 
             if head and humanoidRootPart then
-                -- Get the screen position of the head and the humanoid root part
+                -- Get the screen position of the head and the humanoid root part (feet)
                 local headPos, onScreenHead = Camera:WorldToViewportPoint(head.Position)
-                local footPos, onScreenFoot = Camera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, humanoid.HipWidth, 0))  -- Position of feet
+                local footPos, onScreenFoot = Camera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, humanoid.HipWidth, 0))  -- Feet position
 
                 if onScreenHead and onScreenFoot then
                     -- Calculate the size of the box based on the player's height and width
                     local height = (head.Position - humanoidRootPart.Position).Magnitude
                     local width = humanoid.HipWidth * 2
 
-                    -- Create box size and position on the screen
+                    -- Create the box size and position on the screen
                     local boxPos = Vector2.new((headPos.X + footPos.X) / 2, (headPos.Y + footPos.Y) / 2)
                     local boxSize = Vector2.new(width * 1000 / footPos.Z, height * 1500 / footPos.Z)
                     box.Position = Vector2.new(boxPos.X - boxSize.X / 2, boxPos.Y - boxSize.Y / 2)
@@ -61,7 +61,7 @@ local function UpdateESP()
     end
 end
 
--- Initialize ESP for players already in the game
+-- Initialize ESP for existing players
 for _, player in ipairs(Players:GetPlayers()) do
     if player ~= Players.LocalPlayer then
         CreateBox(player)
