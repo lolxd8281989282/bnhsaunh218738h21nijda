@@ -10,7 +10,7 @@ local ESP = {
 local function CreateBox(player)
     local box = Drawing.new("Square")
     box.Visible = false
-    box.Color = Color3.fromRGB(255, 255, 255)  -- Modern white color
+    box.Color = Color3.fromRGB(255, 255, 255)  -- White box for ESP
     box.Thickness = 2
     box.Transparency = 1
     box.Filled = false
@@ -56,16 +56,6 @@ local function UpdateESP()
                 box.Visible = false
             end
         else
-            box.Visible = false
-        end
-    end
-end
-
-function ESP:Toggle(state)
-    self.Enabled = state
-    if not state then
-        -- Hide all boxes if ESP is disabled
-        for _, box in pairs(ESP.Boxes) do
             box.Visible = false
         end
     end
