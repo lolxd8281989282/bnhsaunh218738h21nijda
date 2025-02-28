@@ -1,14 +1,17 @@
 -- // Tables
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/PoopLibrary/main/Library.lua"))()
 
--- Load the ESP module with error handling
+-- Load the ESP module with proper initialization
 local ESP = {}
 local success, result = pcall(function()
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))()
 end)
 
-if success then
+if success and result then
     ESP = result
+    if typeof(ESP) == "table" and ESP.Initialize then
+        ESP:Initialize()
+    end
 else
     warn("Failed to load ESP module:", result)
     ESP = {
@@ -16,7 +19,8 @@ else
             return {
                 UpdateSettings = function() end
             }
-        end
+        end,
+        Initialize = function() end
     }
 end
 
@@ -150,29 +154,36 @@ Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end
 
 -- Initialize ESP with default settings
 local esp = nil
-pcall(function()
-    if ESP and ESP.new then
-        esp = ESP.new({
-            Enabled = false,
-            TeamCheck = false,
-            ShowBoxes = false,
-            ShowNames = false,
-            ShowDistance = false,
-            ShowHealthBars = false,
-            BoxColor = Color3.fromRGB(255, 255, 255),
-            NameColor = Color3.fromRGB(255, 255, 255),
-            DistanceColor = Color3.fromRGB(255, 255, 255),
-            TextSize = 13,
-            Distance = 1000
-        })
-    end
-end)
+if ESP and typeof(ESP) == "table" then
+    pcall(function()
+        if ESP.new then
+            esp = ESP.new({
+                Enabled = false,
+                TeamCheck = false,
+                ShowBoxes = false,
+                ShowNames = false,
+                ShowDistance = false,
+                ShowHealthBars = false,
+                BoxColor = Color3.fromRGB(255, 255, 255),
+                NameColor = Color3.fromRGB(255, 255, 255),
+                DistanceColor = Color3.fromRGB(255, 255, 255),
+                TextSize = 13,
+                Distance = 1000
+            })
+            
+            -- Initialize ESP if the method exists
+            if esp and typeof(esp) == "table" and esp.Initialize then
+                esp:Initialize()
+            end
+        end
+    end)
+end
 
--- Connect ESP settings to UI toggles
+-- Connect ESP settings to UI toggles with improved error handling
 local function updateESPFromUI()
-    if esp and esp.UpdateSettings then
+    if esp and typeof(esp) == "table" and esp.UpdateSettings then
         pcall(function()
-            esp:UpdateSettings({
+            local settings = {
                 Enabled = Library.pointers.ESP_Enabled:Get(),
                 ShowBoxes = Library.pointers.ESP_Box:Get(),
                 BoxColor = Library.pointers.ESP_BoxColor:Get(),
@@ -181,18 +192,27 @@ local function updateESPFromUI()
                 ShowDistance = Library.pointers.ESP_Distance:Get(),
                 TextSize = Library.pointers.ESP_TextSize:Get(),
                 Distance = Library.pointers.ESP_MaxDistance:Get()
-            })
+            }
+            
+            -- Debug print
+            print("Updating ESP Settings:", settings)
+            
+            esp:UpdateSettings(settings)
         end)
+    else
+        warn("ESP object or UpdateSettings method not available")
     end
 end
 
--- Connect the update function to UI changes
+-- Connect the update function to UI changes with improved error handling
 for _, pointer in pairs(Library.pointers) do
-    if typeof(pointer.Set) == "function" then
+    if typeof(pointer) == "table" and typeof(pointer.Set) == "function" then
         local originalSet = pointer.Set
         pointer.Set = function(self, value)
             originalSet(self, value)
-            pcall(updateESPFromUI)
+            pcall(function()
+                updateESPFromUI()
+            end)
             return value
         end
     end
@@ -203,3 +223,10 @@ Window:Initialize()
 
 -- Initial update of ESP settings
 updateESPFromUI()
+
+-- Debug print to confirm ESP is working
+if esp then
+    print("ESP initialized successfully")
+else
+    warn("ESP failed to initialize")
+end
