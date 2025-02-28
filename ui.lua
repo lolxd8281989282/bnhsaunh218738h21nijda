@@ -32,20 +32,22 @@ library.flags.watermark_y = 1.1
 
 local tabs = {
     Legit = Window:AddTab("Legit"),
-    Settings = library:CreateSettingsTab(Window), -- This uses the library's built-in settings
+    Settings = library:CreateSettingsTab(Window),
 }
 
 -- Legit Tab
 local BulletRedirection = tabs.Legit:AddSection("Bullet Redirection", 1)
 local AimAssist = tabs.Legit:AddSection("Aim Assist", 2)
-local Both = tabs.Legit:AddSection("Both", 1)
 
 -- Bullet Redirection Section
 BulletRedirection:AddToggle({text = "Enabled", flag = "br_enabled"})
 BulletRedirection:AddToggle({text = "Show FOV", flag = "br_show_fov"})
-BulletRedirection:AddToggle({text = "Resolver", flag = "br_resolver"})
+BulletRedirection:AddToggle({text = "Visible Check", flag = "visible_check"})
+BulletRedirection:AddToggle({text = "Friend Check", flag = "friend_check"})
 BulletRedirection:AddToggle({text = "Use Closest Part", flag = "br_use_closest_part"})
+BulletRedirection:AddToggle({text = "Crew Check", flag = "crew_check"})
 BulletRedirection:AddToggle({text = "Anti Ground Shots", flag = "br_anti_ground_shots"})
+BulletRedirection:AddToggle({text = "Team Check", flag = "team_check"})
 BulletRedirection:AddToggle({text = "Use Air Part", flag = "br_use_air_part"})
 BulletRedirection:AddToggle({text = "KO Check", flag = "br_ko_check"})
 BulletRedirection:AddToggle({text = "Grabbed Check", flag = "br_grabbed_check"})
@@ -79,12 +81,6 @@ AimAssist:AddSlider({text = "Radius", flag = "aa_radius", min = 0, max = 250, va
 AimAssist:AddList({text = "Part", flag = "aa_part", values = {"Head"}, value = "Head"})
 AimAssist:AddList({text = "Speed", flag = "aa_speed", values = {"..."}, value = "..."})
 AimAssist:AddList({text = "Key", flag = "aa_key", values = {"..."}, value = "..."})
-
--- Both Section
-Both:AddToggle({text = "Visible Check", flag = "both_visible_check"})
-Both:AddToggle({text = "Friend Check", flag = "both_friend_check"})
-Both:AddToggle({text = "Crew Check", flag = "both_crew_check"})
-Both:AddToggle({text = "Team Check", flag = "both_team_check"})
 
 -- Finalize
 library:SendNotification("UI Loaded", 3, Color3.new(0, 1, 0))
