@@ -1,251 +1,81 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/gamesneeze/main/Library.lua"))()
+-- Credits To The Original Devs @xz, @goof
+getgenv().Config = {
+    Invite = "informant.wtf",
+    Version = "0.0",
+}
 
-local Window = Library:New({
-   Name = "dracula.lol | beta",
-   Accent = Color3.fromRGB(255, 255, 255)
+getgenv().luaguardvars = {
+    DiscordName = "username#0000",
+}
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+
+library:init()
+
+local Window = library.NewWindow({
+    title = "Informant.Wtf",
+    size = UDim2.new(0, 525, 0, 650)
 })
 
--- Visual Page
-local VisualPage = Window:Page({
-   Name = "visuals"
-})
+-- Set initial watermark state
+library.watermark.enabled = true
+library.watermark.lock = 'Bottom Right'
+library.flags.watermark_enabled = true
+library.flags.watermark_pos = 'Bottom Right'
+library.flags.watermark_x = 40
+library.flags.watermark_y = 1.1
 
--- Create the tab container
-local TabContainer = VisualPage:TabContainer({
-   Side = "Left"
-})
+local tabs = {
+    Aimbot = Window:AddTab("Aimbot"),
+    Visuals = Window:AddTab("Visuals"),
+    Misc = Window:AddTab("Misc"),
+    Settings = library:CreateSettingsTab(Window),
+}
 
--- Create tabs
-local EnemiesTab = TabContainer:Tab({
-   Name = "Enemies"
-})
+-- Aimbot Tab
+local AimbotMain = tabs.Aimbot:AddSection("Aimbot", 1)
+local AimbotSettings = tabs.Aimbot:AddSection("Aimbot Settings", 2)
 
-local FriendliesTab = TabContainer:Tab({
-   Name = "Friendlies"
-})
+AimbotMain:AddToggle({text = "Enabled", flag = "aimbot_enabled"})
+AimbotMain:AddBind({text = "Aim Key", flag = "aimbot_key", key = Enum.KeyCode.E})
+AimbotMain:AddList({text = "Aim Part", flag = "aimbot_part", values = {"Head", "Torso"}, value = "Head"})
 
-local LocalTab = TabContainer:Tab({
-   Name = "Local"
-})
+AimbotSettings:AddSlider({text = "Smoothness", flag = "aimbot_smoothness", min = 1, max = 100, value = 20})
+AimbotSettings:AddSlider({text = "FOV", flag = "aimbot_fov", min = 0, max = 800, value = 100})
+AimbotSettings:AddToggle({text = "Visible Check", flag = "aimbot_vischeck"})
+AimbotSettings:AddToggle({text = "Team Check", flag = "aimbot_teamcheck"})
 
--- Enemies Tab Content
-local EnemiesSection = EnemiesTab:Section({
-   Name = "",
-   Side = "Left"
-})
+-- Visuals Tab
+local ESPSettings = tabs.Visuals:AddSection("ESP", 1)
+local WorldSettings = tabs.Visuals:AddSection("World", 2)
 
-EnemiesSection:Toggle({
-   Name = "Enabled"
-})
+ESPSettings:AddToggle({text = "Enabled", flag = "esp_enabled"})
+ESPSettings:AddToggle({text = "Boxes", flag = "esp_boxes"})
+ESPSettings:AddToggle({text = "Names", flag = "esp_names"})
+ESPSettings:AddToggle({text = "Tracers", flag = "esp_tracers"})
+ESPSettings:AddToggle({text = "Team Color", flag = "esp_teamcolor"})
 
-EnemiesSection:Toggle({
-   Name = "Name"
-})
+WorldSettings:AddToggle({text = "Fullbright", flag = "world_fullbright"})
+WorldSettings:AddToggle({text = "Remove Fog", flag = "world_nofog"})
+WorldSettings:AddSlider({text = "Time of Day", flag = "world_time", min = 0, max = 24, value = 12})
 
-EnemiesSection:Toggle({
-   Name = "Bounding Box"
-})
+-- Misc Tab
+local MovementSection = tabs.Misc:AddSection("Movement", 1)
+local ExploitsSection = tabs.Misc:AddSection("Exploits", 2)
 
-EnemiesSection:Toggle({
-   Name = "Health Bar"
-})
+MovementSection:AddToggle({text = "Speed", flag = "move_speed"})
+MovementSection:AddSlider({text = "Speed Amount", flag = "move_speed_value", min = 16, max = 200, value = 16})
+MovementSection:AddToggle({text = "Bunny Hop", flag = "move_bhop"})
 
-EnemiesSection:Toggle({
-   Name = "Health Number"
-})
+ExploitsSection:AddButton({text = "Unlock All Skins", callback = function()
+    -- Add your unlock skins logic here
+    library:SendNotification("Skins Unlocked", 3)
+end})
 
-EnemiesSection:Toggle({
-   Name = "Head Dot"
-})
+ExploitsSection:AddToggle({text = "Anti-Aim", flag = "exploit_antiaim"})
 
-EnemiesSection:Toggle({
-   Name = "Offscreen Arrows"
-})
+-- Finalize
+library:SendNotification("UI Loaded", 3, Color3.new(0, 1, 0))
+Window:SetOpen(true)
 
-EnemiesSection:Slider({
-   Name = "Arrow Size",
-   Min = 0,
-   Max = 100,
-   Default = 50,
-   Suffix = "/100/100"
-})
-
-EnemiesSection:Slider({
-   Name = "Arrow Position",
-   Min = 0,
-   Max = 100,
-   Default = 25,
-   Suffix = "/100/100"
-})
-
-EnemiesSection:Dropdown({
-   Name = "Arrow Types",
-   Default = "None",
-   Options = {"None", "Health Bar"}
-})
-
-EnemiesSection:Toggle({
-   Name = "Tool"
-})
-
-EnemiesSection:Toggle({
-   Name = "Distance"
-})
-
-EnemiesSection:Toggle({
-   Name = "Flags"
-})
-
-EnemiesSection:Dropdown({
-   Name = "Flag Types",
-   Default = "Display Name",
-   Options = {"Display Name", "Username"}
-})
-
-EnemiesSection:Toggle({
-   Name = "Chams"
-})
-
-EnemiesSection:Dropdown({
-   Name = "Chams Types",
-   Default = "Inline",
-   Options = {"Inline", "Outline"}
-})
-
--- Friendlies Tab Content (copy same structure as Enemies)
-local FriendliesSection = FriendliesTab:Section({
-   Name = "",
-   Side = "Left"
-})
-
--- Copy all toggles and settings from Enemies section to Friendlies
--- (For brevity, I'm not repeating all the code here, but in practice, you would copy all the toggles and settings)
-
--- Local Tab Content
-local LocalSection = LocalTab:Section({
-   Name = "",
-   Side = "Left"
-})
-
--- Copy relevant toggles and settings (excluding arrows) to Local tab
--- (Again, for brevity, not repeating all the code, but you would add relevant toggles and settings)
-
--- Other Pages
-local AimPage = Window:Page({
-   Name = "aim"
-})
-
-local RagePage = Window:Page({
-   Name = "rage"
-})
-
-local MiscPage = Window:Page({
-   Name = "misc"
-})
-
--- Players Page with PlayerList
-local PlayerPage = Window:Page({
-   Name = "player-list"
-})
-
--- Keep the existing PlayerList function
-local PlayerList = PlayerPage:PlayerList({})
-
--- Settings Page
-local SettingsPage = Window:Page({
-   Name = "settings"
-})
-
--- Settings Page Sections
-local MainSettingsSection = SettingsPage:Section({
-   Name = "Main",
-   Side = "Left"
-})
-
-MainSettingsSection:Keybind({
-   Name = "Open / Close",
-   Default = Enum.KeyCode.RightShift,
-})
-
-MainSettingsSection:Toggle({
-   Name = "Disable Movement if Open",
-})
-
-MainSettingsSection:Button({
-   Name = "Join Discord",
-})
-
-MainSettingsSection:Button({
-   Name = "Copy Discord",
-})
-
-MainSettingsSection:Button({
-   Name = "Rejoin Server",
-})
-
-MainSettingsSection:Button({
-   Name = "Copy Join Script",
-})
-
-MainSettingsSection:Button({
-   Name = "Unload",
-})
-
--- Config Section
-local ConfigSection = SettingsPage:Section({
-   Name = "Config",
-   Side = "Right"
-})
-
-ConfigSection:TextBox({
-   Name = "Config Name",
-   Default = "",
-   Placeholder = "Enter config name...",
-})
-
-ConfigSection:Dropdown({
-   Name = "Config",
-   Default = "none",
-   Options = {"none"},
-})
-
-ConfigSection:Button({
-   Name = "Load",
-})
-
-ConfigSection:Button({
-   Name = "Save",
-})
-
-ConfigSection:Button({
-   Name = "Create",
-})
-
-ConfigSection:Button({
-   Name = "Delete",
-})
-
--- ESP Preview
-local ESPPreview = Window:ESPPreview({
-   Visible = true,
-   Position = UDim2.new(1, -220, 0.5, -150),
-   Size = UDim2.new(0, 200, 0, 300)
-})
-
--- Show ESP Preview only on visuals page
-VisualPage.callback = function()
-   ESPPreview:Show()
-end
-
--- Hide ESP Preview on other pages
-local function hidePreview()
-   ESPPreview:Hide()
-end
-
-AimPage.callback = hidePreview
-RagePage.callback = hidePreview
-MiscPage.callback = hidePreview
-PlayerPage.callback = hidePreview
-SettingsPage.callback = hidePreview
-
-Window:Initialize()
+return Window
