@@ -1,11 +1,11 @@
 -- Credits To The Original Devs @xz, @goof
 getgenv().Config = {
-    Invite = "informant.wtf",
-    Version = "0.0",
+  Invite = "informant.wtf",
+  Version = "0.0",
 }
 
 getgenv().luaguardvars = {
-    DiscordName = "username#0000",
+  DiscordName = "username#0000",
 }
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
@@ -13,8 +13,13 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd
 library:init()
 
 local Window = library.NewWindow({
-    title = "Informant.Wtf",
-    size = UDim2.new(0, 525, 0, 650)
+  title = "Informant.Wtf",
+  size = UDim2.new(0, 525, 0, 650)
+})
+
+-- Change accent color to white
+library:SetTheme({
+  ["Accent"] = Color3.fromRGB(255, 255, 255)
 })
 
 -- Set initial watermark state
@@ -26,53 +31,29 @@ library.flags.watermark_x = 40
 library.flags.watermark_y = 1.1
 
 local tabs = {
-    Aimbot = Window:AddTab("Aimbot"),
-    Visuals = Window:AddTab("Visuals"),
-    Misc = Window:AddTab("Misc"),
-    Settings = library:CreateSettingsTab(Window),
+  Legit = Window:AddTab("Legit"),
+  Settings = library:CreateSettingsTab(Window),
 }
 
--- Aimbot Tab
-local AimbotMain = tabs.Aimbot:AddSection("Aimbot", 1)
-local AimbotSettings = tabs.Aimbot:AddSection("Aimbot Settings", 2)
+-- Legit Tab
+local AimbotSection = tabs.Legit:AddSection("Aimbot", 1)
+local AimbotSettingsSection = tabs.Legit:AddSection("Aimbot Settings", 2)
 
-AimbotMain:AddToggle({text = "Enabled", flag = "aimbot_enabled"})
-AimbotMain:AddBind({text = "Aim Key", flag = "aimbot_key", key = Enum.KeyCode.E})
-AimbotMain:AddList({text = "Aim Part", flag = "aimbot_part", values = {"Head", "Torso"}, value = "Head"})
+-- Aimbot Section
+AimbotSection:AddToggle({text = "Enable Aimbot", flag = "enable_aimbot"})
+AimbotSection:AddToggle({text = "Phantom Force Aimbot", flag = "phantom_force_aimbot"})
+AimbotSection:AddSlider({text = "Aimbot Offset", flag = "aimbot_offset", min = 0, max = 100, value = 0})
+AimbotSection:AddToggle({text = "Draw FOV", flag = "draw_fov"})
+AimbotSection:AddToggle({text = "Knifebot", flag = "knifebot"})
+AimbotSection:AddSlider({text = "Aimbot Smoothness", flag = "aimbot_smoothness", min = 0, max = 100, value = 0})
+AimbotSection:AddList({text = "Target Bone", flag = "target_bone", values = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, value = "Head"})
 
-AimbotSettings:AddSlider({text = "Smoothness", flag = "aimbot_smoothness", min = 1, max = 100, value = 20})
-AimbotSettings:AddSlider({text = "FOV", flag = "aimbot_fov", min = 0, max = 800, value = 100})
-AimbotSettings:AddToggle({text = "Visible Check", flag = "aimbot_vischeck"})
-AimbotSettings:AddToggle({text = "Team Check", flag = "aimbot_teamcheck"})
-
--- Visuals Tab
-local ESPSettings = tabs.Visuals:AddSection("ESP", 1)
-local WorldSettings = tabs.Visuals:AddSection("World", 2)
-
-ESPSettings:AddToggle({text = "Enabled", flag = "esp_enabled"})
-ESPSettings:AddToggle({text = "Boxes", flag = "esp_boxes"})
-ESPSettings:AddToggle({text = "Names", flag = "esp_names"})
-ESPSettings:AddToggle({text = "Tracers", flag = "esp_tracers"})
-ESPSettings:AddToggle({text = "Team Color", flag = "esp_teamcolor"})
-
-WorldSettings:AddToggle({text = "Fullbright", flag = "world_fullbright"})
-WorldSettings:AddToggle({text = "Remove Fog", flag = "world_nofog"})
-WorldSettings:AddSlider({text = "Time of Day", flag = "world_time", min = 0, max = 24, value = 12})
-
--- Misc Tab
-local MovementSection = tabs.Misc:AddSection("Movement", 1)
-local ExploitsSection = tabs.Misc:AddSection("Exploits", 2)
-
-MovementSection:AddToggle({text = "Speed", flag = "move_speed"})
-MovementSection:AddSlider({text = "Speed Amount", flag = "move_speed_value", min = 16, max = 200, value = 16})
-MovementSection:AddToggle({text = "Bunny Hop", flag = "move_bhop"})
-
-ExploitsSection:AddButton({text = "Unlock All Skins", callback = function()
-    -- Add your unlock skins logic here
-    library:SendNotification("Skins Unlocked", 3)
-end})
-
-ExploitsSection:AddToggle({text = "Anti-Aim", flag = "exploit_antiaim"})
+-- Aimbot Settings Section
+AimbotSettingsSection:AddToggle({text = "Enable Silent Aim", flag = "enable_silent_aim"})
+AimbotSettingsSection:AddToggle({text = "Silent Aim Prediction", flag = "silent_aim_prediction"})
+AimbotSettingsSection:AddSlider({text = "Silent Aim Prediction X", flag = "silent_aim_prediction_x", min = 0, max = 100, value = 0})
+AimbotSettingsSection:AddSlider({text = "Silent Aim Prediction Y", flag = "silent_aim_prediction_y", min = 0, max = 100, value = 0})
+AimbotSettingsSection:AddSlider({text = "Silent Aim Prediction Z", flag = "silent_aim_prediction_z", min = 0, max = 100, value = 0})
 
 -- Finalize
 library:SendNotification("UI Loaded", 3, Color3.new(0, 1, 0))
