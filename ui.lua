@@ -1,6 +1,9 @@
 -- // Tables
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/PoopLibrary/main/Library.lua"))() -- Could Also Save It In Your Workspace And Do loadfile("Library.lua")()
 
+-- Load the ESP module
+local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))()
+
 -- // Init
 local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
@@ -129,5 +132,54 @@ Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", functi
 Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
 Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
+-- Initialize ESP with default settings
+local esp = ESP.Init({
+    Enabled = false,
+    TeamCheck = false,
+    ShowBoxes = false,
+    ShowNames = false,
+    ShowDistance = false,
+    ShowHealthBars = false,
+    BoxColor = Color3.fromRGB(255, 255, 255),
+    NameColor = Color3.fromRGB(255, 255, 255),
+    DistanceColor = Color3.fromRGB(255, 255, 255),
+    TextSize = 13,
+    Distance = 1000
+})
+
+-- Connect ESP settings to UI toggles
+local function updateESPFromUI()
+    esp:UpdateSettings({
+        Enabled = Library.pointers.ESP_Enabled and Library.pointers.ESP_Enabled:Get() or false,
+        ShowBoxes = Library.pointers.ESP_Box and Library.pointers.ESP_Box:Get() or false,
+        BoxColor = Library.pointers.ESP_BoxColor and Library.pointers.ESP_BoxColor:Get() or Color3.fromRGB(255, 255, 255),
+        ShowNames = Library.pointers.ESP_Names and Library.pointers.ESP_Names:Get() or false,
+        ShowHealthBars = Library.pointers.ESP_HealthBar and Library.pointers.ESP_HealthBar:Get() or false,
+        ShowDistance = Library.pointers.ESP_Distance and Library.pointers.ESP_Distance:Get() or false,
+        TextSize = Library.pointers.ESP_TextSize and Library.pointers.ESP_TextSize:Get() or 13,
+        Distance = Library.pointers.ESP_MaxDistance and Library.pointers.ESP_MaxDistance:Get() or 1000
+    })
+    
+    -- Debug prints
+    print("ESP Settings Updated:")
+    print("Enabled:", Library.pointers.ESP_Enabled:Get())
+    print("ShowBoxes:", Library.pointers.ESP_Box:Get())
+end
+
+-- Connect the update function to UI changes
+for _, pointer in pairs(Library.pointers) do
+    if typeof(pointer.Set) == "function" then
+        local originalSet = pointer.Set
+        pointer.Set = function(self, value)
+            originalSet(self, value)
+            updateESPFromUI()
+            return value
+        end
+    end
+end
+
 -- // Initialisation
 Window:Initialize()
+
+-- Initial update of ESP settings
+updateESPFromUI()
