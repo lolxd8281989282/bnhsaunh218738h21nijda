@@ -19,6 +19,7 @@ local ESPSection = VisualPage:Section({
 
 ESPSection:Toggle({
   Name = "Enabled",
+  Default = false,
   Callback = function(Value)
     ESP.Enabled = Value
   end
@@ -26,6 +27,7 @@ ESPSection:Toggle({
 
 ESPSection:Toggle({
   Name = "Team Check",
+  Default = false,
   Callback = function(Value)
     ESP.TeamCheck = Value
   end
@@ -33,6 +35,7 @@ ESPSection:Toggle({
 
 ESPSection:Toggle({
   Name = "Outline",
+  Default = false,
   Callback = function(Value)
     ESP.Outline = Value
   end
@@ -40,6 +43,7 @@ ESPSection:Toggle({
 
 ESPSection:Toggle({
   Name = "Self ESP",
+  Default = false,
   Callback = function(Value)
     ESP.SelfESP = Value
   end
@@ -63,6 +67,7 @@ local BoxSection = VisualPage:Section({
 
 BoxSection:Toggle({
   Name = "Enabled",
+  Default = false,
   Callback = function(Value)
     ESP.ShowBoxes = Value
   end
@@ -70,6 +75,7 @@ BoxSection:Toggle({
 
 BoxSection:Toggle({
   Name = "Fill Box",
+  Default = false,
   Callback = function(Value)
     ESP.FillBox = Value
   end
@@ -92,6 +98,7 @@ local OtherSection = VisualPage:Section({
 
 OtherSection:Toggle({
   Name = "Equipped Item",
+  Default = false,
   Callback = function(Value)
     ESP.ShowEquippedItem = Value
   end
@@ -99,6 +106,7 @@ OtherSection:Toggle({
 
 OtherSection:Toggle({
   Name = "Skeleton",
+  Default = false,
   Callback = function(Value)
     ESP.ShowSkeleton = Value
   end
@@ -106,6 +114,7 @@ OtherSection:Toggle({
 
 OtherSection:Toggle({
   Name = "Head Dot",
+  Default = false,
   Callback = function(Value)
     ESP.ShowHeadDot = Value
   end
@@ -113,6 +122,7 @@ OtherSection:Toggle({
 
 OtherSection:Toggle({
   Name = "Distance",
+  Default = false,
   Callback = function(Value)
     ESP.ShowDistance = Value
   end
@@ -120,6 +130,7 @@ OtherSection:Toggle({
 
 OtherSection:Toggle({
   Name = "Health Bar",
+  Default = false,
   Callback = function(Value)
     ESP.ShowHealthBars = Value
   end
@@ -127,6 +138,7 @@ OtherSection:Toggle({
 
 OtherSection:Toggle({
   Name = "Armor Bar",
+  Default = false,
   Callback = function(Value)
     ESP.ShowArmorBar = Value
   end
@@ -140,6 +152,7 @@ local NameSection = VisualPage:Section({
 
 NameSection:Toggle({
   Name = "Enabled",
+  Default = false,
   Callback = function(Value)
     ESP.ShowNames = Value
   end
