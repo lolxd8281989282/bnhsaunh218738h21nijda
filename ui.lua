@@ -32,13 +32,13 @@ library.flags.watermark_y = 1.1
 
 local tabs = {
     Legit = Window:AddTab("Legit"),
-    Settings = Window:AddTab("Settings"),
+    Settings = library:CreateSettingsTab(Window), -- This uses the library's built-in settings
 }
 
 -- Legit Tab
 local BulletRedirection = tabs.Legit:AddSection("Bullet Redirection", 1)
 local AimAssist = tabs.Legit:AddSection("Aim Assist", 2)
-local Both = tabs.Legit:AddSection("Both", 1) -- Added at the bottom of left column
+local Both = tabs.Legit:AddSection("Both", 1)
 
 -- Bullet Redirection Section
 BulletRedirection:AddToggle({text = "Enabled", flag = "br_enabled"})
@@ -50,9 +50,9 @@ BulletRedirection:AddToggle({text = "Use Air Part", flag = "br_use_air_part"})
 BulletRedirection:AddToggle({text = "KO Check", flag = "br_ko_check"})
 BulletRedirection:AddToggle({text = "Grabbed Check", flag = "br_grabbed_check"})
 
-BulletRedirection:AddSlider({text = "Prediction", flag = "br_prediction", min = 0, max = 100, value = 13.3, suffix = "/3.4"})
-BulletRedirection:AddSlider({text = "SAGS", flag = "br_sags", min = 0, max = 250, value = 0, suffix = "/250"})
-BulletRedirection:AddSlider({text = "HitChance", flag = "br_hitchance", min = 0, max = 100, value = 0, suffix = "/100"})
+BulletRedirection:AddSlider({text = "Prediction", flag = "br_prediction", min = 0, max = 34, value = 13, suffix = "/3.4"})
+BulletRedirection:AddSlider({text = "Radius", flag = "br_radius", min = 0, max = 250, value = 0, suffix = "/250"})
+BulletRedirection:AddSlider({text = "HitChance", flag = "br_hitchance", min = 0, max = 100, value = 0})
 BulletRedirection:AddSlider({text = "AntiGround Shots Value", flag = "br_antiground_value", min = 0, max = 100, value = 0})
 BulletRedirection:AddSlider({text = "Resolver Tuning", flag = "br_resolver_tuning", min = 0, max = 100, value = 0})
 
@@ -61,21 +61,22 @@ BulletRedirection:AddList({text = "Air Part", flag = "br_air_part", values = {"H
 
 -- Aim Assist Section
 AimAssist:AddToggle({text = "Enabled", flag = "aa_enabled"})
+AimAssist:AddToggle({text = "Smoothing", flag = "aa_smoothing"})
 AimAssist:AddToggle({text = "Add Shake", flag = "aa_add_shake"})
 AimAssist:AddToggle({text = "Show FOV", flag = "aa_show_fov"})
-AimAssist:AddToggle({text = "Resolver", flag = "aa_resolver"})
 AimAssist:AddToggle({text = "Use Circle Radius", flag = "aa_use_circle_radius"})
+AimAssist:AddToggle({text = "Resolver", flag = "aa_resolver"})
 AimAssist:AddToggle({text = "Unlock On Target Death", flag = "aa_unlock_target_death"})
 AimAssist:AddToggle({text = "Unlock On My Death", flag = "aa_unlock_my_death"})
 
-AimAssist:AddSlider({text = "Prediction", flag = "aa_prediction", min = 0, max = 100, value = 13.3, suffix = "/3.2"})
+AimAssist:AddSlider({text = "Prediction", flag = "aa_prediction", min = 0, max = 32, value = 13, suffix = "/3.2"})
 AimAssist:AddSlider({text = "Smooth Amount", flag = "aa_smooth_amount", min = 0, max = 100, value = 0})
 AimAssist:AddSlider({text = "Shake Value", flag = "aa_shake_value", min = 0, max = 100, value = 0, suffix = "/100"})
 AimAssist:AddSlider({text = "Shake Multiplier", flag = "aa_shake_multiplier", min = 0, max = 10, value = 1, suffix = "/10"})
 AimAssist:AddSlider({text = "Resolver Time", flag = "aa_resolver_time", min = 0, max = 100, value = 0})
 AimAssist:AddSlider({text = "Radius", flag = "aa_radius", min = 0, max = 250, value = 20, suffix = "/250"})
 
-AimAssist:AddList({text = "Part", flag = "aa_part", values = {"..."}, value = "..."})
+AimAssist:AddList({text = "Part", flag = "aa_part", values = {"Head"}, value = "Head"})
 AimAssist:AddList({text = "Speed", flag = "aa_speed", values = {"..."}, value = "..."})
 AimAssist:AddList({text = "Key", flag = "aa_key", values = {"..."}, value = "..."})
 
