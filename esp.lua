@@ -314,7 +314,7 @@ local function CreateESP(plr)
                   end
 
                   -- Outline ESP
-                  if ESP.Outline then
+                  if ESP.Enabled and ESP.Outline then
                       if plr.Character then
                           highlight.Parent = plr.Character
                           highlight.Enabled = true
@@ -337,7 +337,7 @@ local function CreateESP(plr)
                   end
 
                   -- Head Dot
-                  if ESP.ShowHeadDot and head then
+                  if ESP.Enabled and ESP.ShowHeadDot and head then
                       local headPos, onScreen = camera:WorldToViewportPoint(head.Position)
                       if onScreen then
                           local headSize = head.Size.Y
@@ -396,7 +396,7 @@ local function CreateESP(plr)
                   end
 
                   -- Armor Bar
-                  if ESP.ShowArmorBar then
+                  if ESP.Enabled and ESP.ShowArmorBar then
                       local armorValue = 0
                       local maxArmor = 100
                       
@@ -460,7 +460,7 @@ local function CreateESP(plr)
                   end
 
                   -- Equipped Item
-                  if ESP.ShowEquippedItem or ESP.ShowDistance then
+                  if ESP.Enabled and (ESP.ShowEquippedItem or ESP.ShowDistance) then
                       lines.itemText.Position = Vector2.new(screenPos.X, screenPos.Y + size.Y * 2)
                       local text = ""
                       
@@ -498,7 +498,7 @@ local function CreateESP(plr)
                   end
 
                   -- Skeleton ESP
-                  if ESP.ShowSkeleton then
+                  if ESP.Enabled and ESP.ShowSkeleton then
                       UpdateSkeleton(plr.Character, true)
                   else
                       for _, line in pairs({
