@@ -1,6 +1,9 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
 local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))() -- Update with your actual repo for ESP
 
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourGitHubUsername/YourRepository/main/esp.lua"))()
+
 -- Create the window
 local Window = Library:New({
     Name = "dracula.lol | beta",
@@ -10,7 +13,7 @@ local Window = Library:New({
 -- Create ESP Preview
 local PreviewGui = Instance.new("ScreenGui")
 PreviewGui.Name = "ESPPreview"
-PreviewGui.Parent = game.CoreGui
+PreviewGui.Parent = game:GetService("CoreGui")
 
 local PreviewFrame = Instance.new("Frame")
 PreviewFrame.Name = "PreviewFrame"
