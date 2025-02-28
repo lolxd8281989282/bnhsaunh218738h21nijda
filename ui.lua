@@ -2,7 +2,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd
 
 local Window = Library:New({
     Name = "dracula.lol | beta",
-    Accent = Color3.fromRGB(255, 255, 255)
+    Accent = Color3.fromRGB(255, 255, 255) -- Change accent to white
 })
 
 -- Visual Page
@@ -10,7 +10,7 @@ local VisualPage = Window:Page({
     Name = "visuals"
 })
 
--- Create tabs for Enemies, Friendlies, Local
+-- Create tabs for Enemies, Friendlies, Local, Extra
 local TabContainer = VisualPage:TabContainer({
     Side = "Top"
 })
@@ -27,6 +27,10 @@ local EnemiesSection = EnemiesTab:Section({
 
 EnemiesSection:Toggle({
     Name = "Enabled"
+})
+
+EnemiesSection:Toggle({
+    Name = "Name"
 })
 
 EnemiesSection:Toggle({
@@ -113,6 +117,10 @@ FriendliesSection:Toggle({
 })
 
 FriendliesSection:Toggle({
+    Name = "Name"
+})
+
+FriendliesSection:Toggle({
     Name = "Bounding Box"
 })
 
@@ -196,6 +204,10 @@ LocalSection:Toggle({
 })
 
 LocalSection:Toggle({
+    Name = "Name"
+})
+
+LocalSection:Toggle({
     Name = "Bounding Box"
 })
 
@@ -258,24 +270,44 @@ local AimPage = Window:Page({
     Name = "aim"
 })
 
+-- Aimbot Page Sections
+local AimbotSection = AimPage:Section({
+    Name = "Aimbot",
+    Side = "Left"
+})
+
 local RagePage = Window:Page({
     Name = "rage"
+})
+
+-- Rage Page Sections
+local RageSection = RagePage:Section({
+    Name = "Rage",
+    Side = "Left"
 })
 
 local MiscPage = Window:Page({
     Name = "misc"
 })
 
+-- Misc Page Sections
+local MiscSection = MiscPage:Section({
+    Name = "Misc",
+    Side = "Left"
+})
+
 local PlayerPage = Window:Page({
     Name = "player-list"
 })
 
+-- Keep the existing PlayerList function
 local PlayerList = PlayerPage:PlayerList({})
 
 local SettingsPage = Window:Page({
     Name = "settings"
 })
 
+-- Settings Page Sections
 local MainSettingsSection = SettingsPage:Section({
     Name = "Main",
     Side = "Left"
@@ -310,6 +342,7 @@ MainSettingsSection:Button({
     Name = "Unload",
 })
 
+-- Add Config Section (Simplified)
 local ConfigSection = SettingsPage:Section({
     Name = "Config",
     Side = "Right"
@@ -343,6 +376,4 @@ ConfigSection:Button({
     Name = "Delete",
 })
 
-Window:Initialize()
-
-return Window
+Window:Initialize() -- DO NOT REMOVE
