@@ -1,5 +1,5 @@
 -- // Tables
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/PoopLibrary/main/Library.lua"))() -- Could Also Save It In Your Workspace And Do loadfile("Library.lua")()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/PoopLibrary/main/Library.lua"))()
 
 -- Load the ESP module
 local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))()
@@ -35,20 +35,20 @@ FOV:Dropdown({Name = "Mode", Options = {"Static", "Dynamic"}, Default = "Static"
 FOV:Toggle({Name = "Visible", Default = false, Pointer = "FOVVisible"})
 FOV:Toggle({Name = "Filled", Default = false, Pointer = "FOVFilled"})
 FOV:Colorpicker({Name = "FOV Color", Info = "Field of View Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "FOVColor"})
-FOV:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Smoothness"})
-FOV:Slider({Name = "Visibility", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Visibility"})
-FOV:Slider({Name = "Fluctuation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Fluctuation"})
-FOV:Slider({Name = "Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Transparency"})
-FOV:Slider({Name = "Rotation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Rotation"})
+FOV:Slider({Name = "Size", Minimum = 1, Maximum = 800, Default = 120, Decimals = 1, Pointer = "FOVSize"})
+FOV:Slider({Name = "Visibility", Minimum = 0, Maximum = 1, Default = 0.5, Decimals = 0.1, Pointer = "FOVVisibility"})
+FOV:Slider({Name = "Fluctuation", Minimum = 0, Maximum = 100, Default = 0, Decimals = 1, Pointer = "FOVFluctuation"})
+FOV:Slider({Name = "Transparency", Minimum = 0, Maximum = 1, Default = 0.5, Decimals = 0.1, Pointer = "FOVTransparency"})
+FOV:Slider({Name = "Rotation", Minimum = 0, Maximum = 360, Default = 0, Decimals = 1, Pointer = "FOVRotation"})
 FOV:Toggle({Name = "Auto Select", Default = false, Pointer = "FOVAutoSelect"})
 
 -- // Prediction Section
 Prediction:Toggle({Name = "Use Prediction", Default = false, Pointer = "PredictionEnabled"})
 Prediction:Toggle({Name = "Ping Based", Default = false, Pointer = "PredictionPingBased"})
 Prediction:Label({Name = "X Axis Prediction"})
-Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionX"})
+Prediction:Slider({Name = "Value", Minimum = 0, Maximum = 1, Default = 0.133, Decimals = 0.001, Pointer = "PredictionX"})
 Prediction:Label({Name = "Y Axis Prediction"})
-Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionY"})
+Prediction:Slider({Name = "Value", Minimum = 0, Maximum = 1, Default = 0.133, Decimals = 0.001, Pointer = "PredictionY"})
 Prediction:Toggle({Name = "Strafe", Default = false, Pointer = "PredictionStrafe"})
 Prediction:Toggle({Name = "Destroy Cheaters Bypass", Default = false, Pointer = "PredictionBypass"})
 Prediction:Toggle({Name = "Vehicle Strafe", Default = false, Pointer = "PredictionVehicle"})
@@ -56,7 +56,7 @@ Prediction:Toggle({Name = "Vehicle Strafe", Default = false, Pointer = "Predicti
 -- // Gun Exploits Section
 GunMods:Toggle({Name = "No Recoil", Default = false, Pointer = "GunNoRecoil"})
 GunMods:Toggle({Name = "Rapid Fire", Default = false, Pointer = "GunRapidFire"})
-GunMods:Slider({Name = "Fire Rate Modification", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "GunFireRate"})
+GunMods:Slider({Name = "Fire Rate Modification", Minimum = 0, Maximum = 10, Default = 0.15, Decimals = 0.01, Pointer = "GunFireRate"})
 GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
 
 -- // Visuals Section
@@ -67,12 +67,12 @@ local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
 
 -- Target UI Section
 Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
-Target_UI:Slider({Name = "Target UI Offset", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_Offset"})
+Target_UI:Slider({Name = "Target UI Offset", Minimum = 0, Maximum = 500, Default = 80, Decimals = 1, Pointer = "TargetUI_Offset"})
 
 Target_UI:Label({Name = "Target Visuals", Middle = false})
 Target_UI:Toggle({Name = "Highlight", Default = false, Pointer = "TargetUI_Highlight"})
 :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "TargetUI_HighlightColor"})
-Target_UI:Slider({Name = "Fill Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_FillTransparency"})
+Target_UI:Slider({Name = "Fill Transparency", Minimum = 0, Maximum = 1, Default = 0.5, Decimals = 0.1, Pointer = "TargetUI_FillTransparency"})
 
 Target_UI:Label({Name = "Hit Feedback", Middle = false})
 Target_UI:Toggle({Name = "Hit Marker", Default = false, Pointer = "TargetUI_HitMarker"})
@@ -84,11 +84,11 @@ Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSo
 -- ESP Section
 ESP:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
 ESP:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
-ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
+ESP:Slider({Name = "Max Distance", Minimum = 0, Maximum = 2000, Default = 1000, Decimals = 1, Pointer = "ESP_MaxDistance"})
 ESP:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-ESP:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
+ESP:Slider({Name = "Outline Transparency", Minimum = 0, Maximum = 1, Default = 0.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
 ESP:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
-ESP:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
+ESP:Slider({Name = "Text Size", Minimum = 8, Maximum = 24, Default = 13, Decimals = 1, Pointer = "ESP_TextSize"})
 
 ESP:Label({Name = "ESP Features", Middle = false})
 ESP:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
@@ -110,9 +110,9 @@ ESP:Toggle({Name = "Flags", Default = false, Pointer = "ESP_Flags"})
 
 ESP:Toggle({Name = "Bullet Tracers", Default = false, Pointer = "ESP_BulletTracers"})
 :Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor"})
-ESP:Slider({Name = "Duration", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration"})
+ESP:Slider({Name = "Duration", Minimum = 0.1, Maximum = 5, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration"})
 
--- Atmosphere Section (New)
+-- Atmosphere Section
 Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
 Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
 :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
@@ -121,11 +121,11 @@ Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
 :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
 Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
 
--- Rain Section (New)
+-- Rain Section
 Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
 :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
 
--- // Settings Section (kept from original example)
+-- // Settings Section
 local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
 Settings_Main:ConfigBox({})
 Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
@@ -133,37 +133,48 @@ Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save yo
 Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
 -- Initialize ESP with default settings
-local esp = ESP.Init({
-    Enabled = false,
-    TeamCheck = false,
-    ShowBoxes = false,
-    ShowNames = false,
-    ShowDistance = false,
-    ShowHealthBars = false,
-    BoxColor = Color3.fromRGB(255, 255, 255),
-    NameColor = Color3.fromRGB(255, 255, 255),
-    DistanceColor = Color3.fromRGB(255, 255, 255),
-    TextSize = 13,
-    Distance = 1000
-})
+local success, esp = pcall(function()
+    return ESP.new({
+        Enabled = false,
+        TeamCheck = false,
+        ShowBoxes = false,
+        ShowNames = false,
+        ShowDistance = false,
+        ShowHealthBars = false,
+        BoxColor = Color3.fromRGB(255, 255, 255),
+        NameColor = Color3.fromRGB(255, 255, 255),
+        DistanceColor = Color3.fromRGB(255, 255, 255),
+        TextSize = 13,
+        Distance = 1000
+    })
+end)
+
+if not success then
+    warn("Failed to initialize ESP:", esp)
+    esp = nil
+end
 
 -- Connect ESP settings to UI toggles
 local function updateESPFromUI()
-    esp:UpdateSettings({
-        Enabled = Library.pointers.ESP_Enabled and Library.pointers.ESP_Enabled:Get() or false,
-        ShowBoxes = Library.pointers.ESP_Box and Library.pointers.ESP_Box:Get() or false,
-        BoxColor = Library.pointers.ESP_BoxColor and Library.pointers.ESP_BoxColor:Get() or Color3.fromRGB(255, 255, 255),
-        ShowNames = Library.pointers.ESP_Names and Library.pointers.ESP_Names:Get() or false,
-        ShowHealthBars = Library.pointers.ESP_HealthBar and Library.pointers.ESP_HealthBar:Get() or false,
-        ShowDistance = Library.pointers.ESP_Distance and Library.pointers.ESP_Distance:Get() or false,
-        TextSize = Library.pointers.ESP_TextSize and Library.pointers.ESP_TextSize:Get() or 13,
-        Distance = Library.pointers.ESP_MaxDistance and Library.pointers.ESP_MaxDistance:Get() or 1000
-    })
-    
-    -- Debug prints
-    print("ESP Settings Updated:")
-    print("Enabled:", Library.pointers.ESP_Enabled:Get())
-    print("ShowBoxes:", Library.pointers.ESP_Box:Get())
+    if esp and esp.UpdateSettings then
+        esp:UpdateSettings({
+            Enabled = Library.pointers.ESP_Enabled:Get(),
+            ShowBoxes = Library.pointers.ESP_Box:Get(),
+            BoxColor = Library.pointers.ESP_BoxColor:Get(),
+            ShowNames = Library.pointers.ESP_Names:Get(),
+            ShowHealthBars = Library.pointers.ESP_HealthBar:Get(),
+            ShowDistance = Library.pointers.ESP_Distance:Get(),
+            TextSize = Library.pointers.ESP_TextSize:Get(),
+            Distance = Library.pointers.ESP_MaxDistance:Get()
+        })
+        
+        -- Debug prints
+        print("ESP Settings Updated:")
+        print("Enabled:", Library.pointers.ESP_Enabled:Get())
+        print("ShowBoxes:", Library.pointers.ESP_Box:Get())
+    else
+        warn("ESP or UpdateSettings function not available")
+    end
 end
 
 -- Connect the update function to UI changes
