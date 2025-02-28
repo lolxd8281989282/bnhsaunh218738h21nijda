@@ -1,90 +1,82 @@
--- Credits To The Original Devs @xz, @goof
-getgenv().Config = {
-    Invite = "dracula.lol",
-    Version = "1.0",
-}
+-- Load the new library
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
 
-getgenv().luaguardvars = {
-    DiscordName = "username#0000",
-}
+-- Set up initial configuration
+library.rank = "developer"
+local Wm = library:Watermark("dracula.lol | v" .. library.version .. " | " .. library:GetUsername() .. " | rank: " .. library.rank)
+local FpsWm = Wm:AddWatermark("fps: " .. library.fps)
+coroutine.wrap(function()
+    while wait(.75) do
+        FpsWm:Text("fps: " .. library.fps)
+    end
+end)()
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+-- Set up notifications
+local Notif = library:InitNotifications()
 
-library:init()
+-- Initialize the library
+library.title = "dracula.lol | beta"
+library:Introduction()
+wait(1)
+local Init = library:Init()
 
-local Window = library.NewWindow({
-    title = "dracula.lol | beta",
-    size = UDim2.new(0, 525, 0, 650)
-})
-
--- Change accent color to white
-library:SetTheme({
-    ["Accent"] = Color3.fromRGB(255, 255, 255)
-})
-
--- Set initial watermark state
-library.watermark.enabled = true
-library.watermark.lock = 'Bottom Right'
-library.flags.watermark_enabled = true
-library.flags.watermark_pos = 'Bottom Right'
-library.flags.watermark_x = 40
-library.flags.watermark_y = 1.1
-
-local tabs = {
-    Legit = Window:AddTab("Legit"),
-    Settings = library:CreateSettingsTab(Window),
-}
-
--- Legit Tab
-local Main = tabs.Legit:AddSection("Main", 1)
-local Visuals = tabs.Legit:AddSection("Visuals", 2)
+-- Create the Legit tab
+local LegitTab = Init:NewTab("Legit")
 
 -- Main Section
-Main:AddToggle({text = "Enabled", flag = "main_enabled"})
-Main:AddToggle({text = "Silent", flag = "main_silent"})
-Main:AddToggle({text = "Camlock", flag = "main_camlock"})
-Main:AddToggle({text = "Anti Aim Viewer", flag = "main_anti_aim_viewer"})
-Main:AddToggle({text = "Gun TP", flag = "main_gun_tp"})
-Main:AddToggle({text = "Closest Part", flag = "main_closest_part"})
-Main:AddToggle({text = "Apply Closest Part On GetClo", flag = "main_apply_closest_getclo"})
-Main:AddToggle({text = "Smoothing", flag = "main_smoothing"})
-Main:AddToggle({text = "Alerts", flag = "main_alerts"})
-Main:AddToggle({text = "Auto Prediction", flag = "main_auto_prediction"})
-Main:AddToggle({text = "Use Field of View", flag = "main_use_fov"})
-Main:AddToggle({text = "Visualize FOV", flag = "main_visualize_fov"})
-Main:AddToggle({text = "Use Checks", flag = "main_use_checks"})
+local MainSection = LegitTab:NewSection("Main")
 
-Main:AddList({text = "Aim Part", flag = "main_aim_part", values = {"HumanoidRootPart"}, value = "HumanoidRootPart"})
-Main:AddList({text = "Checks", flag = "main_checks", values = {"..."}, value = "..."})
+MainSection:NewToggle("Enabled", false, function(value)
+    -- Your enabled logic here
+end)
 
-Main:AddSlider({text = "Field of View Radius", flag = "main_fov_radius", min = 0, max = 800, value = 80, suffix = "%/800%"})
-Main:AddSlider({text = "Alerts Duration", flag = "main_alerts_duration", min = 0, max = 10, value = 4, suffix = "%/10%"})
-Main:AddSlider({text = "Smoothing Amount", flag = "main_smoothing_amount", min = 0, max = 7, value = 15, suffix = "%/7%"})
+MainSection:NewToggle("Silent", false, function(value)
+    -- Your silent logic here
+end)
+
+MainSection:NewToggle("Camlock", false, function(value)
+    -- Your camlock logic here
+end)
+
+-- Add more toggles for the Main section...
+
+MainSection:NewDropdown("Aim Part", {"HumanoidRootPart"}, function(value)
+    -- Your aim part logic here
+end)
+
+MainSection:NewDropdown("Checks", {"..."}, function(value)
+    -- Your checks logic here
+end)
+
+MainSection:NewSlider("Field of View Radius", 0, 800, 80, function(value)
+    -- Your FOV radius logic here
+end)
+
+MainSection:NewSlider("Alerts Duration", 0, 10, 4, function(value)
+    -- Your alerts duration logic here
+end)
+
+MainSection:NewSlider("Smoothing Amount", 0, 7, 15, function(value)
+    -- Your smoothing amount logic here
+end)
 
 -- Visuals Section
-Visuals:AddToggle({text = "Enabled", flag = "visuals_enabled"})
-Visuals:AddLabel("Misc") -- Added the Misc label
-Visuals:AddToggle({text = "Tracer", flag = "visuals_tracer"})
-Visuals:AddToggle({text = "Auto Select", flag = "visuals_auto_select"})
-Visuals:AddToggle({text = "Resolver", flag = "visuals_resolver"})
-Visuals:AddToggle({text = "Jump Offset (AIR)", flag = "visuals_jump_offset_air"})
-Visuals:AddToggle({text = "Spectate", flag = "visuals_spectate"})
-Visuals:AddToggle({text = "Air", flag = "visuals_air"})
-Visuals:AddToggle({text = "Anti Groundshots (AIR)", flag = "visuals_anti_groundshots_air"})
+local VisualsSection = LegitTab:NewSection("Visuals")
 
-Visuals:AddSlider({text = "Refresh Rate", flag = "visuals_refresh_rate", min = 0, max = 200, value = 200, suffix = "ms/200ms"})
-Visuals:AddSlider({text = "To Take Off", flag = "visuals_to_take_off", min = 0, max = 1, value = 0.4, suffix = "'/1'"})
-Visuals:AddSlider({text = "Jump Offset", flag = "visuals_jump_offset", min = 0, max = 4, value = 0.09, suffix = "'/4'"})
-Visuals:AddSlider({text = "Dot Size", flag = "visuals_dot_size", min = 0, max = 10, value = 6, suffix = "%/10%"})
-Visuals:AddSlider({text = "Part Transparency", flag = "visuals_part_transparency", min = 0, max = 1, value = 0.05, suffix = "%/1%"})
-Visuals:AddSlider({text = "Part Size", flag = "visuals_part_size", min = 0, max = 20, value = 2, suffix = "'/20'"})
-Visuals:AddSlider({text = "Circle Size", flag = "visuals_circle_size", min = 0, max = 10, value = 2, suffix = "%/10%"})
+VisualsSection:NewToggle("Enabled", false, function(value)
+    -- Your visuals enabled logic here
+end)
 
-Visuals:AddToggle({text = "Part Material", flag = "visuals_part_material"})
-Visuals:AddToggle({text = "Neon", flag = "visuals_neon"})
+VisualsSection:NewLabel("Misc")
+
+VisualsSection:NewToggle("Tracer", false, function(value)
+    -- Your tracer logic here
+end)
+
+-- Add more toggles and sliders for the Visuals section...
+
+-- Settings tab (assuming it's created by the library)
+local SettingsTab = Init:NewTab("Settings")
 
 -- Finalize
-library:SendNotification("Successfully Initialized", 3, Color3.new(0, 1, 0))
-Window:SetOpen(true)
-
-return Window
+Notif:Notify("Successfully Initialized", 3, "success")
