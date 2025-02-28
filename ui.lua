@@ -63,10 +63,10 @@ Main:AddSlider({text = "Smoothing Amount", flag = "main_smoothing_amount", min =
 
 -- Visuals Section
 Visuals:AddToggle({text = "Enabled", flag = "visuals_enabled"})
+Visuals:AddLabel("Misc") -- Added the Misc label
 Visuals:AddToggle({text = "Tracer", flag = "visuals_tracer"})
 Visuals:AddToggle({text = "Auto Select", flag = "visuals_auto_select"})
 Visuals:AddToggle({text = "Resolver", flag = "visuals_resolver"})
-Visuals:AddToggle({text = "Dot", flag = "visuals_dot"})
 Visuals:AddToggle({text = "Jump Offset (AIR)", flag = "visuals_jump_offset_air"})
 Visuals:AddToggle({text = "Spectate", flag = "visuals_spectate"})
 Visuals:AddToggle({text = "Air", flag = "visuals_air"})
