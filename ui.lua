@@ -32,36 +32,58 @@ library.flags.watermark_y = 1.1
 
 local tabs = {
     Legit = Window:AddTab("Legit"),
-    Players = Window:AddTab("Players"),
-    Visuals = Window:AddTab("Visuals"),
-    Misc = Window:AddTab("Misc"),
-    Settings = library:CreateSettingsTab(Window),
+    Settings = Window:AddTab("Settings"),
 }
 
 -- Legit Tab
-local AimAssist = tabs.Legit:AddSection("Aim Assist", 1)
-local BulletRedirection = tabs.Legit:AddSection("Bullet Redirection", 2)
-local MiscSection = tabs.Legit:AddSection("Misc", 2)
+local BulletRedirection = tabs.Legit:AddSection("Bullet Redirection", 1)
+local AimAssist = tabs.Legit:AddSection("Aim Assist", 2)
+local Both = tabs.Legit:AddSection("Both", 1) -- Added at the bottom of left column
+
+-- Bullet Redirection Section
+BulletRedirection:AddToggle({text = "Enabled", flag = "br_enabled"})
+BulletRedirection:AddToggle({text = "Show FOV", flag = "br_show_fov"})
+BulletRedirection:AddToggle({text = "Resolver", flag = "br_resolver"})
+BulletRedirection:AddToggle({text = "Use Closest Part", flag = "br_use_closest_part"})
+BulletRedirection:AddToggle({text = "Anti Ground Shots", flag = "br_anti_ground_shots"})
+BulletRedirection:AddToggle({text = "Use Air Part", flag = "br_use_air_part"})
+BulletRedirection:AddToggle({text = "KO Check", flag = "br_ko_check"})
+BulletRedirection:AddToggle({text = "Grabbed Check", flag = "br_grabbed_check"})
+
+BulletRedirection:AddSlider({text = "Prediction", flag = "br_prediction", min = 0, max = 100, value = 13.3, suffix = "/3.4"})
+BulletRedirection:AddSlider({text = "SAGS", flag = "br_sags", min = 0, max = 250, value = 0, suffix = "/250"})
+BulletRedirection:AddSlider({text = "HitChance", flag = "br_hitchance", min = 0, max = 100, value = 0, suffix = "/100"})
+BulletRedirection:AddSlider({text = "AntiGround Shots Value", flag = "br_antiground_value", min = 0, max = 100, value = 0})
+BulletRedirection:AddSlider({text = "Resolver Tuning", flag = "br_resolver_tuning", min = 0, max = 100, value = 0})
+
+BulletRedirection:AddList({text = "Part", flag = "br_part", values = {"HumanoidRootPart"}, value = "HumanoidRootPart"})
+BulletRedirection:AddList({text = "Air Part", flag = "br_air_part", values = {"Head"}, value = "Head"})
 
 -- Aim Assist Section
-AimAssist:AddList({text = "Aimbot", flag = "aimbot", values = {"none", "..."}, value = "none"})
-AimAssist:AddToggle({text = "Prediction", flag = "prediction"})
-AimAssist:AddList({text = "Mouse", flag = "mouse_settings", values = {"..."}, value = "..."})
-AimAssist:AddSlider({text = "[Mouse] Smoothing", flag = "mouse_smoothing", min = 0, max = 100, value = 1.0})
-AimAssist:AddSlider({text = "[Camera] Smoothing", flag = "camera_smoothing", min = 0, max = 100, value = 55.0})
-AimAssist:AddList({text = "Prediction Method", flag = "prediction_method", values = {"Division", "..."}, value = "Division"})
-AimAssist:AddSlider({text = "Prediction X", flag = "prediction_x", min = 0, max = 100, value = 7.5})
-AimAssist:AddSlider({text = "Prediction Y", flag = "prediction_y", min = 0, max = 100, value = 6.9})
-AimAssist:AddSlider({text = "Prediction Z", flag = "prediction_z", min = 0, max = 100, value = 5.6})
-AimAssist:AddToggle({text = "Use Custom Aim Part", flag = "custom_aim_part"})
+AimAssist:AddToggle({text = "Enabled", flag = "aa_enabled"})
+AimAssist:AddToggle({text = "Add Shake", flag = "aa_add_shake"})
+AimAssist:AddToggle({text = "Show FOV", flag = "aa_show_fov"})
+AimAssist:AddToggle({text = "Resolver", flag = "aa_resolver"})
+AimAssist:AddToggle({text = "Use Circle Radius", flag = "aa_use_circle_radius"})
+AimAssist:AddToggle({text = "Unlock On Target Death", flag = "aa_unlock_target_death"})
+AimAssist:AddToggle({text = "Unlock On My Death", flag = "aa_unlock_my_death"})
 
--- Misc Section
-MiscSection:AddToggle({text = "Shake", flag = "shake"})
-MiscSection:AddToggle({text = "Resolver", flag = "resolver"})
-MiscSection:AddToggle({text = "Auto Prediction", flag = "auto_prediction"})
-MiscSection:AddToggle({text = "Only in FOV", flag = "only_in_fov"})
-MiscSection:AddToggle({text = "Show FOV", flag = "show_fov"})
-MiscSection:AddSlider({text = "FOV Value", flag = "fov_value", min = 0, max = 100, value = 40})
+AimAssist:AddSlider({text = "Prediction", flag = "aa_prediction", min = 0, max = 100, value = 13.3, suffix = "/3.2"})
+AimAssist:AddSlider({text = "Smooth Amount", flag = "aa_smooth_amount", min = 0, max = 100, value = 0})
+AimAssist:AddSlider({text = "Shake Value", flag = "aa_shake_value", min = 0, max = 100, value = 0, suffix = "/100"})
+AimAssist:AddSlider({text = "Shake Multiplier", flag = "aa_shake_multiplier", min = 0, max = 10, value = 1, suffix = "/10"})
+AimAssist:AddSlider({text = "Resolver Time", flag = "aa_resolver_time", min = 0, max = 100, value = 0})
+AimAssist:AddSlider({text = "Radius", flag = "aa_radius", min = 0, max = 250, value = 20, suffix = "/250"})
+
+AimAssist:AddList({text = "Part", flag = "aa_part", values = {"..."}, value = "..."})
+AimAssist:AddList({text = "Speed", flag = "aa_speed", values = {"..."}, value = "..."})
+AimAssist:AddList({text = "Key", flag = "aa_key", values = {"..."}, value = "..."})
+
+-- Both Section
+Both:AddToggle({text = "Visible Check", flag = "both_visible_check"})
+Both:AddToggle({text = "Friend Check", flag = "both_friend_check"})
+Both:AddToggle({text = "Crew Check", flag = "both_crew_check"})
+Both:AddToggle({text = "Team Check", flag = "both_team_check"})
 
 -- Finalize
 library:SendNotification("UI Loaded", 3, Color3.new(0, 1, 0))
