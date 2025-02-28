@@ -10,8 +10,8 @@ local VisualPage = Window:Page({
 })
 
 -- Create the sections using MultiSection
-local EnemiesTab, FriendliesTab, LocalTab, ExtraTab = VisualPage:MultiSection({
-    Sections = {"Enemies", "Friendlies", "Local", "Extra"},
+local EnemiesTab, FriendliesTab, LocalTab = VisualPage:MultiSection({
+    Sections = {"Enemies", "Friendlies", "Local"},
     Side = "Left"
 })
 
@@ -94,15 +94,7 @@ EnemiesTab:Dropdown({
     Options = {"Inline", "Outline"}
 })
 
--- Friendlies Tab Content (copy same structure as Enemies)
--- Local Tab Content (copy same structure, excluding arrows)
-
--- Extra Tab Content
-ExtraTab:Toggle({
-    Name = "Disable Layered Clothing"
-})
-
--- Other Pages
+-- Create other pages
 local AimPage = Window:Page({
     Name = "aim"
 })
@@ -134,32 +126,7 @@ local MainSettingsSection = SettingsPage:Section({
 MainSettingsSection:Keybind({
     Name = "Open / Close",
     Default = Enum.KeyCode.RightShift,
-    KeybindName = "UI Toggle",
     Mode = "Toggle"
-})
-
-MainSettingsSection:Toggle({
-    Name = "Disable Movement if Open"
-})
-
-MainSettingsSection:Button({
-    Name = "Join Discord"
-})
-
-MainSettingsSection:Button({
-    Name = "Copy Discord"
-})
-
-MainSettingsSection:Button({
-    Name = "Rejoin Server"
-})
-
-MainSettingsSection:Button({
-    Name = "Copy Join Script"
-})
-
-MainSettingsSection:Button({
-    Name = "Unload"
 })
 
 -- Config Section
@@ -168,32 +135,43 @@ local ConfigSection = SettingsPage:Section({
     Side = "Right"
 })
 
-ConfigSection:TextBox({
-    Default = "",
-    Placeholder = "Enter config name...",
-    Max = 100
-})
+-- Add ESP Preview visibility logic
+VisualPage.callback = function()
+    -- Show ESP Preview
+    if Window.VisualPreview then
+        Window.VisualPreview:SetPreviewState(true)
+    end
+end
 
-ConfigSection:Dropdown({
-    Name = "Config",
-    Default = "none",
-    Options = {"none"}
-})
+-- Hide ESP Preview when switching to other pages
+AimPage.callback = function()
+    if Window.VisualPreview then
+        Window.VisualPreview:SetPreviewState(false)
+    end
+end
 
-ConfigSection:Button({
-    Name = "Load"
-})
+RagePage.callback = function()
+    if Window.VisualPreview then
+        Window.VisualPreview:SetPreviewState(false)
+    end
+end
 
-ConfigSection:Button({
-    Name = "Save"
-})
+MiscPage.callback = function()
+    if Window.VisualPreview then
+        Window.VisualPreview:SetPreviewState(false)
+    end
+end
 
-ConfigSection:Button({
-    Name = "Create"
-})
+PlayerPage.callback = function()
+    if Window.VisualPreview then
+        Window.VisualPreview:SetPreviewState(false)
+    end
+end
 
-ConfigSection:Button({
-    Name = "Delete"
-})
+SettingsPage.callback = function()
+    if Window.VisualPreview then
+        Window.VisualPreview:SetPreviewState(false)
+    end
+end
 
 Window:Initialize()
