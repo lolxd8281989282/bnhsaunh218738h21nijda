@@ -1,8 +1,17 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+-- Load the Library
+local success, Library = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+end)
 
+if not success then
+    warn("Failed to load Library:", Library)
+    return
+end
+
+-- Create the window
 local Window = Library:New({
     Name = "dracula.lol | beta",
-    Accent = Color3.fromRGB(255, 255, 255) -- Change accent to white
+    Accent = Color3.fromRGB(255, 255, 255)
 })
 
 -- Visual Page
@@ -10,21 +19,28 @@ local VisualPage = Window:Page({
     Name = "visuals"
 })
 
--- Create tabs for Enemies, Friendlies, Local, Extra
-local TabContainer = VisualPage:TabContainer({
-    Side = "Top"
-})
-
--- Enemies Tab
-local EnemiesTab = TabContainer:Tab({
-    Name = "Enemies"
-})
-
-local EnemiesSection = EnemiesTab:Section({
-    Name = "",
+-- Create sections for Enemies, Friendlies, Local, Extra
+local EnemiesSection = VisualPage:Section({
+    Name = "Enemies",
     Side = "Left"
 })
 
+local FriendliesSection = VisualPage:Section({
+    Name = "Friendlies",
+    Side = "Right"
+})
+
+local LocalSection = VisualPage:Section({
+    Name = "Local",
+    Side = "Left"
+})
+
+local ExtraSection = VisualPage:Section({
+    Name = "Extra",
+    Side = "Right"
+})
+
+-- Enemies Section
 EnemiesSection:Toggle({
     Name = "Enabled"
 })
@@ -101,166 +117,9 @@ EnemiesSection:Dropdown({
     Options = {"Inline", "Outline"}
 })
 
--- Friendlies Tab
-local FriendliesTab = TabContainer:Tab({
-    Name = "Friendlies"
-})
-
-local FriendliesSection = FriendliesTab:Section({
-    Name = "",
-    Side = "Left"
-})
-
--- Copy the same toggles and settings from Enemies tab
-FriendliesSection:Toggle({
-    Name = "Enabled"
-})
-
-FriendliesSection:Toggle({
-    Name = "Name"
-})
-
-FriendliesSection:Toggle({
-    Name = "Bounding Box"
-})
-
-FriendliesSection:Toggle({
-    Name = "Health Bar"
-})
-
-FriendliesSection:Toggle({
-    Name = "Health Number"
-})
-
-FriendliesSection:Toggle({
-    Name = "Head Dot"
-})
-
-FriendliesSection:Toggle({
-    Name = "Offscreen Arrows"
-})
-
-FriendliesSection:Slider({
-    Name = "Arrow Size",
-    Min = 0,
-    Max = 100,
-    Default = 50
-})
-
-FriendliesSection:Slider({
-    Name = "Arrow Position",
-    Min = 0,
-    Max = 100,
-    Default = 25
-})
-
-FriendliesSection:Dropdown({
-    Name = "Arrow Types",
-    Default = "None",
-    Options = {"None", "Health Bar"}
-})
-
-FriendliesSection:Toggle({
-    Name = "Tool"
-})
-
-FriendliesSection:Toggle({
-    Name = "Distance"
-})
-
-FriendliesSection:Toggle({
-    Name = "Flags"
-})
-
-FriendliesSection:Dropdown({
-    Name = "Flag Types",
-    Default = "Display Name",
-    Options = {"Display Name", "Username"}
-})
-
-FriendliesSection:Toggle({
-    Name = "Chams"
-})
-
-FriendliesSection:Dropdown({
-    Name = "Chams Types",
-    Default = "Inline",
-    Options = {"Inline", "Outline"}
-})
-
--- Local Tab
-local LocalTab = TabContainer:Tab({
-    Name = "Local"
-})
-
-local LocalSection = LocalTab:Section({
-    Name = "",
-    Side = "Left"
-})
-
--- Copy the same toggles and settings
-LocalSection:Toggle({
-    Name = "Enabled"
-})
-
-LocalSection:Toggle({
-    Name = "Name"
-})
-
-LocalSection:Toggle({
-    Name = "Bounding Box"
-})
-
-LocalSection:Toggle({
-    Name = "Health Bar"
-})
-
-LocalSection:Toggle({
-    Name = "Health Number"
-})
-
-LocalSection:Toggle({
-    Name = "Head Dot"
-})
-
-LocalSection:Toggle({
-    Name = "Tool"
-})
-
-LocalSection:Toggle({
-    Name = "Distance"
-})
-
-LocalSection:Toggle({
-    Name = "Flags"
-})
-
-LocalSection:Dropdown({
-    Name = "Flag Types",
-    Default = "Display Name",
-    Options = {"Display Name", "Username"}
-})
-
-LocalSection:Toggle({
-    Name = "Chams"
-})
-
-LocalSection:Dropdown({
-    Name = "Chams Types",
-    Default = "Inline",
-    Options = {"Inline", "Outline"}
-})
-
--- Extra Tab
-local ExtraTab = TabContainer:Tab({
-    Name = "Extra"
-})
-
-local ExtraSection = ExtraTab:Section({
-    Name = "",
-    Side = "Left"
-})
-
+-- Friendlies Section (copy the same toggles and settings from Enemies section)
+-- Local Section (copy the same toggles and settings, excluding Offscreen Arrows)
+-- Extra Section
 ExtraSection:Toggle({
     Name = "Disable Layered Clothing"
 })
@@ -270,38 +129,17 @@ local AimPage = Window:Page({
     Name = "aim"
 })
 
--- Aimbot Page Sections
-local AimbotSection = AimPage:Section({
-    Name = "Aimbot",
-    Side = "Left"
-})
-
 local RagePage = Window:Page({
     Name = "rage"
-})
-
--- Rage Page Sections
-local RageSection = RagePage:Section({
-    Name = "Rage",
-    Side = "Left"
 })
 
 local MiscPage = Window:Page({
     Name = "misc"
 })
 
--- Misc Page Sections
-local MiscSection = MiscPage:Section({
-    Name = "Misc",
-    Side = "Left"
-})
-
 local PlayerPage = Window:Page({
     Name = "player-list"
 })
-
--- Keep the existing PlayerList function
-local PlayerList = PlayerPage:PlayerList({})
 
 local SettingsPage = Window:Page({
     Name = "settings"
@@ -376,4 +214,5 @@ ConfigSection:Button({
     Name = "Delete",
 })
 
-Window:Initialize() -- DO NOT REMOVE
+-- Initialize the UI
+Window:Initialize()
