@@ -343,12 +343,18 @@ local function CreateESP(plr)
                 lines.healthBarBackground.Color = Color3fromRGB(25, 25, 25)
                 lines.healthBarBackground.Thickness = 5
                 lines.healthBarBackground.Visible = true
+                lines.healthBarBackground.ZIndex = 1
+
+                -- Calculate health bar size
+                local healthBarHeight = barSize.Y * healthPercent
+                local healthBarStart = barPos + Vector2new(0, barSize.Y - healthBarHeight)
+                local healthBarEnd = barPos + Vector2new(0, barSize.Y)
 
                 -- Health bar
-                local healthBarHeight = barSize.Y * healthPercent
-                local healthBarPos = barPos + Vector2new(0, barSize.Y - healthBarHeight)
-                lines.healthBar.From = healthBarPos
-                lines.healthBar.To = barPos + Vector2new(0, barSize.Y)
+                lines.healthBar.From = healthBarStart
+                lines.healthBar.To = healthBarEnd
+                lines.healthBar.Thickness = 3
+                lines.healthBar.ZIndex = 2
                 
                 -- Health bar color
                 if healthPercent > 0.75 then
@@ -359,7 +365,6 @@ local function CreateESP(plr)
                     lines.healthBar.Color = Color3fromRGB(255, 0, 0)
                 end
                 
-                lines.healthBar.Thickness = 3
                 lines.healthBar.Visible = true
             else
                 lines.healthBar.Visible = false
