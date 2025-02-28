@@ -51,6 +51,17 @@ local function NewDrawing(type)
     return drawing
 end
 
+local function NewText()
+    local text = Drawing.new("Text")
+    text.Visible = false
+    text.Center = true
+    text.Outline = true
+    text.Color = ESP.TextColor
+    text.Size = 13
+    text.Font = Drawing.Fonts.Monospace -- Restore monospace font
+    return text
+end
+
 -- ESP Function
 local function CreateESP(plr)
     local lines = {
@@ -58,9 +69,9 @@ local function CreateESP(plr)
                NewDrawing("Line"), NewDrawing("Line"), NewDrawing("Line"), NewDrawing("Line")},
         healthBarBackground = NewDrawing("Line"),
         healthBar = NewDrawing("Line"),
-        text = NewDrawing("Text"),
+        text = NewText(),
         headDot = NewDrawing("Circle"),
-        itemText = NewDrawing("Text"),
+        itemText = NewText(),
         armorBar = NewDrawing("Line"),
         armorBarBackground = NewDrawing("Line"),
         skeleton = {
@@ -81,42 +92,18 @@ local function CreateESP(plr)
 
     local function UpdateESP()
         local connection
-        connection = runService.Heartbeat:Connect(function()
-            if not ESP.Enabled then
-                for _, obj in pairs(lines) do
-                    if type(obj) == "table" then
-                        for _, drawing in pairs(obj) do
-                            drawing.Visible = false
-                        end
-                    else
-                        obj.Visible = false
-                    end
-                end
-                highlight.Enabled = false
-                return
-            end
-
+        connection = runService.RenderStepped:Connect(function()
+            if not ESP.Enabled then return end
+            
             local character = plr.Character
             local humanoid = character and character:FindFirstChildOfClass("Humanoid")
             local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-
-            if not character or not humanoid or not rootPart or humanoid.Health <= 0 then
-                for _, obj in pairs(lines) do
-                    if type(obj) == "table" then
-                        for _, drawing in pairs(obj) do
-                            drawing.Visible = false
-                        end
-                    else
-                        obj.Visible = false
-                    end
-                end
-                highlight.Enabled = false
-                return
-            end
-
+            
+            if not (character and humanoid and rootPart and humanoid.Health > 0) then return end
+            
             local screenPos, onScreen = WorldToViewportPoint(camera, rootPart.Position)
             local distance = (camera.CFrame.Position - rootPart.Position).Magnitude
-
+            
             if not onScreen or distance > ESP.Distance then
                 for _, obj in pairs(lines) do
                     if type(obj) == "table" then
@@ -267,8 +254,11 @@ local function CreateESP(plr)
                 lines.text.Position = Vector2new(screenPos.X, screenPos.Y - size.Y * 2)
                 lines.text.Text = plr.Name
                 lines.text.Color = ESP.NameColor
-                lines.text.Visible = true
+                lines.text.Font = Drawing.Fonts.Monospace
                 lines.text.Size = ESP.TextSize
+                lines.text.Visible = true
+                lines.text.Center = true
+                lines.text.Outline = true
             else
                 lines.text.Visible = false
             end
@@ -293,8 +283,11 @@ local function CreateESP(plr)
                 lines.itemText.Position = Vector2new(screenPos.X, screenPos.Y + size.Y * 1.5)
                 lines.itemText.Text = floor(distance) .. "m"
                 lines.itemText.Color = ESP.DistanceColor
-                lines.itemText.Visible = true
+                lines.itemText.Font = Drawing.Fonts.Monospace
                 lines.itemText.Size = ESP.TextSize
+                lines.itemText.Visible = true
+                lines.itemText.Center = true
+                lines.itemText.Outline = true
             else
                 lines.itemText.Visible = false
             end
