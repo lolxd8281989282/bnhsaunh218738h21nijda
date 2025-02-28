@@ -98,8 +98,8 @@ library.themes = {
             ["Option Border 1"]           = fromrgb(50,50,50);
             ["Option Border 2"]           = fromrgb(0,0,0);
             ["Option Background"]         = fromrgb(23,23,23);
-            ["Risky Text"]                = fromrgb(175, 21, 21);
-            ["Risky Text Enabled"]        = fromrgb(255, 41, 41);
+            ["Risky Text"]                = fromrgb(255, 255, 255);  -- Changed to white
+            ["Risky Text Enabled"]        = fromrgb(255, 255, 255);  -- Changed to white
         }
     },
     {
