@@ -1,7 +1,10 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+local Library, Utility, Flags, Theme = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
 
 local Window = Library:New({
     Name = "dracula.lol | beta",
+    Style = 1,
+    PageAmmount = 6,
+    Size = Vector2.new(554, 629),
     Accent = Color3.fromRGB(255, 255, 255)
 })
 
@@ -11,246 +14,120 @@ local VisualPage = Window:Page({
 })
 
 -- Create the tab container
-local TabContainer = VisualPage:TabContainer({
-    Side = "Left"
+local TabContainer = VisualPage:MultiSection({
+    Sections = {"Enemies", "Friendlies", "Local"},
+    Side = "Left",
+    Fill = true
 })
 
--- Create tabs
-local EnemiesTab = TabContainer:Tab({
-    Name = "Enemies"
-})
-
-local FriendliesTab = TabContainer:Tab({
-    Name = "Friendlies"
-})
-
-local LocalTab = TabContainer:Tab({
-    Name = "Local"
-})
+local EnemiesTab, FriendliesTab, LocalTab = TabContainer[1], TabContainer[2], TabContainer[3]
 
 -- Enemies Tab Content
-local EnemiesSection = EnemiesTab:Section({
-    Name = "",
-    Side = "Left"
+EnemiesTab:Toggle({
+    Name = "Enabled",
+    Default = false,
+    Flag = "EnemiesESPEnabled"
 })
 
-EnemiesSection:Toggle({
-    Name = "Enabled"
+EnemiesTab:Toggle({
+    Name = "Name",
+    Default = false,
+    Flag = "EnemiesESPName"
 })
 
-EnemiesSection:Toggle({
-    Name = "Name"
+EnemiesTab:Toggle({
+    Name = "Bounding Box",
+    Default = false,
+    Flag = "EnemiesESPBox"
 })
 
-EnemiesSection:Toggle({
-    Name = "Bounding Box"
+EnemiesTab:Toggle({
+    Name = "Health Bar",
+    Default = false,
+    Flag = "EnemiesESPHealthBar"
 })
 
-EnemiesSection:Toggle({
-    Name = "Health Bar"
+EnemiesTab:Toggle({
+    Name = "Health Number",
+    Default = false,
+    Flag = "EnemiesESPHealthNumber"
 })
 
-EnemiesSection:Toggle({
-    Name = "Health Number"
+EnemiesTab:Toggle({
+    Name = "Head Dot",
+    Default = false,
+    Flag = "EnemiesESPHeadDot"
 })
 
-EnemiesSection:Toggle({
-    Name = "Head Dot"
+EnemiesTab:Toggle({
+    Name = "Offscreen Arrows",
+    Default = false,
+    Flag = "EnemiesESPArrows"
 })
 
-EnemiesSection:Toggle({
-    Name = "Offscreen Arrows"
-})
-
-EnemiesSection:Slider({
+EnemiesTab:Slider({
     Name = "Arrow Size",
+    Default = 50,
     Min = 0,
     Max = 100,
-    Default = 50
+    Flag = "EnemiesESPArrowSize"
 })
 
-EnemiesSection:Slider({
+EnemiesTab:Slider({
     Name = "Arrow Position",
+    Default = 25,
     Min = 0,
     Max = 100,
-    Default = 25
+    Flag = "EnemiesESPArrowPosition"
 })
 
-EnemiesSection:Dropdown({
+EnemiesTab:Dropdown({
     Name = "Arrow Types",
     Default = "None",
-    Options = {"None", "Health Bar"}
+    Options = {"None", "Health Bar"},
+    Flag = "EnemiesESPArrowType"
 })
 
-EnemiesSection:Toggle({
-    Name = "Tool"
+EnemiesTab:Toggle({
+    Name = "Tool",
+    Default = false,
+    Flag = "EnemiesESPTool"
 })
 
-EnemiesSection:Toggle({
-    Name = "Distance"
+EnemiesTab:Toggle({
+    Name = "Distance",
+    Default = false,
+    Flag = "EnemiesESPDistance"
 })
 
-EnemiesSection:Toggle({
-    Name = "Flags"
+EnemiesTab:Toggle({
+    Name = "Flags",
+    Default = false,
+    Flag = "EnemiesESPFlags"
 })
 
-EnemiesSection:Dropdown({
+EnemiesTab:Dropdown({
     Name = "Flag Types",
     Default = "Display Name",
-    Options = {"Display Name", "Username"}
+    Options = {"Display Name", "Username"},
+    Flag = "EnemiesESPFlagType"
 })
 
-EnemiesSection:Toggle({
-    Name = "Chams"
+EnemiesTab:Toggle({
+    Name = "Chams",
+    Default = false,
+    Flag = "EnemiesESPChams"
 })
 
-EnemiesSection:Dropdown({
+EnemiesTab:Dropdown({
     Name = "Chams Types",
     Default = "Inline",
-    Options = {"Inline", "Outline"}
+    Options = {"Inline", "Outline"},
+    Flag = "EnemiesESPChamsType"
 })
 
 -- Friendlies Tab Content (copy same structure as Enemies)
-local FriendliesSection = FriendliesTab:Section({
-    Name = "",
-    Side = "Left"
-})
-
--- Copy all toggles and settings from Enemies section
-FriendliesSection:Toggle({
-    Name = "Enabled"
-})
-
-FriendliesSection:Toggle({
-    Name = "Name"
-})
-
-FriendliesSection:Toggle({
-    Name = "Bounding Box"
-})
-
-FriendliesSection:Toggle({
-    Name = "Health Bar"
-})
-
-FriendliesSection:Toggle({
-    Name = "Health Number"
-})
-
-FriendliesSection:Toggle({
-    Name = "Head Dot"
-})
-
-FriendliesSection:Toggle({
-    Name = "Offscreen Arrows"
-})
-
-FriendliesSection:Slider({
-    Name = "Arrow Size",
-    Min = 0,
-    Max = 100,
-    Default = 50
-})
-
-FriendliesSection:Slider({
-    Name = "Arrow Position",
-    Min = 0,
-    Max = 100,
-    Default = 25
-})
-
-FriendliesSection:Dropdown({
-    Name = "Arrow Types",
-    Default = "None",
-    Options = {"None", "Health Bar"}
-})
-
-FriendliesSection:Toggle({
-    Name = "Tool"
-})
-
-FriendliesSection:Toggle({
-    Name = "Distance"
-})
-
-FriendliesSection:Toggle({
-    Name = "Flags"
-})
-
-FriendliesSection:Dropdown({
-    Name = "Flag Types",
-    Default = "Display Name",
-    Options = {"Display Name", "Username"}
-})
-
-FriendliesSection:Toggle({
-    Name = "Chams"
-})
-
-FriendliesSection:Dropdown({
-    Name = "Chams Types",
-    Default = "Inline",
-    Options = {"Inline", "Outline"}
-})
-
--- Local Tab Content
-local LocalSection = LocalTab:Section({
-    Name = "",
-    Side = "Left"
-})
-
--- Copy relevant toggles and settings (excluding arrows)
-LocalSection:Toggle({
-    Name = "Enabled"
-})
-
-LocalSection:Toggle({
-    Name = "Name"
-})
-
-LocalSection:Toggle({
-    Name = "Bounding Box"
-})
-
-LocalSection:Toggle({
-    Name = "Health Bar"
-})
-
-LocalSection:Toggle({
-    Name = "Health Number"
-})
-
-LocalSection:Toggle({
-    Name = "Head Dot"
-})
-
-LocalSection:Toggle({
-    Name = "Tool"
-})
-
-LocalSection:Toggle({
-    Name = "Distance"
-})
-
-LocalSection:Toggle({
-    Name = "Flags"
-})
-
-LocalSection:Dropdown({
-    Name = "Flag Types",
-    Default = "Display Name",
-    Options = {"Display Name", "Username"}
-})
-
-LocalSection:Toggle({
-    Name = "Chams"
-})
-
-LocalSection:Dropdown({
-    Name = "Chams Types",
-    Default = "Inline",
-    Options = {"Inline", "Outline"}
-})
+-- Local Tab Content (copy relevant toggles and settings, excluding arrows)
 
 -- Other Pages
 local AimPage = Window:Page({
@@ -270,7 +147,6 @@ local PlayerPage = Window:Page({
     Name = "player-list"
 })
 
--- Keep the existing PlayerList function
 local PlayerList = PlayerPage:PlayerList({})
 
 -- Settings Page
@@ -287,30 +163,48 @@ local MainSettingsSection = SettingsPage:Section({
 MainSettingsSection:Keybind({
     Name = "Open / Close",
     Default = Enum.KeyCode.RightShift,
+    Flag = "UIToggleKey"
 })
 
 MainSettingsSection:Toggle({
     Name = "Disable Movement if Open",
+    Default = false,
+    Flag = "DisableMovementWhenOpen"
 })
 
 MainSettingsSection:Button({
     Name = "Join Discord",
+    Callback = function()
+        -- Add discord join logic here
+    end
 })
 
 MainSettingsSection:Button({
     Name = "Copy Discord",
+    Callback = function()
+        -- Add discord copy logic here
+    end
 })
 
 MainSettingsSection:Button({
     Name = "Rejoin Server",
+    Callback = function()
+        -- Add rejoin server logic here
+    end
 })
 
 MainSettingsSection:Button({
     Name = "Copy Join Script",
+    Callback = function()
+        -- Add copy join script logic here
+    end
 })
 
 MainSettingsSection:Button({
     Name = "Unload",
+    Callback = function()
+        Window:Unload()
+    end
 })
 
 -- Config Section
@@ -323,28 +217,56 @@ ConfigSection:TextBox({
     Name = "Config Name",
     Default = "",
     Placeholder = "Enter config name...",
+    Flag = "ConfigName"
 })
 
 ConfigSection:Dropdown({
     Name = "Config",
     Default = "none",
     Options = {"none"},
+    Flag = "SelectedConfig"
 })
 
 ConfigSection:Button({
     Name = "Load",
+    Callback = function()
+        local configName = Flags.SelectedConfig
+        if configName ~= "none" then
+            Window:LoadConfig(configName)
+        end
+    end
 })
 
 ConfigSection:Button({
     Name = "Save",
+    Callback = function()
+        local configName = Flags.ConfigName
+        if configName ~= "" then
+            local config = Window:GetConfig()
+            -- Add logic to save the config
+        end
+    end
 })
 
 ConfigSection:Button({
     Name = "Create",
+    Callback = function()
+        local configName = Flags.ConfigName
+        if configName ~= "" then
+            local config = Window:GetConfig()
+            -- Add logic to create a new config
+        end
+    end
 })
 
 ConfigSection:Button({
     Name = "Delete",
+    Callback = function()
+        local configName = Flags.SelectedConfig
+        if configName ~= "none" then
+            -- Add logic to delete the selected config
+        end
+    end
 })
 
 Window:Initialize()
