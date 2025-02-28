@@ -3,138 +3,167 @@ local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281
 
 local Window = Library:New({
     Name = "dracula.lol | beta",
-    Accent = Color3.fromRGB(255, 255, 255) -- Change accent to white
+    Accent = Color3.fromRGB(255, 255, 255)
 })
 
--- Visual Page
+-- Create the Visual page
 local VisualPage = Window:Page({
     Name = "visuals"
 })
 
--- World Section
-local WorldSection = VisualPage:Section({
-    Name = "World",
+-- Create the ESP section
+local ESPSection = VisualPage:Section({
+    Name = "ESP",
     Side = "Left"
 })
 
-WorldSection:Toggle({
-    Name = "Fog",
-})
+-- Initialize ESP with default settings
+local espSettings = {
+    Enabled = false,
+    TeamCheck = false,
+    ShowBoxes = false,
+    ShowNames = false,
+    ShowDistance = false,
+    ShowHealthBars = false,
+    ShowHeadDot = false,
+    ShowSkeleton = false,
+    Outline = false,
+    SelfESP = false,
+    BoxType = "Full",
+    Distance = 1000
+}
 
-WorldSection:Toggle({
-    Name = "Ambient",
-})
+local espInstance = ESP.Init(espSettings)
 
-WorldSection:Toggle({
-    Name = "Outdoor Ambient",
-})
-
-WorldSection:Toggle({
-    Name = "Colorshift Bottom",
-})
-
-WorldSection:Toggle({
-    Name = "Colorshift Top",
-})
-
-WorldSection:Toggle({
-    Name = "Global Shadows",
-})
-
-WorldSection:Toggle({
-    Name = "Fog Start Enabled",
-})
-
-WorldSection:Toggle({
-    Name = "Fog End Enabled",
-})
-
-WorldSection:Slider({
-    Name = "Fog Start",
-    Min = 0,
-    Max = 10000,
-    Default = 10000,
-    Decimals = 3  -- This will allow for three decimal places
-})
-
-WorldSection:Slider({
-    Name = "Fog End",
-    Min = 0,
-    Max = 10000,
-    Default = 10000,
-    Decimals = 3  -- This will allow for three decimal places
-})
-
--- Visuals Section
-local VisualsSection = VisualPage:Section({
-    Name = "Visuals",
-    Side = "Right"
-})
-
-VisualsSection:Toggle({
-    Name = "ESP",
-    Default = false,
-    Callback = function(state)
-        ESP:Toggle(state)
+-- Add ESP toggles
+ESPSection:Toggle({
+    Name = "Enabled",
+    Callback = function(Value)
+        espSettings.Enabled = Value
+        espInstance:UpdateSettings(espSettings)
     end
 })
 
-VisualsSection:Toggle({
-    Name = "Bounding Box",
+ESPSection:Toggle({
+    Name = "Team Check",
+    Callback = function(Value)
+        espSettings.TeamCheck = Value
+        espInstance:UpdateSettings(espSettings)
+    end
 })
 
-VisualsSection:Toggle({
+ESPSection:Toggle({
+    Name = "Outline",
+    Callback = function(Value)
+        espSettings.Outline = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+ESPSection:Toggle({
+    Name = "Self ESP",
+    Callback = function(Value)
+        espSettings.SelfESP = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+ESPSection:Slider({
+    Name = "Distance",
+    Min = 0,
+    Max = 2000,
+    Default = 1000,
+    Callback = function(Value)
+        espSettings.Distance = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+ESPSection:Label({
+    Name = "Box",
+})
+
+ESPSection:Toggle({
+    Name = "Enabled",
+    Callback = function(Value)
+        espSettings.ShowBoxes = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+ESPSection:Toggle({
+    Name = "Fill Box",
+    Callback = function(Value)
+        -- This option is not directly supported in the current ESP implementation
+        -- You may need to add this feature to the ESP module if needed
+    end
+})
+
+ESPSection:Dropdown({
+    Name = "Box Type",
+    Default = "Full",
+    Options = {"Corners", "Full"},
+    Callback = function(Value)
+        espSettings.BoxType = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+local OtherSection = VisualPage:Section({
+    Name = "Other",
+    Side = "Right"
+})
+
+OtherSection:Toggle({
+    Name = "Equipped Item",
+    Callback = function(Value)
+        -- This option is not directly supported in the current ESP implementation
+        -- You may need to add this feature to the ESP module if needed
+    end
+})
+
+OtherSection:Toggle({
+    Name = "Skeleton",
+    Callback = function(Value)
+        espSettings.ShowSkeleton = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+OtherSection:Toggle({
+    Name = "Head Dot",
+    Callback = function(Value)
+        espSettings.ShowHeadDot = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+OtherSection:Toggle({
+    Name = "Distance",
+    Callback = function(Value)
+        espSettings.ShowDistance = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+OtherSection:Toggle({
+    Name = "Health Bar",
+    Callback = function(Value)
+        espSettings.ShowHealthBars = Value
+        espInstance:UpdateSettings(espSettings)
+    end
+})
+
+OtherSection:Label({
     Name = "Name",
 })
 
-VisualsSection:Toggle({
-    Name = "Distance",
-})
-
-VisualsSection:Toggle({
-    Name = "Health Bar",
-})
-
-VisualsSection:Toggle({
-    Name = "Skeleton",
-})
-
-VisualsSection:Toggle({
-    Name = "Glow ESP",
-})
-
-VisualsSection:Toggle({
-    Name = "Tool",
-})
-
-VisualsSection:Toggle({
-    Name = "Team Text",
-})
-
-VisualsSection:Toggle({
-    Name = "Tracers",
-})
-
-VisualsSection:Dropdown({
-    Name = "Box Type",
-    Default = "2D Box",
-    Options = {"2D Box", "3D Box"},
-})
-
-VisualsSection:Toggle({
-    Name = "Use Team Color",
-})
-
-VisualsSection:Toggle({
-    Name = "Fill Box",
-})
-
-VisualsSection:Toggle({
-    Name = "Gradient Box",
-})
-
-VisualsSection:Toggle({
-    Name = "Team Check",
+OtherSection:Toggle({
+    Name = "Enabled",
+    Callback = function(Value)
+        espSettings.ShowNames = Value
+        espInstance:UpdateSettings(espSettings)
+    end
 })
 
 -- Aimbot Page
@@ -142,107 +171,21 @@ local AimPage = Window:Page({
     Name = "aim"
 })
 
--- Options Section
-local OptionsSection = AimPage:Section({
-    Name = "Options",
+-- Aimbot Page Sections
+local AimbotSection = AimPage:Section({
+    Name = "Aimbot",
     Side = "Left"
 })
 
-OptionsSection:Slider({
-    Name = "Field Of View",
-    Min = 0,
-    Max = 70,
-    Default = 70,
-    Decimals = 3
+-- Rage Page
+local RagePage = Window:Page({
+    Name = "rage"
 })
 
-OptionsSection:Slider({
-    Name = "Speed",
-    Min = 0,
-    Max = 100,
-    Default = 35
-})
-
-OptionsSection:Slider({
-    Name = "Smoothness",
-    Min = 0,
-    Max = 100,
-    Default = 15
-})
-
-OptionsSection:Slider({
-    Name = "Distance",
-    Min = 0,
-    Max = 1000,
-    Default = 800
-})
-
-OptionsSection:Slider({
-    Name = "Prediction X",
-    Min = 0,
-    Max = 10,
-    Default = 7,
-    Decimals = 3
-})
-
-OptionsSection:Slider({
-    Name = "Prediction Y",
-    Min = 0,
-    Max = 10,
-    Default = 7,
-    Decimals = 3
-})
-
-OptionsSection:Label({
-    Name = "Type"
-})
-
-OptionsSection:Dropdown({
-    Name = "Target",
-    Default = "Camera",
-    Options = {"Camera", "Hitbox", "Head"}
-})
-
--- Aimbot Section
-local AimbotSection = AimPage:Section({
-    Name = "Aimbot",
-    Side = "Right"
-})
-
-AimbotSection:Toggle({
-    Name = "Enabled"
-})
-
-AimbotSection:Toggle({
-    Name = "Sticky Aim"
-})
-
-AimbotSection:Toggle({
-    Name = "Visualize FOV"
-})
-
-AimbotSection:Toggle({
-    Name = "Indicator"
-})
-
-AimbotSection:Toggle({
-    Name = "Prediction"
-})
-
-AimbotSection:Label({
-    Name = "Silent Aim"
-})
-
-AimbotSection:Toggle({
-    Name = "Enabled"
-})
-
-AimbotSection:Toggle({
-    Name = "Visualize FOV"
-})
-
-AimbotSection:Toggle({
-    Name = "Indicator"
+-- Rage Page Sections
+local RageSection = RagePage:Section({
+    Name = "Rage",
+    Side = "Left"
 })
 
 -- Misc Page
