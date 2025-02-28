@@ -1,7 +1,7 @@
 -- Credits To The Original Devs @xz, @goof
 getgenv().Config = {
-    Invite = "informant.wtf",
-    Version = "0.0",
+    Invite = "dracula.lol",
+    Version = "1.0",
 }
 
 getgenv().luaguardvars = {
@@ -13,7 +13,7 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd
 library:init()
 
 local Window = library.NewWindow({
-    title = "Informant.Wtf",
+    title = "dracula.lol | beta",
     size = UDim2.new(0, 525, 0, 650)
 })
 
@@ -80,7 +80,7 @@ AimAssist:AddList({text = "Speed", flag = "aa_speed", values = {"..."}, value = 
 AimAssist:AddList({text = "Key", flag = "aa_key", values = {"..."}, value = "..."})
 
 -- Finalize
-library:SendNotification("UI Loaded", 3, Color3.new(0, 1, 0))
+library:SendNotification("Successfully Initialized", 3, Color3.new(0, 1, 0))
 Window:SetOpen(true)
 
 return Window
