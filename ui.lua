@@ -1,4 +1,20 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+-- Debug: Print when the script starts
+print("Starting ui.lua script")
+
+-- Load the Library first and wait for it
+local success, Library = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
+end)
+
+if not success then
+    warn("Failed to load Library:", Library)
+    return
+else
+    print("Library loaded successfully:", Library)
+end
+
+-- Load the ESP module
+local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourGitHubUsername/YourRepository/main/esp.lua"))()
 
 -- Create the window
 local Window = Library:New({
@@ -19,194 +35,70 @@ local ESPSection = VisualPage:Section({
 
 ESPSection:Toggle({
     Name = "Enabled",
+    Callback = function(Value)
+        ESP.Enabled = Value
+    end
 })
 
 ESPSection:Toggle({
     Name = "Team Check",
+    Callback = function(Value)
+        ESP.TeamCheck = Value
+    end
 })
 
 ESPSection:Toggle({
-    Name = "Outline",
+    Name = "Box ESP",
+    Callback = function(Value)
+        ESP.ShowBoxes = Value
+    end
 })
 
 ESPSection:Toggle({
-    Name = "Self ESP",
-})
-
-ESPSection:Slider({
-    Name = "Distance",
-    Min = 0,
-    Max = 2000,
-    Default = 1000,
-})
-
-ESPSection:Label({
-    Name = "Box",
+    Name = "Name ESP",
+    Callback = function(Value)
+        ESP.ShowNames = Value
+    end
 })
 
 ESPSection:Toggle({
-    Name = "Enabled",
+    Name = "Health Bar",
+    Callback = function(Value)
+        ESP.ShowHealthBars = Value
+    end
 })
 
-ESPSection:Toggle({
-    Name = "Fill Box",
-})
-
-ESPSection:Dropdown({
-    Name = "Box Type",
-    Default = "Corners",
-    Options = {"Corners", "Full", "3D"},
-})
-
-local OtherSection = VisualPage:Section({
-    Name = "Other",
-    Side = "Right"
-})
-
-OtherSection:Toggle({
-    Name = "Equipped Item",
-})
-
-OtherSection:Toggle({
-    Name = "Skeleton",
-})
-
-OtherSection:Toggle({
-    Name = "Head Dot",
-})
-
-OtherSection:Toggle({
-    Name = "Distance",
-})
-
-OtherSection:Toggle({
-    Name = "Armor Bar",
-})
-
-OtherSection:Label({
-    Name = "Name",
-})
-
-OtherSection:Toggle({
-    Name = "Enabled",
-})
-
--- Aimbot Page
+-- Other Pages
 local AimPage = Window:Page({
     Name = "aim"
 })
 
--- Aimbot Page Sections
-local AimbotSection = AimPage:Section({
-    Name = "Aimbot",
-    Side = "Left"
-})
-
--- Rage Page
 local RagePage = Window:Page({
     Name = "rage"
 })
 
--- Rage Page Sections
-local RageSection = RagePage:Section({
-    Name = "Rage",
-    Side = "Left"
-})
-
--- Misc Page
 local MiscPage = Window:Page({
     Name = "misc"
 })
 
--- Misc Page Sections
-local MiscSection = MiscPage:Section({
-    Name = "Misc",
-    Side = "Left"
-})
-
--- Players Page
 local PlayerPage = Window:Page({
     Name = "player-list"
 })
 
--- Keep the existing PlayerList function
-local PlayerList = PlayerPage:PlayerList({})
-
--- Settings Page
 local SettingsPage = Window:Page({
     Name = "settings"
 })
 
--- Settings Page Sections
-local MainSettingsSection = SettingsPage:Section({
-    Name = "Main",
-    Side = "Left"
-})
+-- Debug: Print before initializing the window
+print("About to initialize the window")
 
-MainSettingsSection:Keybind({
-    Name = "Open / Close",
-    Default = Enum.KeyCode.RightShift,
-})
+-- Initialize the window
+Window:Initialize()
 
-MainSettingsSection:Toggle({
-    Name = "Disable Movement if Open",
-})
+-- Debug: Print after initializing the window
+print("Window initialized")
 
-MainSettingsSection:Button({
-    Name = "Join Discord",
-})
-
-MainSettingsSection:Button({
-    Name = "Copy Discord",
-})
-
-MainSettingsSection:Button({
-    Name = "Rejoin Server",
-})
-
-MainSettingsSection:Button({
-    Name = "Copy Join Script",
-})
-
-MainSettingsSection:Button({
-    Name = "Unload",
-})
-
--- Add Config Section
-local ConfigSection = SettingsPage:Section({
-    Name = "Config",
-    Side = "Right"
-})
-
-ConfigSection:TextBox({
-    Name = "Config Name",
-    Default = "",
-    Placeholder = "Enter config name...",
-})
-
-ConfigSection:Dropdown({
-    Name = "Config",
-    Default = "none",
-    Options = {"none"},
-})
-
-ConfigSection:Button({
-    Name = "Load",
-})
-
-ConfigSection:Button({
-    Name = "Save",
-})
-
-ConfigSection:Button({
-    Name = "Create",
-})
-
-ConfigSection:Button({
-    Name = "Delete",
-})
-
--- Create ESP Preview after window initialization
+-- Create ESP Preview
 local function CreateESPPreview()
     local PreviewGui = Instance.new("ScreenGui")
     PreviewGui.Name = "ESPPreview"
@@ -244,13 +136,13 @@ local function CreateESPPreview()
     PreviewModel.BackgroundTransparency = 1
     PreviewModel.Parent = PreviewContent
 
-    return PreviewModel
+    print("ESP Preview created")
 end
 
--- Initialize the UI first
-Window:Initialize()
+-- Create the preview
+CreateESPPreview()
 
--- Create ESP Preview after UI initialization
-local PreviewModel = CreateESPPreview()
+print("ui.lua script completed")
 
 return Window
+
