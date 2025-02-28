@@ -1,8 +1,24 @@
 -- // Tables
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/PoopLibrary/main/Library.lua"))()
 
--- Load the ESP module
-local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))()
+-- Load the ESP module with error handling
+local ESP = {}
+local success, result = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))()
+end)
+
+if success then
+    ESP = result
+else
+    warn("Failed to load ESP module:", result)
+    ESP = {
+        new = function() 
+            return {
+                UpdateSettings = function() end
+            }
+        end
+    }
+end
 
 -- // Init
 local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
@@ -133,47 +149,40 @@ Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save yo
 Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
 -- Initialize ESP with default settings
-local success, esp = pcall(function()
-    return ESP.new({
-        Enabled = false,
-        TeamCheck = false,
-        ShowBoxes = false,
-        ShowNames = false,
-        ShowDistance = false,
-        ShowHealthBars = false,
-        BoxColor = Color3.fromRGB(255, 255, 255),
-        NameColor = Color3.fromRGB(255, 255, 255),
-        DistanceColor = Color3.fromRGB(255, 255, 255),
-        TextSize = 13,
-        Distance = 1000
-    })
+local esp = nil
+pcall(function()
+    if ESP and ESP.new then
+        esp = ESP.new({
+            Enabled = false,
+            TeamCheck = false,
+            ShowBoxes = false,
+            ShowNames = false,
+            ShowDistance = false,
+            ShowHealthBars = false,
+            BoxColor = Color3.fromRGB(255, 255, 255),
+            NameColor = Color3.fromRGB(255, 255, 255),
+            DistanceColor = Color3.fromRGB(255, 255, 255),
+            TextSize = 13,
+            Distance = 1000
+        })
+    end
 end)
-
-if not success then
-    warn("Failed to initialize ESP:", esp)
-    esp = nil
-end
 
 -- Connect ESP settings to UI toggles
 local function updateESPFromUI()
     if esp and esp.UpdateSettings then
-        esp:UpdateSettings({
-            Enabled = Library.pointers.ESP_Enabled:Get(),
-            ShowBoxes = Library.pointers.ESP_Box:Get(),
-            BoxColor = Library.pointers.ESP_BoxColor:Get(),
-            ShowNames = Library.pointers.ESP_Names:Get(),
-            ShowHealthBars = Library.pointers.ESP_HealthBar:Get(),
-            ShowDistance = Library.pointers.ESP_Distance:Get(),
-            TextSize = Library.pointers.ESP_TextSize:Get(),
-            Distance = Library.pointers.ESP_MaxDistance:Get()
-        })
-        
-        -- Debug prints
-        print("ESP Settings Updated:")
-        print("Enabled:", Library.pointers.ESP_Enabled:Get())
-        print("ShowBoxes:", Library.pointers.ESP_Box:Get())
-    else
-        warn("ESP or UpdateSettings function not available")
+        pcall(function()
+            esp:UpdateSettings({
+                Enabled = Library.pointers.ESP_Enabled:Get(),
+                ShowBoxes = Library.pointers.ESP_Box:Get(),
+                BoxColor = Library.pointers.ESP_BoxColor:Get(),
+                ShowNames = Library.pointers.ESP_Names:Get(),
+                ShowHealthBars = Library.pointers.ESP_HealthBar:Get(),
+                ShowDistance = Library.pointers.ESP_Distance:Get(),
+                TextSize = Library.pointers.ESP_TextSize:Get(),
+                Distance = Library.pointers.ESP_MaxDistance:Get()
+            })
+        end)
     end
 end
 
@@ -183,7 +192,7 @@ for _, pointer in pairs(Library.pointers) do
         local originalSet = pointer.Set
         pointer.Set = function(self, value)
             originalSet(self, value)
-            updateESPFromUI()
+            pcall(updateESPFromUI)
             return value
         end
     end
