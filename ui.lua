@@ -1,7 +1,7 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/gamesneeze/main/Library.lua"))()
 
 local Window = Library:New({
-    Name = "dracula.lol | beta",
+    Name = "dracula.lol | beta"
 })
 
 -- Visual Page
@@ -9,60 +9,39 @@ local VisualPage = Window:Page({
     Name = "visuals"
 })
 
--- Create the tab container
-local EnemiesTab, FriendliesTab, LocalTab = VisualPage:MultiSection({
-    Sections = {"Enemies", "Friendlies", "Local"},
+-- Create the sections using MultiSection
+local EnemiesTab, FriendliesTab, LocalTab, ExtraTab = VisualPage:MultiSection({
+    Sections = {"Enemies", "Friendlies", "Local", "Extra"},
     Side = "Left"
 })
 
 -- Enemies Tab Content
-local EnemiesToggle = EnemiesTab:Toggle({
-    Name = "Enabled",
-    callback = function(value)
-        print("Enemies ESP Enabled:", value)
-    end
+EnemiesTab:Toggle({
+    Name = "Enabled"
 })
 
 EnemiesTab:Toggle({
-    Name = "Name",
-    callback = function(value)
-        print("Enemies Name ESP:", value)
-    end
+    Name = "Name"
 })
 
 EnemiesTab:Toggle({
-    Name = "Bounding Box",
-    callback = function(value)
-        print("Enemies Box ESP:", value)
-    end
+    Name = "Bounding Box"
 })
 
 EnemiesTab:Toggle({
-    Name = "Health Bar",
-    callback = function(value)
-        print("Enemies Health Bar:", value)
-    end
+    Name = "Health Bar"
 })
 
 EnemiesTab:Toggle({
-    Name = "Health Number",
-    callback = function(value)
-        print("Enemies Health Number:", value)
-    end
+    Name = "Health Number"
 })
 
 EnemiesTab:Toggle({
-    Name = "Head Dot",
-    callback = function(value)
-        print("Enemies Head Dot:", value)
-    end
+    Name = "Head Dot"
 })
 
 EnemiesTab:Toggle({
-    Name = "Offscreen Arrows",
-    callback = function(value)
-        print("Enemies Offscreen Arrows:", value)
-    end
+    Name = "Offscreen Arrows"
 })
 
 EnemiesTab:Slider({
@@ -70,9 +49,7 @@ EnemiesTab:Slider({
     Min = 0,
     Max = 100,
     Default = 50,
-    callback = function(value)
-        print("Enemies Arrow Size:", value)
-    end
+    Suffix = "/100"
 })
 
 EnemiesTab:Slider({
@@ -80,68 +57,50 @@ EnemiesTab:Slider({
     Min = 0,
     Max = 100,
     Default = 25,
-    callback = function(value)
-        print("Enemies Arrow Position:", value)
-    end
+    Suffix = "/100"
 })
 
 EnemiesTab:Dropdown({
     Name = "Arrow Types",
     Default = "None",
-    Options = {"None", "Health Bar"},
-    callback = function(value)
-        print("Enemies Arrow Type:", value)
-    end
+    Options = {"None", "Health Bar"}
 })
 
 EnemiesTab:Toggle({
-    Name = "Tool",
-    callback = function(value)
-        print("Enemies Tool ESP:", value)
-    end
+    Name = "Tool"
 })
 
 EnemiesTab:Toggle({
-    Name = "Distance",
-    callback = function(value)
-        print("Enemies Distance ESP:", value)
-    end
+    Name = "Distance"
 })
 
 EnemiesTab:Toggle({
-    Name = "Flags",
-    callback = function(value)
-        print("Enemies Flags ESP:", value)
-    end
+    Name = "Flags"
 })
 
 EnemiesTab:Dropdown({
     Name = "Flag Types",
     Default = "Display Name",
-    Options = {"Display Name", "Username"},
-    callback = function(value)
-        print("Enemies Flag Type:", value)
-    end
+    Options = {"Display Name", "Username"}
 })
 
 EnemiesTab:Toggle({
-    Name = "Chams",
-    callback = function(value)
-        print("Enemies Chams:", value)
-    end
+    Name = "Chams"
 })
 
 EnemiesTab:Dropdown({
     Name = "Chams Types",
     Default = "Inline",
-    Options = {"Inline", "Outline"},
-    callback = function(value)
-        print("Enemies Chams Type:", value)
-    end
+    Options = {"Inline", "Outline"}
 })
 
 -- Friendlies Tab Content (copy same structure as Enemies)
--- Local Tab Content (copy relevant toggles and settings, excluding arrows)
+-- Local Tab Content (copy same structure, excluding arrows)
+
+-- Extra Tab Content
+ExtraTab:Toggle({
+    Name = "Disable Layered Clothing"
+})
 
 -- Other Pages
 local AimPage = Window:Page({
@@ -156,14 +115,12 @@ local MiscPage = Window:Page({
     Name = "misc"
 })
 
--- Players Page with PlayerList
 local PlayerPage = Window:Page({
     Name = "player-list"
 })
 
 local PlayerList = PlayerPage:PlayerList({})
 
--- Settings Page
 local SettingsPage = Window:Page({
     Name = "settings"
 })
@@ -178,52 +135,31 @@ MainSettingsSection:Keybind({
     Name = "Open / Close",
     Default = Enum.KeyCode.RightShift,
     KeybindName = "UI Toggle",
-    Mode = "Toggle",
-    Callback = function(Input, State)
-        print("UI Toggle:", Input, State)
-    end
+    Mode = "Toggle"
 })
 
 MainSettingsSection:Toggle({
-    Name = "Disable Movement if Open",
-    callback = function(value)
-        print("Disable Movement:", value)
-    end
+    Name = "Disable Movement if Open"
 })
 
 MainSettingsSection:Button({
-    Name = "Join Discord",
-    callback = function()
-        print("Join Discord button clicked")
-    end
+    Name = "Join Discord"
 })
 
 MainSettingsSection:Button({
-    Name = "Copy Discord",
-    callback = function()
-        print("Copy Discord button clicked")
-    end
+    Name = "Copy Discord"
 })
 
 MainSettingsSection:Button({
-    Name = "Rejoin Server",
-    callback = function()
-        print("Rejoin Server button clicked")
-    end
+    Name = "Rejoin Server"
 })
 
 MainSettingsSection:Button({
-    Name = "Copy Join Script",
-    callback = function()
-        print("Copy Join Script button clicked")
-    end
+    Name = "Copy Join Script"
 })
 
 MainSettingsSection:Button({
-    Name = "Unload",
-    callback = function()
-        Window:Unload()
-    end
+    Name = "Unload"
 })
 
 -- Config Section
@@ -235,47 +171,29 @@ local ConfigSection = SettingsPage:Section({
 ConfigSection:TextBox({
     Default = "",
     Placeholder = "Enter config name...",
-    Max = 100,
-    Callback = function(value)
-        print("Config Name:", value)
-    end
+    Max = 100
 })
 
 ConfigSection:Dropdown({
     Name = "Config",
     Default = "none",
-    Options = {"none"},
-    callback = function(value)
-        print("Selected Config:", value)
-    end
+    Options = {"none"}
 })
 
 ConfigSection:Button({
-    Name = "Load",
-    callback = function()
-        print("Load Config button clicked")
-    end
+    Name = "Load"
 })
 
 ConfigSection:Button({
-    Name = "Save",
-    callback = function()
-        print("Save Config button clicked")
-    end
+    Name = "Save"
 })
 
 ConfigSection:Button({
-    Name = "Create",
-    callback = function()
-        print("Create Config button clicked")
-    end
+    Name = "Create"
 })
 
 ConfigSection:Button({
-    Name = "Delete",
-    callback = function()
-        print("Delete Config button clicked")
-    end
+    Name = "Delete"
 })
 
 Window:Initialize()
