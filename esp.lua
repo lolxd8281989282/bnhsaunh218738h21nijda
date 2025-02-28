@@ -1,144 +1,349 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local Camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Camera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
-local ESP = {
-    Enabled = false,
-    Boxes = {},
-}
+local ESP = {}
 
--- Utility function to get character size
-local function GetCharacterSize(character)
-    local size = Vector3.new()
-    local hrp = character:FindFirstChild("HumanoidRootPart")
-    
-    if hrp then
-        -- Get all parts of the character
-        local parts = {}
-        for _, part in pairs(character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                table.insert(parts, part)
-            end
-        end
-        
-        -- Calculate bounds
-        local minX, minY, minZ = math.huge, math.huge, math.huge
-        local maxX, maxY, maxZ = -math.huge, -math.huge, -math.huge
-        
-        for _, part in pairs(parts) do
-            local cf = part.CFrame
-            local size = part.Size
-            local corners = {
-                cf * CFrame.new(size.X/2, size.Y/2, size.Z/2),
-                cf * CFrame.new(size.X/2, size.Y/2, -size.Z/2),
-                cf * CFrame.new(size.X/2, -size.Y/2, size.Z/2),
-                cf * CFrame.new(size.X/2, -size.Y/2, -size.Z/2),
-                cf * CFrame.new(-size.X/2, size.Y/2, size.Z/2),
-                cf * CFrame.new(-size.X/2, size.Y/2, -size.Z/2),
-                cf * CFrame.new(-size.X/2, -size.Y/2, size.Z/2),
-                cf * CFrame.new(-size.X/2, -size.Y/2, -size.Z/2)
-            }
-            
-            for _, corner in pairs(corners) do
-                local pos = corner.Position
-                minX = math.min(minX, pos.X)
-                minY = math.min(minY, pos.Y)
-                minZ = math.min(minZ, pos.Z)
-                maxX = math.max(maxX, pos.X)
-                maxY = math.max(maxY, pos.Y)
-                maxZ = math.max(maxZ, pos.Z)
-            end
-        end
-        
-        size = Vector3.new(maxX - minX, maxY - minY, maxZ - minZ)
+function ESP.Init(config)
+    -- ESP settings
+    local settings = {
+        Enabled = false,
+        TeamCheck = false,
+        ShowBoxes = false,
+        ShowNames = false,
+        ShowDistance = false,
+        ShowHealthBars = false,
+        ShowHeadDot = false,
+        ShowSkeleton = false,
+        Outline = false,
+        BoxType = "Full",
+        BoxColor = Color3.fromRGB(255, 255, 255),
+        NameColor = Color3.fromRGB(255, 255, 255),
+        DistanceColor = Color3.fromRGB(255, 255, 255),
+        HeadDotColor = Color3.fromRGB(255, 255, 255),
+        SkeletonColor = Color3.fromRGB(255, 255, 255),
+        BoxThickness = 1,
+        BoxTransparency = 1,
+        OutlineColor = Color3.fromRGB(255, 255, 255),
+        TextSize = 13,
+        Distance = 1000,
+        SelfESP = false
+    }
+
+    -- Merge provided config with default settings
+    for k, v in pairs(config or {}) do
+        settings[k] = v
     end
-    
-    return size
-end
 
-local function CreateBox(player)
-    local box = Drawing.new("Square")
-    box.Visible = false
-    box.Color = Color3.fromRGB(255, 255, 255) -- White color
-    box.Thickness = 1 -- Thinner lines
-    box.Transparency = 1
-    box.Filled = false
-    ESP.Boxes[player] = box
-end
+    -- Drawing Functions
+    local function NewDrawing(type, properties)
+        local drawing = Drawing.new(type)
+        for prop, value in pairs(properties) do
+            drawing[prop] = value
+        end
+        return drawing
+    end
 
-local function UpdateESP()
-    for player, box in pairs(ESP.Boxes) do
-        if player.Character and player ~= LocalPlayer then
-            local humanoid = player.Character:FindFirstChild("Humanoid")
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            
-            if humanoid and humanoid.Health > 0 and hrp then
-                local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
-                
-                if onScreen and ESP.Enabled then
-                    local size = GetCharacterSize(player.Character)
-                    local depth = (Camera.CFrame.Position - hrp.Position).Magnitude
-                    
-                    -- Calculate box dimensions
-                    local scaleFactorX = 1 / (depth * math.tan(math.rad(Camera.FieldOfView / 2)) * 2) * 1000
-                    local scaleFactorY = scaleFactorX * (Camera.ViewportSize.Y / Camera.ViewportSize.X)
-                    
-                    local width = size.X * scaleFactorX
-                    local height = size.Y * scaleFactorY
-                    
-                    -- Update box properties
-                    box.Size = Vector2.new(width, height)
-                    box.Position = Vector2.new(pos.X - width/2, pos.Y - height/2)
-                    box.Visible = true
-                    
-                    -- Optional: Add distance-based transparency
-                    local maxDistance = 100 -- Adjust this value as needed
-                    box.Transparency = math.clamp(1 - (depth / maxDistance), 0.3, 1)
+    local function NewLine()
+        return NewDrawing("Line", {
+            Visible = false,
+            From = Vector2.new(0, 0),
+            To = Vector2.new(1, 1),
+            Color = settings.BoxColor,
+            Thickness = settings.BoxThickness,
+            Transparency = settings.BoxTransparency
+        })
+    end
+
+    local function NewText()
+        return NewDrawing("Text", {
+            Visible = false,
+            Center = true,
+            Outline = true,
+            Color = settings.NameColor,
+            Size = settings.TextSize,
+            Font = Drawing.Fonts.Monospace
+        })
+    end
+
+    local function NewCircle()
+        return NewDrawing("Circle", {
+            Visible = false,
+            Radius = 3,
+            Color = settings.HeadDotColor,
+            Thickness = 1,
+            Filled = true
+        })
+    end
+
+    -- ESP Function
+    local function CreateESP(plr)
+        local esp = {
+            box = {
+                line1 = NewLine(),
+                line2 = NewLine(),
+                line3 = NewLine(),
+                line4 = NewLine(),
+                line5 = NewLine(),
+                line6 = NewLine(),
+                line7 = NewLine(),
+                line8 = NewLine(),
+            },
+            name = NewText(),
+            distance = NewText(),
+            healthBar = NewLine(),
+            healthBarBackground = NewLine(),
+            headDot = NewCircle(),
+            skeleton = {
+                head = NewLine(),
+                torso = NewLine(),
+                leftArm = NewLine(),
+                rightArm = NewLine(),
+                leftLeg = NewLine(),
+                rightLeg = NewLine(),
+            }
+        }
+
+        local function UpdateESP()
+            local character = plr.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+            local head = character and character:FindFirstChild("Head")
+            local hrp = character and character:FindFirstChild("HumanoidRootPart")
+
+            if not character or not humanoid or not head or not hrp or humanoid.Health <= 0 then
+                for _, drawing in pairs(esp.box) do drawing.Visible = false end
+                esp.name.Visible = false
+                esp.distance.Visible = false
+                esp.healthBar.Visible = false
+                esp.healthBarBackground.Visible = false
+                esp.headDot.Visible = false
+                for _, drawing in pairs(esp.skeleton) do drawing.Visible = false end
+                return
+            end
+
+            local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+            local distance = (Camera.CFrame.Position - hrp.Position).Magnitude
+
+            if onScreen and distance <= settings.Distance and settings.Enabled then
+                -- Team Check
+                if settings.TeamCheck and plr.Team == LocalPlayer.Team then
+                    for _, drawing in pairs(esp.box) do drawing.Visible = false end
+                    esp.name.Visible = false
+                    esp.distance.Visible = false
+                    esp.healthBar.Visible = false
+                    esp.healthBarBackground.Visible = false
+                    esp.headDot.Visible = false
+                    for _, drawing in pairs(esp.skeleton) do drawing.Visible = false end
+                    return
+                end
+
+                -- Self ESP Check
+                if not settings.SelfESP and plr == LocalPlayer then
+                    for _, drawing in pairs(esp.box) do drawing.Visible = false end
+                    esp.name.Visible = false
+                    esp.distance.Visible = false
+                    esp.healthBar.Visible = false
+                    esp.healthBarBackground.Visible = false
+                    esp.headDot.Visible = false
+                    for _, drawing in pairs(esp.skeleton) do drawing.Visible = false end
+                    return
+                end
+
+                local size = (Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2) - Vector2.new(pos.X, pos.Y)).Magnitude / 100
+                local boxSize = Vector2.new(size * 2, size * 3)
+                local boxPos = Vector2.new(pos.X - size, pos.Y - size * 1.5)
+
+                -- Box ESP
+                if settings.ShowBoxes then
+                    if settings.BoxType == "Corners" then
+                        local cornerSize = boxSize.X * 0.2
+
+                        -- Top left
+                        esp.box.line1.From = boxPos
+                        esp.box.line1.To = boxPos + Vector2.new(cornerSize, 0)
+                        esp.box.line2.From = boxPos
+                        esp.box.line2.To = boxPos + Vector2.new(0, cornerSize)
+
+                        -- Top right
+                        esp.box.line3.From = boxPos + Vector2.new(boxSize.X, 0)
+                        esp.box.line3.To = esp.box.line3.From - Vector2.new(cornerSize, 0)
+                        esp.box.line4.From = boxPos + Vector2.new(boxSize.X, 0)
+                        esp.box.line4.To = esp.box.line4.From + Vector2.new(0, cornerSize)
+
+                        -- Bottom left
+                        esp.box.line5.From = boxPos + Vector2.new(0, boxSize.Y)
+                        esp.box.line5.To = esp.box.line5.From + Vector2.new(cornerSize, 0)
+                        esp.box.line6.From = boxPos + Vector2.new(0, boxSize.Y)
+                        esp.box.line6.To = esp.box.line6.From - Vector2.new(0, cornerSize)
+
+                        -- Bottom right
+                        esp.box.line7.From = boxPos + boxSize
+                        esp.box.line7.To = esp.box.line7.From - Vector2.new(cornerSize, 0)
+                        esp.box.line8.From = boxPos + boxSize
+                        esp.box.line8.To = esp.box.line8.From - Vector2.new(0, cornerSize)
+
+                        for _, line in pairs(esp.box) do
+                            line.Visible = true
+                            line.Color = settings.BoxColor
+                            line.Thickness = settings.BoxThickness
+                            line.Transparency = settings.BoxTransparency
+                        end
+                    else
+                        esp.box.line1.From = boxPos
+                        esp.box.line1.To = boxPos + Vector2.new(boxSize.X, 0)
+                        esp.box.line2.From = boxPos + Vector2.new(boxSize.X, 0)
+                        esp.box.line2.To = boxPos + boxSize
+                        esp.box.line3.From = boxPos + boxSize
+                        esp.box.line3.To = boxPos + Vector2.new(0, boxSize.Y)
+                        esp.box.line4.From = boxPos
+                        esp.box.line4.To = boxPos + Vector2.new(0, boxSize.Y)
+
+                        for i = 1, 4 do
+                            esp.box["line"..i].Visible = true
+                            esp.box["line"..i].Color = settings.BoxColor
+                            esp.box["line"..i].Thickness = settings.BoxThickness
+                            esp.box["line"..i].Transparency = settings.BoxTransparency
+                        end
+                        for i = 5, 8 do
+                            esp.box["line"..i].Visible = false
+                        end
+                    end
                 else
-                    box.Visible = false
+                    for _, line in pairs(esp.box) do
+                        line.Visible = false
+                    end
+                end
+
+                -- Name ESP
+                if settings.ShowNames then
+                    esp.name.Position = Vector2.new(pos.X, boxPos.Y - esp.name.TextBounds.Y - 2)
+                    esp.name.Text = plr.Name
+                    esp.name.Color = settings.NameColor
+                    esp.name.Visible = true
+                else
+                    esp.name.Visible = false
+                end
+
+                -- Distance ESP
+                if settings.ShowDistance then
+                    esp.distance.Position = Vector2.new(pos.X, boxPos.Y + boxSize.Y + 2)
+                    esp.distance.Text = string.format("%.1f m", distance)
+                    esp.distance.Color = settings.DistanceColor
+                    esp.distance.Visible = true
+                else
+                    esp.distance.Visible = false
+                end
+
+                -- Health Bar
+                if settings.ShowHealthBars then
+                    local healthPercent = humanoid.Health / humanoid.MaxHealth
+                    local barPos = Vector2.new(boxPos.X - 5, boxPos.Y)
+                    local barSize = Vector2.new(2, boxSize.Y)
+
+                    esp.healthBarBackground.From = barPos
+                    esp.healthBarBackground.To = barPos + Vector2.new(0, barSize.Y)
+                    esp.healthBarBackground.Color = Color3.fromRGB(0, 0, 0)
+                    esp.healthBarBackground.Thickness = 4
+                    esp.healthBarBackground.Visible = true
+
+                    esp.healthBar.From = barPos + Vector2.new(0, barSize.Y * (1 - healthPercent))
+                    esp.healthBar.To = barPos + Vector2.new(0, barSize.Y)
+                    esp.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
+                    esp.healthBar.Thickness = 2
+                    esp.healthBar.Visible = true
+                else
+                    esp.healthBar.Visible = false
+                    esp.healthBarBackground.Visible = false
+                end
+
+                -- Head Dot
+                if settings.ShowHeadDot then
+                    local headPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                    if onScreen then
+                        esp.headDot.Position = Vector2.new(headPos.X, headPos.Y)
+                        esp.headDot.Visible = true
+                        esp.headDot.Color = settings.HeadDotColor
+                    else
+                        esp.headDot.Visible = false
+                    end
+                else
+                    esp.headDot.Visible = false
+                end
+
+                -- Skeleton ESP
+                if settings.ShowSkeleton then
+                    local function drawBone(bone1, bone2, skeletonPart)
+                        local pos1, vis1 = Camera:WorldToViewportPoint(bone1.Position)
+                        local pos2, vis2 = Camera:WorldToViewportPoint(bone2.Position)
+                        if vis1 and vis2 then
+                            esp.skeleton[skeletonPart].From = Vector2.new(pos1.X, pos1.Y)
+                            esp.skeleton[skeletonPart].To = Vector2.new(pos2.X, pos2.Y)
+                            esp.skeleton[skeletonPart].Visible = true
+                            esp.skeleton[skeletonPart].Color = settings.SkeletonColor
+                        else
+                            esp.skeleton[skeletonPart].Visible = false
+                        end
+                    end
+
+                    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+                    local leftArm = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
+                    local rightArm = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
+                    local leftLeg = character:FindFirstChild("LeftUpperLeg") or character:FindFirstChild("Left Leg")
+                    local rightLeg = character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg")
+
+                    if torso and head and leftArm and rightArm and leftLeg and rightLeg then
+                        drawBone(head, torso, "head")
+                        drawBone(torso, leftArm, "leftArm")
+                        drawBone(torso, rightArm, "rightArm")
+                        drawBone(torso, leftLeg, "leftLeg")
+                        drawBone(torso, rightLeg, "rightLeg")
+                    else
+                        for _, part in pairs(esp.skeleton) do
+                            part.Visible = false
+                        end
+                    end
+                else
+                    for _, part in pairs(esp.skeleton) do
+                        part.Visible = false
+                    end
                 end
             else
-                box.Visible = false
+                for _, drawing in pairs(esp.box) do drawing.Visible = false end
+                esp.name.Visible = false
+                esp.distance.Visible = false
+                esp.healthBar.Visible = false
+                esp.healthBarBackground.Visible = false
+                esp.headDot.Visible = false
+                for _, drawing in pairs(esp.skeleton) do drawing.Visible = false end
             end
-        else
-            box.Visible = false
+        end
+
+        RunService:BindToRenderStep(plr.Name.."_ESP", 1, UpdateESP)
+    end
+
+    -- Initialize ESP for all players
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            CreateESP(plr)
         end
     end
-end
 
-function ESP:Toggle(state)
-    self.Enabled = state
-    if not state then
-        for _, box in pairs(self.Boxes) do
-            box.Visible = false
+    -- Connect player added event
+    Players.PlayerAdded:Connect(function(plr)
+        CreateESP(plr)
+    end)
+
+    -- Update settings function
+    function ESP:UpdateSettings(newSettings)
+        for k, v in pairs(newSettings) do
+            settings[k] = v
         end
     end
+
+    return ESP
 end
-
--- Initialize boxes for existing players
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        CreateBox(player)
-    end
-end
-
--- Create boxes for new players
-Players.PlayerAdded:Connect(function(player)
-    if player ~= LocalPlayer then
-        CreateBox(player)
-    end
-end)
-
--- Remove boxes for players who leave
-Players.PlayerRemoving:Connect(function(player)
-    if ESP.Boxes[player] then
-        ESP.Boxes[player]:Remove()
-        ESP.Boxes[player] = nil
-    end
-end)
-
--- Update ESP
-RunService.RenderStepped:Connect(UpdateESP)
 
 return ESP
