@@ -12,9 +12,9 @@ local ESP = {
     TeamCheck = false,
     Outline = false,
     SelfESP = false,
-    ShowNames = true,
-    ShowBoxes = true,
-    ShowHealthBars = true,
+    ShowNames = false,
+    ShowBoxes = false,
+    ShowHealthBars = false,
     ShowEquippedItem = false,
     ShowSkeleton = false,
     ShowArmorBar = false,
@@ -358,21 +358,19 @@ local function CreateESP(plr)
                     if ESP.ShowHealthBars then
                         local healthPercent = humanoid.Health / humanoid.MaxHealth
                         local barPos = Vector2.new(screenPos.X - size.X - 5, screenPos.Y - size.Y * 1.5)
-                        local barSize = Vector2.new(0, size.Y * 3)
-                    
+                        local barSize = Vector2.new(2, size.Y * 3)  -- Changed width to 2
+
                         -- Background bar
                         lines.healthBarBackground.From = barPos
-                        lines.healthBarBackground.To = barPos + Vector2.new(0, barSize.Y)
+                        lines.healthBarBackground.To = barPos + barSize
                         lines.healthBarBackground.Color = Color3.fromRGB(25, 25, 25)
                         lines.healthBarBackground.Thickness = 4
                         lines.healthBarBackground.Visible = true
-                    
+
                         -- Health bar
-                        local healthBarStart = barPos
-                        local healthBarEnd = barPos + Vector2.new(0, barSize.Y)
-                        local currentHeight = barSize.Y * (1 - healthPercent)
-                        lines.healthBar.From = healthBarStart + Vector2.new(0, currentHeight)
-                        lines.healthBar.To = healthBarEnd
+                        local healthBarHeight = barSize.Y * healthPercent
+                        lines.healthBar.From = barPos + Vector2.new(0, barSize.Y - healthBarHeight)
+                        lines.healthBar.To = barPos + barSize
                         
                         if healthPercent > 0.75 then
                             lines.healthBar.Color = Color3.fromRGB(0, 255, 0)
