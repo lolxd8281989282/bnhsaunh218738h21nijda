@@ -36,48 +36,64 @@ local tabs = {
 }
 
 -- Legit Tab
-local BulletRedirection = tabs.Legit:AddSection("Bullet Redirection", 1)
-local AimAssist = tabs.Legit:AddSection("Aim Assist", 2)
+local Main = tabs.Legit:AddSection("Main", 1)
+local Visuals = tabs.Legit:AddSection("Visuals", 2)
+local Misc = tabs.Legit:AddSection("Misc", 2)
 
--- Bullet Redirection Section
-BulletRedirection:AddToggle({text = "Enabled", flag = "br_enabled"})
-BulletRedirection:AddToggle({text = "Show FOV", flag = "br_show_fov"})
-BulletRedirection:AddToggle({text = "Resolver", flag = "br_resolver"})
-BulletRedirection:AddToggle({text = "Use Closest Part", flag = "br_use_closest_part"})
-BulletRedirection:AddToggle({text = "Anti Ground Shots", flag = "br_anti_ground_shots"})
-BulletRedirection:AddToggle({text = "Use Air Part", flag = "br_use_air_part"})
-BulletRedirection:AddToggle({text = "KO Check", flag = "br_ko_check"})
-BulletRedirection:AddToggle({text = "Grabbed Check", flag = "br_grabbed_check"})
+-- Main Section
+Main:AddToggle({text = "Enabled", flag = "main_enabled"})
+Main:AddToggle({text = "Silent", flag = "main_silent"})
+Main:AddToggle({text = "Camlock", flag = "main_camlock"})
+Main:AddToggle({text = "Anti Aim Viewer", flag = "main_anti_aim_viewer"})
+Main:AddToggle({text = "Gun TP", flag = "main_gun_tp"})
+Main:AddToggle({text = "Closest Part", flag = "main_closest_part"})
+Main:AddToggle({text = "Apply Closest Part On GetClo", flag = "main_apply_closest_getclo"})
+Main:AddToggle({text = "Smoothing", flag = "main_smoothing"})
+Main:AddToggle({text = "Alerts", flag = "main_alerts"})
+Main:AddToggle({text = "Auto Prediction", flag = "main_auto_prediction"})
+Main:AddToggle({text = "Use Field of View", flag = "main_use_fov"})
+Main:AddToggle({text = "Visualize FOV", flag = "main_visualize_fov"})
+Main:AddToggle({text = "Use Checks", flag = "main_use_checks"})
 
-BulletRedirection:AddSlider({text = "Prediction", flag = "br_prediction", min = 0, max = 34, value = 13, suffix = "/3.4"})
-BulletRedirection:AddSlider({text = "Radius", flag = "br_radius", min = 0, max = 250, value = 0, suffix = "/250"})
-BulletRedirection:AddSlider({text = "HitChance", flag = "br_hitchance", min = 0, max = 100, value = 0})
-BulletRedirection:AddSlider({text = "AntiGround Shots Value", flag = "br_antiground_value", min = 0, max = 100, value = 0})
-BulletRedirection:AddSlider({text = "Resolver Tuning", flag = "br_resolver_tuning", min = 0, max = 100, value = 0})
+Main:AddList({text = "Aim Part", flag = "main_aim_part", values = {"HumanoidRootPart"}, value = "HumanoidRootPart"})
+Main:AddList({text = "Checks", flag = "main_checks", values = {"..."}, value = "..."})
 
-BulletRedirection:AddList({text = "Part", flag = "br_part", values = {"HumanoidRootPart"}, value = "HumanoidRootPart"})
-BulletRedirection:AddList({text = "Air Part", flag = "br_air_part", values = {"Head"}, value = "Head"})
+Main:AddSlider({text = "Field of View Radius", flag = "main_fov_radius", min = 0, max = 800, value = 80, suffix = "%/800%"})
+Main:AddSlider({text = "Alerts Duration", flag = "main_alerts_duration", min = 0, max = 10, value = 4, suffix = "%/10%"})
+Main:AddSlider({text = "Smoothing Amount", flag = "main_smoothing_amount", min = 0, max = 100, value = 15, suffix = "%/7%"})
 
--- Aim Assist Section
-AimAssist:AddToggle({text = "Enabled", flag = "aa_enabled"})
-AimAssist:AddToggle({text = "Smoothing", flag = "aa_smoothing"})
-AimAssist:AddToggle({text = "Add Shake", flag = "aa_add_shake"})
-AimAssist:AddToggle({text = "Show FOV", flag = "aa_show_fov"})
-AimAssist:AddToggle({text = "Use Circle Radius", flag = "aa_use_circle_radius"})
-AimAssist:AddToggle({text = "Resolver", flag = "aa_resolver"})
-AimAssist:AddToggle({text = "Unlock On Target Death", flag = "aa_unlock_target_death"})
-AimAssist:AddToggle({text = "Unlock On My Death", flag = "aa_unlock_my_death"})
+-- Visuals Section
+Visuals:AddToggle({text = "Enabled", flag = "visuals_enabled"})
+Visuals:AddToggle({text = "Tracer", flag = "visuals_tracer"})
+Visuals:AddToggle({text = "Circle", flag = "visuals_circle"})
+Visuals:AddToggle({text = "Dot", flag = "visuals_dot"})
+Visuals:AddToggle({text = "Dot Filled", flag = "visuals_dot_filled"})
+Visuals:AddToggle({text = "Chams", flag = "visuals_chams"})
 
-AimAssist:AddSlider({text = "Prediction", flag = "aa_prediction", min = 0, max = 32, value = 13, suffix = "/3.2"})
-AimAssist:AddSlider({text = "Smooth Amount", flag = "aa_smooth_amount", min = 0, max = 100, value = 0})
-AimAssist:AddSlider({text = "Shake Value", flag = "aa_shake_value", min = 0, max = 100, value = 0, suffix = "/100"})
-AimAssist:AddSlider({text = "Shake Multiplier", flag = "aa_shake_multiplier", min = 0, max = 10, value = 1, suffix = "/10"})
-AimAssist:AddSlider({text = "Resolver Time", flag = "aa_resolver_time", min = 0, max = 100, value = 0})
-AimAssist:AddSlider({text = "Radius", flag = "aa_radius", min = 0, max = 250, value = 20, suffix = "/250"})
+Visuals:AddList({text = "Part", flag = "visuals_part", values = {"..."}, value = "..."})
 
-AimAssist:AddList({text = "Part", flag = "aa_part", values = {"Head"}, value = "Head"})
-AimAssist:AddList({text = "Speed", flag = "aa_speed", values = {"..."}, value = "..."})
-AimAssist:AddList({text = "Key", flag = "aa_key", values = {"..."}, value = "..."})
+Visuals:AddSlider({text = "Thickness", flag = "visuals_thickness", min = 0, max = 10, value = 2, suffix = "%/10%"})
+Visuals:AddSlider({text = "Outline Transparency", flag = "visuals_outline_transparency", min = 0, max = 100, value = 5, suffix = "%/1%"})
+Visuals:AddSlider({text = "Fill Transparency", flag = "visuals_fill_transparency", min = 0, max = 100, value = 5, suffix = "%/1%"})
+Visuals:AddSlider({text = "Dot Size", flag = "visuals_dot_size", min = 0, max = 10, value = 6, suffix = "%/10%"})
+Visuals:AddSlider({text = "Part Transparency", flag = "visuals_part_transparency", min = 0, max = 100, value = 5, suffix = "%/1%"})
+Visuals:AddSlider({text = "Part Size", flag = "visuals_part_size", min = 0, max = 20, value = 2, suffix = "'/20'"})
+Visuals:AddSlider({text = "Circle Size", flag = "visuals_circle_size", min = 0, max = 10, value = 2, suffix = "%/10%"})
+
+Visuals:AddToggle({text = "Part Material", flag = "visuals_part_material"})
+Visuals:AddToggle({text = "Neon", flag = "visuals_neon"})
+
+-- Misc Section
+Misc:AddToggle({text = "Auto Select", flag = "misc_auto_select"})
+Misc:AddToggle({text = "Resolver", flag = "misc_resolver"})
+Misc:AddToggle({text = "Jump Offset (AIR)", flag = "misc_jump_offset_air"})
+Misc:AddToggle({text = "Spectate", flag = "misc_spectate"})
+Misc:AddToggle({text = "Air", flag = "misc_air"})
+Misc:AddToggle({text = "Anti Groundshots (AIR)", flag = "misc_anti_groundshots_air"})
+
+Misc:AddSlider({text = "Refresh Rate", flag = "misc_refresh_rate", min = 0, max = 200, value = 200, suffix = "ms/200ms"})
+Misc:AddSlider({text = "To Take Off", flag = "misc_to_take_off", min = 0, max = 10, value = 0.4, suffix = "'/1'"})
+Misc:AddSlider({text = "Jump Offset", flag = "misc_jump_offset", min = 0, max = 4, value = 0.09, suffix = "'/4'"})
 
 -- Finalize
 library:SendNotification("Successfully Initialized", 3, Color3.new(0, 1, 0))
