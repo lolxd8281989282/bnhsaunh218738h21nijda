@@ -14,9 +14,9 @@ local ESP = {
   TeamCheck = false,
   Outline = false,
   SelfESP = false,
-  ShowNames = true,
-  ShowBoxes = true,
-  ShowHealthBars = true,
+  ShowNames = false,
+  ShowBoxes = false,
+  ShowHealthBars = false,
   ShowEquippedItem = false,
   ShowSkeleton = false,
   ShowArmorBar = false,
@@ -213,6 +213,7 @@ local function CreateESP(plr)
               for _, drawing in pairs(lines) do
                   drawing.Visible = false
               end
+              highlight.Enabled = false
               return
           end
 
@@ -247,7 +248,7 @@ local function CreateESP(plr)
                   end
 
                   -- Box ESP
-                  if ESP.ShowBoxes then
+                  if ESP.Enabled and ESP.ShowBoxes then
                       local boxSize = Vector2.new(size.X * 2, size.Y * 3)
                       local boxPosition = Vector2.new(screenPos.X - size.X, screenPos.Y - size.Y * 1.5)
 
@@ -326,7 +327,7 @@ local function CreateESP(plr)
                   end
 
                   -- Name ESP
-                  if ESP.ShowNames then
+                  if ESP.Enabled and ESP.ShowNames then
                       lines.text.Position = Vector2.new(screenPos.X, screenPos.Y - size.Y * 2)
                       lines.text.Text = plr.Name
                       lines.text.Color = ESP.NameColor
@@ -357,7 +358,7 @@ local function CreateESP(plr)
                   end
 
                   -- Health Bar
-                  if ESP.ShowHealthBars then
+                  if ESP.Enabled and ESP.ShowHealthBars then
                       local healthPercent = humanoid.Health / humanoid.MaxHealth
                       local barPos = Vector2.new(screenPos.X - size.X - 5, screenPos.Y - size.Y * 1.5)
                       local barSize = Vector2.new(0, size.Y * 3)
