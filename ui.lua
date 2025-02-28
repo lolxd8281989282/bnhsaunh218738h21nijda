@@ -36,24 +36,39 @@ local tabs = {
 }
 
 -- Legit Tab
-local AimbotSection = tabs.Legit:AddSection("Aimbot", 1)
-local AimbotSettingsSection = tabs.Legit:AddSection("Aimbot Settings", 2)
+local AimbotSettingsLeft = tabs.Legit:AddSection("Aimbot Settings", 1)
+local AimbotSettingsRight = tabs.Legit:AddSection("Aimbot Settings", 2)
 
--- Aimbot Section
-AimbotSection:AddToggle({text = "Enable Aimbot", flag = "enable_aimbot"})
-AimbotSection:AddToggle({text = "Phantom Force Aimbot", flag = "phantom_force_aimbot"})
-AimbotSection:AddSlider({text = "Aimbot Offset", flag = "aimbot_offset", min = 0, max = 100, value = 0})
-AimbotSection:AddToggle({text = "Draw FOV", flag = "draw_fov"})
-AimbotSection:AddToggle({text = "Knifebot", flag = "knifebot"})
-AimbotSection:AddSlider({text = "Aimbot Smoothness", flag = "aimbot_smoothness", min = 0, max = 100, value = 0})
-AimbotSection:AddList({text = "Target Bone", flag = "target_bone", values = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, value = "Head"})
+-- Left Aimbot Settings
+AimbotSettingsLeft:AddToggle({text = "Enable Aimbot", flag = "enable_aimbot"})
+AimbotSettingsLeft:AddToggle({text = "Phantom Force Aimbot", flag = "phantom_force_aimbot"})
+AimbotSettingsLeft:AddToggle({text = "Body Hit", flag = "body_hit"})
+AimbotSettingsLeft:AddToggle({text = "Aimbot Prediction", flag = "aimbot_prediction"})
+AimbotSettingsLeft:AddToggle({text = "Draw FOV", flag = "draw_fov"})
+AimbotSettingsLeft:AddToggle({text = "Knifebot", flag = "knifebot"})
+AimbotSettingsLeft:AddToggle({text = "Smoothing", flag = "smoothing"})
 
--- Aimbot Settings Section
-AimbotSettingsSection:AddToggle({text = "Enable Silent Aim", flag = "enable_silent_aim"})
-AimbotSettingsSection:AddToggle({text = "Silent Aim Prediction", flag = "silent_aim_prediction"})
-AimbotSettingsSection:AddSlider({text = "Silent Aim Prediction X", flag = "silent_aim_prediction_x", min = 0, max = 100, value = 0})
-AimbotSettingsSection:AddSlider({text = "Silent Aim Prediction Y", flag = "silent_aim_prediction_y", min = 0, max = 100, value = 0})
-AimbotSettingsSection:AddSlider({text = "Silent Aim Prediction Z", flag = "silent_aim_prediction_z", min = 0, max = 100, value = 0})
+AimbotSettingsLeft:AddSlider({text = "Aimbot Prediction X", flag = "aimbot_prediction_x", min = 0, max = 100, value = 5})
+AimbotSettingsLeft:AddSlider({text = "Aimbot Prediction Y", flag = "aimbot_prediction_y", min = 0, max = 100, value = 5})
+AimbotSettingsLeft:AddSlider({text = "Aimbot Prediction Z", flag = "aimbot_prediction_z", min = 0, max = 100, value = 5})
+
+AimbotSettingsLeft:AddList({text = "Target Bone", flag = "target_bone", values = {"Head"}, value = "Head"})
+AimbotSettingsLeft:AddList({text = "Aimbot Type", flag = "aimbot_type", values = {"Default"}, value = "Default"})
+AimbotSettingsLeft:AddList({text = "Cleaner's", flag = "cleaners", values = {"Default"}, value = "Default"})
+AimbotSettingsLeft:AddList({text = "Knocked", flag = "knocked", values = {"Default"}, value = "Default"})
+
+-- Right Aimbot Settings
+AimbotSettingsRight:AddToggle({text = "Enable Silent Aim", flag = "enable_silent_aim"})
+AimbotSettingsRight:AddToggle({text = "Silent Aim Ricochet", flag = "silent_aim_ricochet"})
+AimbotSettingsRight:AddToggle({text = "Silent Aim Prediction", flag = "silent_aim_prediction"})
+
+AimbotSettingsRight:AddList({text = "Silent Aim Target Part", flag = "silent_aim_target", values = {"Head"}, value = "Head"})
+
+AimbotSettingsRight:AddSlider({text = "Silent Aim Prediction X", flag = "silent_prediction_x", min = 0, max = 100, value = 5})
+AimbotSettingsRight:AddSlider({text = "Silent Aim Prediction Y", flag = "silent_prediction_y", min = 0, max = 100, value = 5})
+AimbotSettingsRight:AddSlider({text = "Silent Aim Prediction Z", flag = "silent_prediction_z", min = 0, max = 100, value = 5})
+
+AimbotSettingsRight:AddBind({text = "Trigger Bot Key", flag = "triggerbot_key", key = Enum.KeyCode.E})
 
 -- Finalize
 library:SendNotification("UI Loaded", 3, Color3.new(0, 1, 0))
