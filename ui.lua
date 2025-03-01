@@ -180,4 +180,3 @@ return function(Window, Library, ESP)
         warn("ESP module not loaded correctly")
     end
 end
-
