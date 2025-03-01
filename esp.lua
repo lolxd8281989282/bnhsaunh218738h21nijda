@@ -119,11 +119,11 @@ function ESPObject:Update()
 
     local size = (CurrentCamera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, 3, 0)).Y - CurrentCamera:WorldToViewportPoint(humanoidRootPart.Position + Vector3.new(0, 2.6, 0)).Y) / 2
 
-    -- Update Box
+    -- Update Box with proper color
     if ESP.ShowBoxes then
         self.Drawings.Box.Size = Vector2.new(size * 1.5, size * 1.8)
         self.Drawings.Box.Position = Vector2.new(position.X - size * 1.5 / 2, position.Y - size * 1.8 / 2)
-        self.Drawings.Box.Color = ESP.BoxColor
+        self.Drawings.Box.Color = ESP.BoxColor -- Apply box color directly from ESP settings
         self.Drawings.Box.Visible = true
     else
         self.Drawings.Box.Visible = false
@@ -144,21 +144,21 @@ function ESPObject:Update()
         self.Drawings.HeadCircle.Visible = false
     end
 
-    -- Update Name
+    -- Update Name with proper color
     if ESP.ShowNames then
         self.Drawings.Name.Position = Vector2.new(position.X, position.Y - size * 1.8 / 2 - 15)
-        self.Drawings.Name.Color = ESP.NameColor
+        self.Drawings.Name.Color = ESP.NameColor -- Apply name color directly from ESP settings
         self.Drawings.Name.Visible = true
     else
         self.Drawings.Name.Visible = false
     end
 
-    -- Update Health Bar
+    -- Update Health Bar with proper color
     if ESP.ShowHealthBars and humanoid then
         local health = humanoid.Health / humanoid.MaxHealth
         self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
         self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2 * health)
-        self.Drawings.HealthBar.Color = ESP.HealthBarColor
+        self.Drawings.HealthBar.Color = ESP.HealthBarColor -- Apply health bar color directly from ESP settings
         self.Drawings.HealthBar.Visible = true
     else
         self.Drawings.HealthBar.Visible = false
@@ -337,12 +337,18 @@ function ESP:UpdateProperty(property, value)
 end
 
 function ESP:UpdateColor(property, color)
-    if self[property.."Color"] ~= nil then
-        self[property.."Color"] = color
-        -- Force refresh all ESP objects when a color changes
-        for _, object in pairs(self.Objects) do
-            object:Update()
-        end
+    if property == "Box" then
+        self.BoxColor = color
+    elseif property == "Names" then
+        self.NameColor = color
+    elseif property == "HealthBars" then
+        self.HealthBarColor = color
+    -- Add other color properties as needed
+    end
+
+    -- Force refresh all ESP objects when a color changes
+    for _, object in pairs(self.Objects) do
+        object:Update()
     end
 end
 
