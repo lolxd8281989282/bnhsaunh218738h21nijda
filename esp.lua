@@ -31,11 +31,15 @@ local function Debug(...)
 end
 
 local function GetCharacterSize(character)
-    local hrp = character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return Vector3.new(5, 7, 3) end
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid then return Vector3.new(4, 5, 1) end
     
-    local size = hrp.Size
-    return Vector3.new(size.X * 2, size.Y * 2, size.Z)
+    local head = character:FindFirstChild("Head")
+    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+    if not head or not torso then return Vector3.new(4, 5, 1) end
+    
+    local height = (head.Position - torso.Position).Magnitude * 3.5
+    return Vector3.new(height * 0.8, height, 1)
 end
 
 local function CreateDrawingsForPlayer(player)
@@ -106,7 +110,7 @@ end
 
 local function UpdateESP()
     if not ESP.Enabled then
-        -- Hide all drawings when ESP is disabled
+        Debug("ESP is disabled")
         for _, drawings in pairs(Drawings) do
             for _, drawing in pairs(drawings) do
                 drawing.Visible = false
@@ -114,6 +118,8 @@ local function UpdateESP()
         end
         return
     end
+    
+    Debug("Updating ESP - Enabled:", ESP.Enabled, "ShowBoxes:", ESP.ShowBoxes, "ShowNames:", ESP.ShowNames)
     
     for player, drawings in pairs(Drawings) do
         if player == LocalPlayer then continue end
@@ -123,7 +129,7 @@ local function UpdateESP()
         local rootPart = character and character:FindFirstChild("HumanoidRootPart")
         
         if not character or not humanoid or not rootPart or not humanoid.Health > 0 then
-            -- Hide drawings if character is not valid
+            Debug("Invalid character for player:", player.Name)
             for _, drawing in pairs(drawings) do
                 drawing.Visible = false
             end
@@ -134,7 +140,7 @@ local function UpdateESP()
         local distance = (Camera.CFrame.Position - rootPart.Position).Magnitude
         
         if not onScreen or distance > ESP.Distance then
-            -- Hide drawings if player is not on screen or too far
+            Debug("Player not on screen or too far:", player.Name)
             for _, drawing in pairs(drawings) do
                 drawing.Visible = false
             end
@@ -143,14 +149,17 @@ local function UpdateESP()
         
         -- Get character size for box calculations
         local charSize = GetCharacterSize(character)
-        local boxSize = Vector2.new(charSize.X * 1000 / distance, charSize.Y * 1000 / distance)
+        local scaleFactor = 1000 / distance
+        local boxWidth = charSize.X * scaleFactor
+        local boxHeight = charSize.Y * scaleFactor
         
         -- Update Box
         if ESP.ShowBoxes then
-            drawings.Box.Size = boxSize
-            drawings.Box.Position = Vector2.new(pos.X - boxSize.X / 2, pos.Y - boxSize.Y / 2)
+            drawings.Box.Size = Vector2.new(boxWidth, boxHeight)
+            drawings.Box.Position = Vector2.new(pos.X - boxWidth/2, pos.Y - boxHeight/2)
             drawings.Box.Color = ESP.BoxColor
             drawings.Box.Visible = true
+            Debug("Box updated for player:", player.Name)
         else
             drawings.Box.Visible = false
         end
@@ -158,10 +167,11 @@ local function UpdateESP()
         -- Update Name
         if ESP.ShowNames then
             drawings.Name.Text = player.Name
-            drawings.Name.Position = Vector2.new(pos.X, pos.Y - boxSize.Y / 2 - 15)
+            drawings.Name.Position = Vector2.new(pos.X, pos.Y - boxHeight/2 - 15)
             drawings.Name.Color = ESP.NameColor
             drawings.Name.Size = ESP.TextSize
             drawings.Name.Visible = true
+            Debug("Name updated for player:", player.Name)
         else
             drawings.Name.Visible = false
         end
@@ -169,7 +179,7 @@ local function UpdateESP()
         -- Update Distance
         if ESP.ShowDistance then
             drawings.Distance.Text = math.floor(distance) .. " studs"
-            drawings.Distance.Position = Vector2.new(pos.X, pos.Y + boxSize.Y / 2 + 5)
+            drawings.Distance.Position = Vector2.new(pos.X, pos.Y + boxHeight/2 + 5)
             drawings.Distance.Color = ESP.DistanceColor
             drawings.Distance.Size = ESP.TextSize
             drawings.Distance.Visible = true
@@ -180,9 +190,8 @@ local function UpdateESP()
         -- Update Health Bar
         if ESP.ShowHealthBars and humanoid then
             local health = humanoid.Health / humanoid.MaxHealth
-            local barHeight = boxSize.Y
-            drawings.HealthBar.Size = Vector2.new(3, barHeight * health)
-            drawings.HealthBar.Position = Vector2.new(pos.X - boxSize.X / 2 - 5, pos.Y - boxSize.Y / 2 + (barHeight - drawings.HealthBar.Size.Y))
+            drawings.HealthBar.Size = Vector2.new(3, boxHeight * health)
+            drawings.HealthBar.Position = Vector2.new(pos.X - boxWidth/2 - 5, pos.Y - boxHeight/2 + (boxHeight - drawings.HealthBar.Size.Y))
             drawings.HealthBar.Color = Color3.fromRGB(255 * (1 - health), 255 * health, 0)
             drawings.HealthBar.Visible = true
         else
@@ -214,7 +223,7 @@ function ESP:Initialize()
     end)
     
     -- Update ESP
-    local connection = RunService.RenderStepped:Connect(function()
+    RunService:BindToRenderStep("ESP", Enum.RenderPriority.Camera.Value, function()
         local success, err = pcall(UpdateESP)
         if not success then
             Debug("Error in UpdateESP:", err)
@@ -222,7 +231,7 @@ function ESP:Initialize()
     end)
     
     Debug("ESP initialized successfully")
-    return connection
+    return true
 end
 
 return ESP
