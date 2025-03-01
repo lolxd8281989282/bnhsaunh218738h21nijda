@@ -102,6 +102,7 @@ function ESP:UpdateESP()
             drawings.Name.Text = player.Name
             drawings.Name.Position = Vector2.new(pos.X, pos.Y - 45)
             drawings.Name.Color = self.NameColor
+            drawings.Name.Size = self.TextSize
             drawings.Name.Visible = true
         else
             drawings.Name.Visible = false
@@ -112,6 +113,7 @@ function ESP:UpdateESP()
             drawings.Distance.Text = math.floor(distance) .. " studs"
             drawings.Distance.Position = Vector2.new(pos.X, pos.Y + 35)
             drawings.Distance.Color = self.DistanceColor
+            drawings.Distance.Size = self.TextSize
             drawings.Distance.Visible = true
         else
             drawings.Distance.Visible = false
