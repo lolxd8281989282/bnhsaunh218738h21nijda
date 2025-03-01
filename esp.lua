@@ -1,16 +1,22 @@
 local ESP = {
     Enabled = false,
     Boxes = false,
+    Names = false,
+    Tracers = false,
+    TeamCheck = true,
     BoxShift = CFrame.new(0,-1.5,0),
     BoxSize = Vector3.new(4,6,0),
-    Color = Color3.fromRGB(255, 170, 0),
+    Color = Color3.fromRGB(255, 255, 255),
+    TeamColor = Color3.fromRGB(0, 255, 0),
+    EnemyColor = Color3.fromRGB(255, 0, 0),
     FaceCamera = false,
-    Names = false,
-    TeamColor = false,
     Thickness = 2,
     AttachShift = 1,
     TeamMates = true,
     Players = true,
+    MaxDistance = 1000,
+    TextSize = 14,
+    Font = Drawing.Fonts.Plex,
     
     Objects = setmetatable({}, {__mode="kv"}),
     Overrides = {}
@@ -60,7 +66,7 @@ function ESP:GetColor(obj)
         return ov(obj)
     end
     local p = self:GetPlrFromChar(obj)
-    return p and self.TeamColor and p.Team and p.Team.TeamColor.Color or self.Color
+    return p and (self.TeamCheck and (self:IsTeamMate(p) and self.TeamColor or self.EnemyColor) or self.Color) or self.Color
 end
 
 function ESP:GetPlrFromChar(char)
@@ -144,12 +150,7 @@ function boxBase:Update()
         return self:Remove()
     end
 
-    local color
-    if ESP.Highlighted == self.Object then
-       color = ESP.HighlightColor
-    else
-        color = self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
-    end
+    local color = ESP:GetColor(self.Object)
 
     local allow = true
     if ESP.Overrides.UpdateAllow and not ESP.Overrides.UpdateAllow(self) then
@@ -173,10 +174,6 @@ function boxBase:Update()
             v.Visible = false
         end
         return
-    end
-
-    if ESP.Highlighted == self.Object then
-        color = ESP.HighlightColor
     end
 
     --calculations--
@@ -213,15 +210,13 @@ function boxBase:Update()
             end
         end
     else
-        if self.Components.Quad then
-            self.Components.Quad.Visible = false
-        end
+        self.Components.Quad.Visible = false
     end
 
     if ESP.Names then
         local TagPos, Vis5 = WorldToViewportPoint(cam, locs.TagPos.p)
         
-        if Vis5 then
+        if Vis5 and (TagPos.Z < ESP.MaxDistance) then
             self.Components.Name.Visible = true
             self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y)
             self.Components.Name.Text = self.Name
@@ -229,7 +224,7 @@ function boxBase:Update()
             
             self.Components.Distance.Visible = true
             self.Components.Distance.Position = Vector2.new(TagPos.X, TagPos.Y + 14)
-            self.Components.Distance.Text = math.floor((cam.CFrame.p - cf.p).magnitude) .."m away"
+            self.Components.Distance.Text = math.floor((cam.CFrame.p - cf.p).magnitude) .."m"
             self.Components.Distance.Color = color
         else
             self.Components.Name.Visible = false
@@ -292,14 +287,16 @@ function ESP:Add(obj, options)
         Color = box.Color,
         Center = true,
         Outline = true,
-        Size = 19,
+        Size = self.TextSize,
+        Font = self.Font,
         Visible = self.Enabled and self.Names
     })
     box.Components["Distance"] = Draw("Text", {
         Color = box.Color,
         Center = true,
         Outline = true,
-        Size = 19,
+        Size = self.TextSize,
+        Font = self.Font,
         Visible = self.Enabled and self.Names
     })
     
