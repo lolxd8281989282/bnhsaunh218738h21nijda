@@ -267,6 +267,15 @@ return function(Library, ESP)
    Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
+   -- // Watermark
+   Library:Watermark({
+       Title = "dracula.lol | beta",
+       Subtitle = "v1.0.0",
+       SizeX = 250,
+       SizeY = 50,
+       Position = "TopRight"
+   })
+
    -- // Initialisation
    Window:Initialize()
 end
