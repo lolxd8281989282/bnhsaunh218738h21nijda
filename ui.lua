@@ -209,6 +209,7 @@ return function(Library, ESP)
    createESPFeature("Distance", "Distance", Color3.fromRGB(255, 255, 255))
    createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
    createESPFeature("Flags", "Flags", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Skeleton", "Bone", Color3.fromRGB(255, 255, 255))
 
    -- Bullet Tracers
    ESP_Section:Toggle({
