@@ -10,17 +10,17 @@ local ESP = {
     ShowWeapon = false,
     ShowFlags = false,
     ShowBone = false,
+    ShowHeadCircle = false,
     BulletTracers = false,
     BoxColor = Color3.fromRGB(255, 255, 255),
     NameColor = Color3.fromRGB(255, 255, 255),
-    HealthBarColor = Color3.fromRGB(0, 255, 0),
-    ArmorBarColor = Color3.fromRGB(0, 255, 255,255),
     HealthBarColor = Color3.fromRGB(0, 255, 0),
     ArmorBarColor = Color3.fromRGB(0, 255, 255),
     DistanceColor = Color3.fromRGB(255, 255, 255),
     WeaponColor = Color3.fromRGB(255, 255, 255),
     FlagsColor = Color3.fromRGB(255, 255, 255),
     BoneColor = Color3.fromRGB(255, 255, 255),
+    HeadCircleColor = Color3.fromRGB(255, 255, 255),
     BulletTracersColor = Color3.fromRGB(139, 0, 0),
     TextSize = 14,
     TextFont = Drawing.Fonts.UI,
@@ -72,9 +72,12 @@ function ESPObject.new(player)
         Distance = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.DistanceColor, Visible = false}),
         Weapon = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.WeaponColor, Visible = false}),
         Flags = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.FlagsColor, Visible = false}),
-        Bone = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+        Bone = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false}),
+        HeadCircle = CreateDrawing("Circle", {Thickness = 1, Color = ESP.HeadCircleColor, Visible = false, NumSides = 30}),
+        BulletTracer = CreateDrawing("Line", {Thickness = 1, Color = ESP.BulletTracersColor, Visible = false})
     }
     
+    -- Handle character changes
     player.CharacterAdded:Connect(function(char)
         self.Character = char
     end)
@@ -101,7 +104,9 @@ function ESPObject:Update()
 
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not humanoidRootPart or not humanoid then
+    local head = character:FindFirstChild("Head")
+    
+    if not humanoidRootPart or not humanoid or not head then
         self:Hide()
         return true
     end
@@ -122,6 +127,17 @@ function ESPObject:Update()
         self.Drawings.Box.Visible = true
     else
         self.Drawings.Box.Visible = false
+    end
+
+    -- Update Head Circle
+    if ESP.ShowHeadCircle and head then
+        local headPos = CurrentCamera:WorldToViewportPoint(head.Position)
+        self.Drawings.HeadCircle.Position = Vector2.new(headPos.X, headPos.Y)
+        self.Drawings.HeadCircle.Radius = size * 0.5
+        self.Drawings.HeadCircle.Color = ESP.HeadCircleColor
+        self.Drawings.HeadCircle.Visible = true
+    else
+        self.Drawings.HeadCircle.Visible = false
     end
 
     -- Update Name
@@ -231,6 +247,29 @@ function ESPObject:Remove()
         drawing:Remove()
     end
     ESP.Objects[self.Player] = nil
+end
+
+-- Bullet Tracer Implementation
+function ESP:CreateBulletTracer(origin, destination)
+    if not ESP.BulletTracers then return end
+    
+    local tracer = Drawing.new("Line")
+    tracer.Visible = true
+    tracer.Color = ESP.BulletTracersColor
+    tracer.Thickness = 1
+    tracer.Transparency = 1
+    
+    local startPos = CurrentCamera:WorldToViewportPoint(origin)
+    local endPos = CurrentCamera:WorldToViewportPoint(destination)
+    
+    tracer.From = Vector2.new(startPos.X, startPos.Y)
+    tracer.To = Vector2.new(endPos.X, endPos.Y)
+    
+    -- Remove tracer after duration
+    spawn(function()
+        wait(ESP.TracerDuration)
+        tracer:Remove()
+    end)
 end
 
 -- Main ESP Functions
