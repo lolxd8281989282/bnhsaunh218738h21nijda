@@ -1,8 +1,5 @@
 return function(Library, ESP)
-   assert(ESP, "ESP module must be provided")
-   assert(type(ESP.Toggle) == "function", "ESP.Toggle must be a function")
-
-   -- // Init
+   -- Remove assertions since we'll handle ESP differently according to documentation
    local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
    -- // Pages
@@ -79,103 +76,165 @@ return function(Library, ESP)
    Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
    Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
-   -- ESP Section
+   -- ESP Section with fixed implementation
    ESP_Section:Toggle({
        Name = "Enabled", 
        Default = false, 
        Pointer = "ESP_Enabled", 
-       callback = function(value)
-           local success, err = pcall(function()
-               if ESP and ESP.Toggle then
-                   print("Attempting to toggle ESP:", value) -- Debug print
-                   ESP:Toggle(value)
-                   print("ESP toggle successful") -- Debug print
-               else
-                   warn("ESP or ESP.Toggle is not available")
-               end
-           end)
-           
-           if not success then
-               warn("Failed to toggle ESP:", err)
+       callback = function(state)
+           if ESP and type(ESP) == "table" then
+               ESP.Enabled = state
            end
        end
    })
-   ESP_Section:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self", callback = function(value)
-       ESP.SelfESP = value
-   end})
-   ESP_Section:Slider({Name = "Max Distance", Minimum = 100, Maximum = 2000, Default = 1000, Suffix = "m", Pointer = "ESP_MaxDistance", callback = function(value)
-       ESP.MaxDistance = value
-   end})
-   ESP_Section:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-   ESP_Section:Slider({Name = "Outline Transparency", Minimum = 0, Maximum = 1, Default = 1, Decimals = 0.1, Pointer = "ESP_OutlineTransparency", callback = function(value)
-       ESP.OutlineTransparency = value
-   end})
-   ESP_Section:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont", callback = function(value)
-       ESP.TextFont = Drawing.Fonts[value]
-   end})
-   ESP_Section:Slider({Name = "Text Size", Minimum = 8, Maximum = 24, Default = 14, Pointer = "ESP_TextSize", callback = function(value)
-       ESP.TextSize = value
-   end})
+   
+   ESP_Section:Toggle({
+       Name = "Self", 
+       Default = false, 
+       Pointer = "ESP_Self", 
+       callback = function(state)
+           if ESP and type(ESP) == "table" then
+               ESP.Self = state
+           end
+       end
+   })
+
+   ESP_Section:Slider({
+       Name = "Max Distance", 
+       Minimum = 100, 
+       Maximum = 2000, 
+       Default = 1000, 
+       Suffix = "m", 
+       Pointer = "ESP_MaxDistance", 
+       callback = function(value)
+           if ESP and type(ESP) == "table" then
+               ESP.MaxDistance = value
+           end
+       end
+   })
+
+   ESP_Section:Dropdown({
+       Name = "Distance Mode", 
+       Options = {"Dynamic", "Static"}, 
+       Default = "Dynamic", 
+       Pointer = "ESP_DistanceMode",
+       callback = function(value)
+           if ESP and type(ESP) == "table" then
+               ESP.DistanceMode = value
+           end
+       end
+   })
+
+   ESP_Section:Slider({
+       Name = "Outline Transparency", 
+       Minimum = 0, 
+       Maximum = 1, 
+       Default = 1, 
+       Decimals = 0.1, 
+       Pointer = "ESP_OutlineTransparency", 
+       callback = function(value)
+           if ESP and type(ESP) == "table" then
+               ESP.OutlineTransparency = value
+           end
+       end
+   })
+
+   ESP_Section:Dropdown({
+       Name = "Text Font", 
+       Options = {"UI", "System", "Plex", "Monospace"}, 
+       Default = "UI", 
+       Pointer = "ESP_TextFont", 
+       callback = function(value)
+           if ESP and type(ESP) == "table" and Drawing and Drawing.Fonts then
+               ESP.TextFont = Drawing.Fonts[value]
+           end
+       end
+   })
+
+   ESP_Section:Slider({
+       Name = "Text Size", 
+       Minimum = 8, 
+       Maximum = 24, 
+       Default = 14, 
+       Pointer = "ESP_TextSize", 
+       callback = function(value)
+           if ESP and type(ESP) == "table" then
+               ESP.TextSize = value
+           end
+       end
+   })
 
    ESP_Section:Label({Name = "ESP Features", Middle = false})
-   ESP_Section:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names", callback = function(value)
-       ESP.ShowNames = value
-   end})
-   :Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor", callback = function(value)
-       ESP.NameColor = value
-   end})
-   ESP_Section:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box", callback = function(value)
-       ESP.ShowBoxes = value
-   end})
-   :Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor", callback = function(value)
-       ESP.BoxColor = value
-   end})
-   ESP_Section:Toggle({Name = "Bone", Default = false, Pointer = "ESP_Bone", callback = function(value)
-       ESP.ShowBone = value
-   end})
-   :Colorpicker({Info = "Bone Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoneColor", callback = function(value)
-       ESP.BoneColor = value
-   end})
-   ESP_Section:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar", callback = function(value)
-       ESP.ShowHealthBars = value
-   end})
-   :Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(0, 255, 0), Pointer = "ESP_HealthBarColor", callback = function(value)
-       ESP.HealthBarColor = value
-   end})
-   ESP_Section:Toggle({Name = "Armor Bar", Default = false, Pointer = "ESP_ArmorBar", callback = function(value)
-       ESP.ShowArmorBar = value
-   end})
-   :Colorpicker({Info = "Armor Bar Color", Default = Color3.fromRGB(0, 255, 255), Pointer = "ESP_ArmorBarColor", callback = function(value)
-       ESP.ArmorBarColor = value
-   end})
-   ESP_Section:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance", callback = function(value)
-       ESP.ShowDistance = value
-   end})
-   :Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor", callback = function(value)
-       ESP.DistanceColor = value
-   end})
-   ESP_Section:Toggle({Name = "Weapon", Default = false, Pointer = "ESP_Weapon", callback = function(value)
-       ESP.ShowWeapon = value
-   end})
-   :Colorpicker({Info = "Weapon Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_WeaponColor", callback = function(value)
-       ESP.WeaponColor = value
-   end})
-   ESP_Section:Toggle({Name = "Flags", Default = false, Pointer = "ESP_Flags", callback = function(value)
-       ESP.ShowFlags = value
-   end})
-   :Colorpicker({Info = "Flags Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_FlagsColor", callback = function(value)
-       ESP.FlagsColor = value
-   end})
+   
+   -- ESP Features with proper implementation
+   local function createESPFeature(name, property, default_color)
+       ESP_Section:Toggle({
+           Name = name, 
+           Default = false, 
+           Pointer = "ESP_" .. property, 
+           callback = function(state)
+               if ESP and type(ESP) == "table" then
+                   ESP[property] = state
+               end
+           end
+       })
+       :Colorpicker({
+           Info = name .. " Color", 
+           Default = default_color, 
+           Pointer = "ESP_" .. property .. "Color", 
+           callback = function(color)
+               if ESP and type(ESP) == "table" then
+                   ESP[property .. "Color"] = color
+               end
+           end
+       })
+   end
 
-   ESP_Section:Toggle({Name = "Bullet Tracers", Default = false, Pointer = "ESP_BulletTracers", callback = function(value)
-       ESP.BulletTracers = value
-   end})
-   :Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor", callback = function(value)
-       ESP.BulletTracersColor = value
-   end})
-   ESP_Section:Slider({Name = "Duration", Minimum = 0.1, Maximum = 5, Default = 1.5, Decimals = 0.1, Suffix = "s", Pointer = "ESP_TracerDuration", callback = function(value)
-       ESP.TracerDuration = value
-   end})
+   -- Create ESP features with their respective colors
+   createESPFeature("Names", "Names", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Box", "Boxes", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Health Bar", "HealthBar", Color3.fromRGB(0, 255, 0))
+   createESPFeature("Armor Bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
+   createESPFeature("Distance", "Distance", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Flags", "Flags", Color3.fromRGB(255, 255, 255))
+
+   -- Bullet Tracers
+   ESP_Section:Toggle({
+       Name = "Bullet Tracers", 
+       Default = false, 
+       Pointer = "ESP_BulletTracers", 
+       callback = function(state)
+           if ESP and type(ESP) == "table" then
+               ESP.BulletTracers = state
+           end
+       end
+   })
+   :Colorpicker({
+       Info = "Bullet Tracers Color", 
+       Default = Color3.fromRGB(139, 0, 0), 
+       Pointer = "ESP_BulletTracersColor", 
+       callback = function(color)
+           if ESP and type(ESP) == "table" then
+               ESP.BulletTracersColor = color
+           end
+       end
+   })
+
+   ESP_Section:Slider({
+       Name = "Duration", 
+       Minimum = 0.1, 
+       Maximum = 5, 
+       Default = 1.5, 
+       Decimals = 0.1, 
+       Suffix = "s", 
+       Pointer = "ESP_TracerDuration", 
+       callback = function(value)
+           if ESP and type(ESP) == "table" then
+               ESP.TracerDuration = value
+           end
+       end
+   })
 
    -- Atmosphere Section
    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
