@@ -83,9 +83,18 @@ return function(Library, ESP)
     ESP_Section:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self", callback = function(value)
         ESP.SelfESP = value
     end})
-    ESP_Section:Slider({Name = "Max Distance", Minimum = 1, Maximum = 2000, Default = 1000, Decimals = 0, Suffix = "m", Pointer = "ESP_MaxDistance", callback = function(value)
-        ESP.MaxDistance = value
-    end})
+    ESP_Section:Slider({
+        Name = "Max Distance", 
+        Minimum = 0, 
+        Maximum = 2000, 
+        Default = 0, 
+        Decimals = 0, 
+        Suffix = "m", 
+        Pointer = "ESP_MaxDistance", 
+        callback = function(value)
+            ESP.MaxDistance = value
+        end
+    })
     ESP_Section:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
     ESP_Section:Slider({Name = "Outline Transparency", Minimum = 0, Maximum = 1, Default = 1, Decimals = 0.1, Pointer = "ESP_OutlineTransparency", callback = function(value)
         ESP.OutlineTransparency = value
@@ -93,9 +102,17 @@ return function(Library, ESP)
     ESP_Section:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont", callback = function(value)
         ESP.TextFont = Drawing.Fonts[value]
     end})
-    ESP_Section:Slider({Name = "Text Size", Minimum = 8, Maximum = 24, Default = 14, Decimals = 0, Pointer = "ESP_TextSize", callback = function(value)
-        ESP.TextSize = value
-    end})
+    ESP_Section:Slider({
+        Name = "Text Size", 
+        Minimum = 0, 
+        Maximum = 24, 
+        Default = 0, 
+        Decimals = 0, 
+        Pointer = "ESP_TextSize", 
+        callback = function(value)
+            ESP.TextSize = value
+        end
+    })
 
     ESP_Section:Label({Name = "ESP Features", Middle = false})
     ESP_Section:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names", callback = function(value)
