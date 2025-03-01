@@ -210,43 +210,7 @@ return function(Library, ESP)
    createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
    createESPFeature("Flags", "Flags", Color3.fromRGB(255, 255, 255))
    createESPFeature("Skeleton", "Bone", Color3.fromRGB(255, 255, 255))
-
-   -- Bullet Tracers
-   ESP_Section:Toggle({
-       Name = "Bullet Tracers", 
-       Default = false, 
-       Pointer = "ESP_BulletTracers", 
-       callback = function(state)
-           if ESP and type(ESP) == "table" then
-               ESP.BulletTracers = state
-           end
-       end
-   })
-   :Colorpicker({
-       Info = "Bullet Tracers Color", 
-       Default = Color3.fromRGB(139, 0, 0), 
-       Pointer = "ESP_BulletTracersColor", 
-       callback = function(color)
-           if ESP and type(ESP) == "table" then
-               ESP.BulletTracersColor = color
-           end
-       end
-   })
-
-   ESP_Section:Slider({
-       Name = "Duration", 
-       Minimum = 0.1, 
-       Maximum = 5, 
-       Default = 1.5, 
-       Decimals = 0.1, 
-       Suffix = "s", 
-       Pointer = "ESP_TracerDuration", 
-       callback = function(value)
-           if ESP and type(ESP) == "table" then
-               ESP.TracerDuration = value
-           end
-       end
-   })
+   createESPFeature("Bullet Tracers", "BulletTracers", Color3.fromRGB(139, 0, 0))
 
    -- Atmosphere Section
    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
