@@ -1,4 +1,4 @@
-return function(Window, Library, ESP)
+return function(Window, Library, esp)
     -- // Pages
     local Main = Window:Page({Name = "aim-assist"})
     local Visuals = Window:Page({Name = "visuals"})
@@ -53,7 +53,7 @@ return function(Window, Library, ESP)
 
     -- // Visuals Section
     local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
-    local ESP = Visuals:Section({Name = "ESP", Side = "Right"})
+    local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
     local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
     local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
 
@@ -74,32 +74,22 @@ return function(Window, Library, ESP)
     Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
     -- ESP Section
-    ESP:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled", Callback = function(value)
-        ESP.Enabled = value
-    end})
-    ESP:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
-    ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
-    ESP:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-    ESP:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
-    ESP:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
-    ESP:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
+    ESP_Section:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
+    ESP_Section:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
+    ESP_Section:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
+    ESP_Section:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
+    ESP_Section:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
+    ESP_Section:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
+    ESP_Section:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
 
-    ESP:Label({Name = "ESP Features", Middle = false})
-    ESP:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names", Callback = function(value)
-        ESP.ShowNames = value
-    end})
+    ESP_Section:Label({Name = "ESP Features", Middle = false})
+    ESP_Section:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
     :Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor"})
-    ESP:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box", Callback = function(value)
-        ESP.ShowBoxes = value
-    end})
+    ESP_Section:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box"})
     :Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor"})
-    ESP:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar", Callback = function(value)
-        ESP.ShowHealthBars = value
-    end})
+    ESP_Section:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar"})
     :Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(127, 255, 0), Pointer = "ESP_HealthBarColor"})
-    ESP:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance", Callback = function(value)
-        ESP.ShowDistance = value
-    end})
+    ESP_Section:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance"})
     :Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor"})
 
     -- Atmosphere Section
