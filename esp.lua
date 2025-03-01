@@ -106,7 +106,6 @@ function ESP:AddObjectListener(parent, options)
                         IsEnabled = options.IsEnabled,
                         RenderInNil = options.RenderInNil
                     })
-                    --TODO: add a better way of passing options
                     if options.OnAdded then
                         coroutine.wrap(options.OnAdded)(box)
                     end
@@ -142,7 +141,6 @@ end
 
 function boxBase:Update()
     if not self.PrimaryPart then
-        --warn("not supposed to print", self.Object)
         return self:Remove()
     end
 
@@ -215,7 +213,9 @@ function boxBase:Update()
             end
         end
     else
-        self.Components.Quad.Visible = false
+        if self.Components.Quad then
+            self.Components.Quad.Visible = false
+        end
     end
 
     if ESP.Names then
@@ -264,7 +264,7 @@ function ESP:Add(obj, options)
     local box = setmetatable({
         Name = options.Name or obj.Name,
         Type = "Box",
-        Color = options.Color --[[or self:GetColor(obj)]],
+        Color = options.Color,
         Size = options.Size or self.BoxSize,
         Object = obj,
         Player = options.Player or plrs:GetPlayerFromCharacter(obj),
@@ -356,12 +356,14 @@ local function CharAdded(char)
         })
     end
 end
+
 local function PlayerAdded(p)
     p.CharacterAdded:Connect(CharAdded)
     if p.Character then
         coroutine.wrap(CharAdded)(p.Character)
     end
 end
+
 plrs.PlayerAdded:Connect(PlayerAdded)
 for i,v in pairs(plrs:GetPlayers()) do
     if v ~= plr then
