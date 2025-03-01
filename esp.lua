@@ -9,56 +9,30 @@ local Camera = workspace.CurrentCamera
 function ESP.new()
     local self = setmetatable({}, ESP)
     
+    -- Core Settings
     self.Enabled = false
     self.ShowNames = false
     self.ShowBoxes = false
     self.ShowDistance = false
     self.ShowHealthBars = false
+    
+    -- Colors and Style
     self.BoxColor = Color3.fromRGB(255, 255, 255)
     self.NameColor = Color3.fromRGB(255, 255, 255)
     self.DistanceColor = Color3.fromRGB(255, 255, 255)
     self.TextSize = 13
     self.MaxDistance = 1000
     
-    self.Objects = {}
-    self.Connections = {}
+    -- Storage
+    self.Drawings = {}
     
     return self
 end
 
-function ESP:Initialize()
-    -- Clear existing connections
-    for _, connection in pairs(self.Connections) do
-        connection:Disconnect()
-    end
-    self.Connections = {}
+function ESP:CreateDrawings(player)
+    if self.Drawings[player] then return end
     
-    -- Add existing players
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            self:CreateObject(player)
-        end
-    end
-    
-    -- Handle players joining and leaving
-    table.insert(self.Connections, Players.PlayerAdded:Connect(function(player)
-        self:CreateObject(player)
-    end))
-    
-    table.insert(self.Connections, Players.PlayerRemoving:Connect(function(player)
-        self:RemoveObject(player)
-    end))
-    
-    -- Update loop
-    table.insert(self.Connections, RunService.RenderStepped:Connect(function()
-        self:Update()
-    end))
-end
-
-function ESP:CreateObject(player)
-    if self.Objects[player] then return end
-    
-    self.Objects[player] = {
+    self.Drawings[player] = {
         Box = Drawing.new("Square"),
         Name = Drawing.new("Text"),
         Distance = Drawing.new("Text"),
@@ -66,61 +40,84 @@ function ESP:CreateObject(player)
         HealthBarOutline = Drawing.new("Square")
     }
     
-    local obj = self.Objects[player]
+    local drawings = self.Drawings[player]
     
-    -- Box
-    obj.Box.Thickness = 1
-    obj.Box.Filled = false
-    obj.Box.Color = self.BoxColor
-    obj.Box.Visible = false
+    -- Box Setup
+    drawings.Box.Thickness = 1
+    drawings.Box.Filled = false
+    drawings.Box.Color = self.BoxColor
+    drawings.Box.Visible = false
     
-    -- Name
-    obj.Name.Center = true
-    obj.Name.Outline = true
-    obj.Name.Color = self.NameColor
-    obj.Name.Size = self.TextSize
-    obj.Name.Visible = false
+    -- Name Setup
+    drawings.Name.Center = true
+    drawings.Name.Outline = true
+    drawings.Name.Size = self.TextSize
+    drawings.Name.Color = self.NameColor
+    drawings.Name.Visible = false
     
-    -- Distance
-    obj.Distance.Center = true
-    obj.Distance.Outline = true
-    obj.Distance.Color = self.DistanceColor
-    obj.Distance.Size = self.TextSize
-    obj.Distance.Visible = false
+    -- Distance Setup
+    drawings.Distance.Center = true
+    drawings.Distance.Outline = true
+    drawings.Distance.Size = self.TextSize
+    drawings.Distance.Color = self.DistanceColor
+    drawings.Distance.Visible = false
     
-    -- Health Bar
-    obj.HealthBar.Thickness = 1
-    obj.HealthBar.Filled = true
-    obj.HealthBar.Color = Color3.fromRGB(0, 255, 0)
-    obj.HealthBar.Visible = false
+    -- Health Bar Setup
+    drawings.HealthBar.Thickness = 1
+    drawings.HealthBar.Filled = true
+    drawings.HealthBar.Color = Color3.fromRGB(0, 255, 0)
+    drawings.HealthBar.Visible = false
     
-    obj.HealthBarOutline.Thickness = 1
-    obj.HealthBarOutline.Filled = false
-    obj.HealthBarOutline.Color = Color3.new(0, 0, 0)
-    obj.HealthBarOutline.Visible = false
+    drawings.HealthBarOutline.Thickness = 1
+    drawings.HealthBarOutline.Filled = false
+    drawings.HealthBarOutline.Color = Color3.new(0, 0, 0)
+    drawings.HealthBarOutline.Visible = false
 end
 
-function ESP:RemoveObject(player)
-    local obj = self.Objects[player]
-    if obj then
-        for _, drawing in pairs(obj) do
+function ESP:RemoveDrawings(player)
+    if self.Drawings[player] then
+        for _, drawing in pairs(self.Drawings[player]) do
             drawing:Remove()
         end
-        self.Objects[player] = nil
+        self.Drawings[player] = nil
     end
 end
 
+function ESP:Initialize()
+    -- Add existing players
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            self:CreateDrawings(player)
+        end
+    end
+    
+    -- Handle new players
+    Players.PlayerAdded:Connect(function(player)
+        self:CreateDrawings(player)
+    end)
+    
+    -- Handle players leaving
+    Players.PlayerRemoving:Connect(function(player)
+        self:RemoveDrawings(player)
+    end)
+    
+    -- Update loop
+    RunService.RenderStepped:Connect(function()
+        self:Update()
+    end)
+end
+
 function ESP:Update()
-    for player, obj in pairs(self.Objects) do
+    for player, drawings in pairs(self.Drawings) do
         if not self.Enabled then
-            for _, drawing in pairs(obj) do
+            for _, drawing in pairs(drawings) do
                 drawing.Visible = false
             end
             continue
         end
         
         if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
-            for _, drawing in pairs(obj) do
+            for _, drawing in pairs(drawings) do
                 drawing.Visible = false
             end
             continue
@@ -128,63 +125,72 @@ function ESP:Update()
         
         local humanoid = player.Character:FindFirstChild("Humanoid")
         local rootPart = player.Character.HumanoidRootPart
-        local pos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
-        local distance = (Camera.CFrame.Position - rootPart.Position).Magnitude
+        local head = player.Character:FindFirstChild("Head")
         
-        if not onScreen or distance > self.MaxDistance then
-            for _, drawing in pairs(obj) do
+        if not humanoid or not rootPart or not head then
+            for _, drawing in pairs(drawings) do
                 drawing.Visible = false
             end
             continue
         end
         
-        -- Update Box
+        local pos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+        local distance = (Camera.CFrame.Position - rootPart.Position).Magnitude
+        
+        if not onScreen or distance > self.MaxDistance then
+            for _, drawing in pairs(drawings) do
+                drawing.Visible = false
+            end
+            continue
+        end
+        
+        -- Update Box ESP
         if self.ShowBoxes then
-            obj.Box.Size = Vector2.new(50, 70)
-            obj.Box.Position = Vector2.new(pos.X - 25, pos.Y - 35)
-            obj.Box.Color = self.BoxColor
-            obj.Box.Visible = true
+            drawings.Box.Size = Vector2.new(50, 70)
+            drawings.Box.Position = Vector2.new(pos.X - 25, pos.Y - 35)
+            drawings.Box.Color = self.BoxColor
+            drawings.Box.Visible = true
         else
-            obj.Box.Visible = false
+            drawings.Box.Visible = false
         end
         
-        -- Update Name
+        -- Update Name ESP
         if self.ShowNames then
-            obj.Name.Text = player.Name
-            obj.Name.Position = Vector2.new(pos.X, pos.Y - 45)
-            obj.Name.Color = self.NameColor
-            obj.Name.Visible = true
+            drawings.Name.Text = player.Name
+            drawings.Name.Position = Vector2.new(pos.X, pos.Y - 45)
+            drawings.Name.Color = self.NameColor
+            drawings.Name.Visible = true
         else
-            obj.Name.Visible = false
+            drawings.Name.Visible = false
         end
         
-        -- Update Distance
+        -- Update Distance ESP
         if self.ShowDistance then
-            obj.Distance.Text = math.floor(distance) .. " studs"
-            obj.Distance.Position = Vector2.new(pos.X, pos.Y + 35)
-            obj.Distance.Color = self.DistanceColor
-            obj.Distance.Visible = true
+            drawings.Distance.Text = math.floor(distance) .. " studs"
+            drawings.Distance.Position = Vector2.new(pos.X, pos.Y + 35)
+            drawings.Distance.Color = self.DistanceColor
+            drawings.Distance.Visible = true
         else
-            obj.Distance.Visible = false
+            drawings.Distance.Visible = false
         end
         
         -- Update Health Bar
-        if self.ShowHealthBars and humanoid then
+        if self.ShowHealthBars then
             local health = humanoid.Health
             local maxHealth = humanoid.MaxHealth
             local healthPercent = health / maxHealth
             
-            obj.HealthBarOutline.Size = Vector2.new(4, 70)
-            obj.HealthBarOutline.Position = Vector2.new(pos.X - 30, pos.Y - 35)
-            obj.HealthBarOutline.Visible = true
+            drawings.HealthBarOutline.Size = Vector2.new(4, 70)
+            drawings.HealthBarOutline.Position = Vector2.new(pos.X - 30, pos.Y - 35)
+            drawings.HealthBarOutline.Visible = true
             
-            obj.HealthBar.Size = Vector2.new(2, 70 * healthPercent)
-            obj.HealthBar.Position = Vector2.new(pos.X - 29, pos.Y - 35 + (70 * (1 - healthPercent)))
-            obj.HealthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
-            obj.HealthBar.Visible = true
+            drawings.HealthBar.Size = Vector2.new(2, 70 * healthPercent)
+            drawings.HealthBar.Position = Vector2.new(pos.X - 29, pos.Y - 35 + (70 * (1 - healthPercent)))
+            drawings.HealthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
+            drawings.HealthBar.Visible = true
         else
-            obj.HealthBar.Visible = false
-            obj.HealthBarOutline.Visible = false
+            drawings.HealthBar.Visible = false
+            drawings.HealthBarOutline.Visible = false
         end
     end
 end
@@ -196,4 +202,3 @@ function ESP:UpdateSettings(settings)
 end
 
 return ESP
-
