@@ -28,19 +28,24 @@ return function(Library, ESP)
    local Prediction = Main:Section({Name = "Prediction", Side = "Left"})
    local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
 
-   -- // Target Aim Section
-   TargetAim:Toggle({
-       Name = "Enabled", 
-       Default = false, 
+   -- // Target Aim Section with fixed Toggle implementation
+   local targetEnabled = TargetAim:Toggle({
+       Name = "Enabled",
+       Default = false,
        Pointer = "TargetEnabled",
-       Callback = function() end -- Add empty callback if none needed
+       Callback = function(Value)
+           print("Target Enabled:", Value) -- Debug print
+       end
    })
-   :Keybind({
-       Default = Enum.KeyCode.E, 
-       KeybindName = "Target", 
-       Mode = "Toggle", 
+
+   targetEnabled:Keybind({
+       Default = Enum.KeyCode.E,
+       KeybindName = "Target",
+       Mode = "Toggle",
        Pointer = "TargetBind",
-       Callback = function() end
+       Callback = function(Value)
+           print("Keybind Pressed:", Value) -- Debug print
+       end
    })
    TargetAim:Dropdown({Name = "Method", Options = {"Silent", "Sticky"}, Default = "Silent", Pointer = "TargetMethod"})
    TargetAim:Toggle({Name = "Index (Mouse M1)", Default = false, Pointer = "TargetIndex"})
@@ -80,19 +85,17 @@ return function(Library, ESP)
    GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
 
    -- // Visuals Section
-   local Visuals = Window:Page({Name = "visuals"})
+   local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
    local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
 
-   -- ESP Section with correct implementation
    ESP_Section:Toggle({
-       Name = "Enabled", 
-       Default = false, 
-       Pointer = "ESP_Enabled", 
-       Callback = function(state)
+       Name = "Enabled",
+       Default = false,
+       Pointer = "ESP_Enabled",
+       Callback = function(Value)
            if ESP and type(ESP.Toggle) == "function" then
-               ESP:Toggle(state)
-           else
-               warn("ESP or ESP.Toggle is not available")
+               ESP:Toggle(Value)
+               print("ESP Toggle:", Value) -- Debug print
            end
        end
    })
@@ -271,9 +274,7 @@ return function(Library, ESP)
    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
    -- // Initialisation
-   task.spawn(function()
-       Window:Initialize()
-   end)
+   Window:Initialize()
 
    return Window -- Return window for external reference
 end
