@@ -1,31 +1,24 @@
-local ESP = {
-    Enabled = false,
-    ShowNames = false,
-    ShowBoxes = false,
-    ShowDistance = false,
-    ShowHealthBars = false,
-    BoxColor = Color3.fromRGB(255, 255, 255),
-    NameColor = Color3.fromRGB(255, 255, 255),
-    DistanceColor = Color3.fromRGB(255, 255, 255),
-    TextSize = 13,
-    Distance = 1000,
-    Drawings = {},
-    new = function(self, options)
-        local esp = setmetatable({}, { __index = self })
-        esp.Enabled = options.Enabled or false
-        esp.ShowNames = options.ShowNames or false
-        esp.ShowBoxes = options.ShowBoxes or false
-        esp.ShowDistance = options.ShowDistance or false
-        esp.ShowHealthBars = options.ShowHealthBars or false
-        esp.BoxColor = options.BoxColor or Color3.fromRGB(255, 255, 255)
-        esp.NameColor = options.NameColor or Color3.fromRGB(255, 255, 255)
-        esp.DistanceColor = options.DistanceColor or Color3.fromRGB(255, 255, 255)
-        esp.TextSize = options.TextSize or 13
-        esp.Distance = options.Distance or 1000
-        esp.Drawings = {}
-        return esp
-    end
-}
+local ESP = {}
+ESP.__index = ESP
+
+function ESP.new(options)
+    options = options or {}
+    local self = setmetatable({}, ESP)
+    
+    self.Enabled = options.Enabled or false
+    self.ShowNames = options.ShowNames or false
+    self.ShowBoxes = options.ShowBoxes or false
+    self.ShowDistance = options.ShowDistance or false
+    self.ShowHealthBars = options.ShowHealthBars or false
+    self.BoxColor = options.BoxColor or Color3.fromRGB(255, 255, 255)
+    self.NameColor = options.NameColor or Color3.fromRGB(255, 255, 255)
+    self.DistanceColor = options.DistanceColor or Color3.fromRGB(255, 255, 255)
+    self.TextSize = options.TextSize or 13
+    self.Distance = options.Distance or 1000
+    self.Drawings = {}
+    
+    return self
+end
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
