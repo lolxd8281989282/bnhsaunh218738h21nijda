@@ -1,3 +1,6 @@
+-- // Tables
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/matas3535/PoopLibrary/main/Library.lua"))() -- Could Also Save It In Your Workspace And Do loadfile("Library.lua")()
+
 -- // Init
 local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
@@ -106,7 +109,7 @@ ESP:Toggle({Name = "Bullet Tracers", Default = false, Pointer = "ESP_BulletTrace
 :Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor"})
 ESP:Slider({Name = "Duration", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration"})
 
--- Atmosphere Section
+-- Atmosphere Section (New)
 Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
 Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
 :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
@@ -115,64 +118,16 @@ Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
 :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
 Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
 
--- Rain Section
+-- Rain Section (New)
 Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
 :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
 
--- // Settings Section
+-- // Settings Section (kept from original example)
 local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
 Settings_Main:ConfigBox({})
 Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
 Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
 Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
--- Initialize ESP with default settings
-local esp = ESP.new({
-    Enabled = false,
-    TeamCheck = false,
-    ShowBoxes = false,
-    ShowNames = false,
-    ShowDistance = false,
-    ShowHealthBars = false,
-    BoxColor = Color3.fromRGB(255, 255, 255),
-    NameColor = Color3.fromRGB(255, 255, 255),
-    DistanceColor = Color3.fromRGB(255, 255, 255),
-    TextSize = 13,
-    Distance = 1000
-})
-
--- Connect ESP settings to UI toggles
-local function updateESPFromUI()
-    esp:UpdateSettings({
-        Enabled = Library.pointers.ESP_Enabled:Get(),
-        ShowBoxes = Library.pointers.ESP_Box:Get(),
-        BoxColor = Library.pointers.ESP_BoxColor:Get(),
-        ShowNames = Library.pointers.ESP_Names:Get(),
-        ShowHealthBars = Library.pointers.ESP_HealthBar:Get(),
-        ShowDistance = Library.pointers.ESP_Distance:Get(),
-        TextSize = Library.pointers.ESP_TextSize:Get(),
-        Distance = Library.pointers.ESP_MaxDistance:Get()
-    })
-end
-
--- Connect the update function to UI changes
-for _, pointer in pairs(Library.pointers) do
-    if typeof(pointer) == "table" and typeof(pointer.Set) == "function" then
-        local originalSet = pointer.Set
-        pointer.Set = function(self, value)
-            originalSet(self, value)
-            task.spawn(function()
-                updateESPFromUI()
-            end)
-            return value
-        end
-    end
-end
-
--- Initialize ESP
-esp:Initialize()
-
--- Initial update of ESP settings
-updateESPFromUI()
-
-return Window
+-- // Initialisation
+Window:Initialize()
