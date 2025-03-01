@@ -85,30 +85,51 @@ local function NewCircle()
     return circle
 end
 
+-- Store ESP lines in a separate table instead of attaching to Player instances
+ESP.PlayerESP = {}
+
 -- ESP Function
 function ESP:CreateESP(plr)
-    local lines = {
-        box = {NewLine(), NewLine(), NewLine(), NewLine()},
-        name = NewText(),
-        healthBar = NewLine(),
-        healthBarBackground = NewLine(),
-        equippedItem = NewText(),
-        distance = NewText(),
-        headDot = NewCircle(),
-    }
+    if not self.PlayerESP[plr.Name] then
+        self.PlayerESP[plr.Name] = {
+            box = {NewLine(), NewLine(), NewLine(), NewLine()},
+            name = NewText(),
+            healthBar = NewLine(),
+            healthBarBackground = NewLine(),
+            equippedItem = NewText(),
+            distance = NewText(),
+            headDot = NewCircle(),
+        }
+    end
+end
 
-    plr.espLines = lines
+function ESP:RemoveESP(plr)
+    if self.PlayerESP[plr.Name] then
+        for _, drawing in pairs(self.PlayerESP[plr.Name]) do
+            if type(drawing) == "table" then
+                for _, line in pairs(drawing) do
+                    line:Remove()
+                end
+            else
+                drawing:Remove()
+            end
+        end
+        self.PlayerESP[plr.Name] = nil
+    end
 end
 
 function ESP:UpdateESP()
     for _, plr in pairs(players:GetPlayers()) do
         if plr == player and not self.Settings.SelfESP then continue end
         
-        local lines = plr.espLines
-        if not lines then continue end
+        local espData = self.PlayerESP[plr.Name]
+        if not espData then
+            self:CreateESP(plr)
+            espData = self.PlayerESP[plr.Name]
+        end
 
         if not self.Settings.Enabled then
-            for _, drawing in pairs(lines) do
+            for _, drawing in pairs(espData) do
                 if type(drawing) == "table" then
                     for _, line in pairs(drawing) do
                         line.Visible = false
@@ -137,34 +158,34 @@ function ESP:UpdateESP()
 
                 -- Box ESP
                 if self.Settings.ShowBoxes then
-                    for i, line in ipairs(lines.box) do
+                    for i, line in ipairs(espData.box) do
                         line.Visible = true
                         line.Color = self.Settings.BoxColor
                         line.Thickness = self.Settings.BoxThickness
                     end
 
-                    lines.box[1].From = boxPosition
-                    lines.box[1].To = boxPosition + Vector2.new(boxSize.X, 0)
-                    lines.box[2].From = boxPosition + Vector2.new(boxSize.X, 0)
-                    lines.box[2].To = boxPosition + boxSize
-                    lines.box[3].From = boxPosition + boxSize
-                    lines.box[3].To = boxPosition + Vector2.new(0, boxSize.Y)
-                    lines.box[4].From = boxPosition
-                    lines.box[4].To = boxPosition + Vector2.new(0, boxSize.Y)
+                    espData.box[1].From = boxPosition
+                    espData.box[1].To = boxPosition + Vector2.new(boxSize.X, 0)
+                    espData.box[2].From = boxPosition + Vector2.new(boxSize.X, 0)
+                    espData.box[2].To = boxPosition + boxSize
+                    espData.box[3].From = boxPosition + boxSize
+                    espData.box[3].To = boxPosition + Vector2.new(0, boxSize.Y)
+                    espData.box[4].From = boxPosition
+                    espData.box[4].To = boxPosition + Vector2.new(0, boxSize.Y)
                 else
-                    for _, line in ipairs(lines.box) do
+                    for _, line in ipairs(espData.box) do
                         line.Visible = false
                     end
                 end
 
                 -- Name ESP
                 if self.Settings.ShowNames then
-                    lines.name.Visible = true
-                    lines.name.Position = Vector2.new(screenPos.X, screenPos.Y - size.Y * 2)
-                    lines.name.Text = plr.Name
-                    lines.name.Color = self.Settings.NameColor
+                    espData.name.Visible = true
+                    espData.name.Position = Vector2.new(screenPos.X, screenPos.Y - size.Y * 2)
+                    espData.name.Text = plr.Name
+                    espData.name.Color = self.Settings.NameColor
                 else
-                    lines.name.Visible = false
+                    espData.name.Visible = false
                 end
 
                 -- Health Bar
@@ -173,58 +194,58 @@ function ESP:UpdateESP()
                     local barPos = Vector2.new(screenPos.X - size.X - 5, screenPos.Y - size.Y * 1.5)
                     local barSize = Vector2.new(0, size.Y * 3)
 
-                    lines.healthBarBackground.Visible = true
-                    lines.healthBarBackground.From = barPos
-                    lines.healthBarBackground.To = barPos + Vector2.new(0, barSize.Y)
-                    lines.healthBarBackground.Color = Color3.fromRGB(25, 25, 25)
-                    lines.healthBarBackground.Thickness = 4
+                    espData.healthBarBackground.Visible = true
+                    espData.healthBarBackground.From = barPos
+                    espData.healthBarBackground.To = barPos + Vector2.new(0, barSize.Y)
+                    espData.healthBarBackground.Color = Color3.fromRGB(25, 25, 25)
+                    espData.healthBarBackground.Thickness = 4
 
-                    lines.healthBar.Visible = true
-                    lines.healthBar.From = barPos + Vector2.new(0, barSize.Y * (1 - healthPercent))
-                    lines.healthBar.To = barPos + Vector2.new(0, barSize.Y)
-                    lines.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
-                    lines.healthBar.Thickness = 2
+                    espData.healthBar.Visible = true
+                    espData.healthBar.From = barPos + Vector2.new(0, barSize.Y * (1 - healthPercent))
+                    espData.healthBar.To = barPos + Vector2.new(0, barSize.Y)
+                    espData.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
+                    espData.healthBar.Thickness = 2
                 else
-                    lines.healthBar.Visible = false
-                    lines.healthBarBackground.Visible = false
+                    espData.healthBar.Visible = false
+                    espData.healthBarBackground.Visible = false
                 end
 
                 -- Equipped Item
                 if self.Settings.ShowEquippedItem then
                     local tool = plr.Character:FindFirstChildOfClass("Tool")
                     if tool then
-                        lines.equippedItem.Visible = true
-                        lines.equippedItem.Position = Vector2.new(screenPos.X, screenPos.Y + size.Y * 2)
-                        lines.equippedItem.Text = tool.Name
-                        lines.equippedItem.Color = self.Settings.EquippedItemColor
+                        espData.equippedItem.Visible = true
+                        espData.equippedItem.Position = Vector2.new(screenPos.X, screenPos.Y + size.Y * 2)
+                        espData.equippedItem.Text = tool.Name
+                        espData.equippedItem.Color = self.Settings.EquippedItemColor
                     else
-                        lines.equippedItem.Visible = false
+                        espData.equippedItem.Visible = false
                     end
                 else
-                    lines.equippedItem.Visible = false
+                    espData.equippedItem.Visible = false
                 end
 
                 -- Distance
                 if self.Settings.ShowDistance then
-                    lines.distance.Visible = true
-                    lines.distance.Position = Vector2.new(screenPos.X, screenPos.Y + size.Y * 2.5)
-                    lines.distance.Text = string.format("%.0f studs", distance)
-                    lines.distance.Color = self.Settings.DistanceColor
+                    espData.distance.Visible = true
+                    espData.distance.Position = Vector2.new(screenPos.X, screenPos.Y + size.Y * 2.5)
+                    espData.distance.Text = string.format("%.0f studs", distance)
+                    espData.distance.Color = self.Settings.DistanceColor
                 else
-                    lines.distance.Visible = false
+                    espData.distance.Visible = false
                 end
 
                 -- Head Dot
                 if self.Settings.ShowHeadDot and head then
                     local headPos = camera:WorldToViewportPoint(head.Position)
-                    lines.headDot.Visible = true
-                    lines.headDot.Position = Vector2.new(headPos.X, headPos.Y)
-                    lines.headDot.Color = self.Settings.HeadDotColor
+                    espData.headDot.Visible = true
+                    espData.headDot.Position = Vector2.new(headPos.X, headPos.Y)
+                    espData.headDot.Color = self.Settings.HeadDotColor
                 else
-                    lines.headDot.Visible = false
+                    espData.headDot.Visible = false
                 end
             else
-                for _, drawing in pairs(lines) do
+                for _, drawing in pairs(espData) do
                     if type(drawing) == "table" then
                         for _, line in pairs(drawing) do
                             line.Visible = false
@@ -235,7 +256,7 @@ function ESP:UpdateESP()
                 end
             end
         else
-            for _, drawing in pairs(lines) do
+            for _, drawing in pairs(espData) do
                 if type(drawing) == "table" then
                     for _, line in pairs(drawing) do
                         line.Visible = false
