@@ -1,8 +1,5 @@
 -- // Tables
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))()
-
--- Load the ESP module
-local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/esp.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/Library.lua"))() -- Could Also Save It In Your Workspace And Do loadfile("Library.lua")()
 
 -- // Init
 local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
@@ -61,7 +58,7 @@ GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunAp
 
 -- // Visuals Section
 local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
-local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
+local ESP = Visuals:Section({Name = "ESP", Side = "Right"})
 local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
 local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
 
@@ -81,76 +78,38 @@ Target_UI:Toggle({Name = "Chams", Default = false, Pointer = "TargetUI_Chams"})
 Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
 Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
--- ESP Section (modified to work with ESP module)
-ESP_Section:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled",
-    Callback = function(state)
-        ESP.Enabled = state
-    end
-})
-ESP_Section:Toggle({Name = "Team Check", Default = false, Pointer = "ESP_TeamCheck",
-    Callback = function(state)
-        ESP.TeamCheck = state
-    end
-})
-ESP_Section:Toggle({Name = "Self ESP", Default = false, Pointer = "ESP_Self",
-    Callback = function(state)
-        ESP.SelfESP = state
-    end
-})
-ESP_Section:Slider({Name = "Max Distance", Minimum = 100, Maximum = 2000, Default = 1000, Decimals = 0, Pointer = "ESP_MaxDistance",
-    Callback = function(value)
-        ESP.Distance = value
-    end
-})
-ESP_Section:Dropdown({Name = "Box Type", Options = {"Full", "Corners"}, Default = "Corners", Pointer = "ESP_BoxType",
-    Callback = function(option)
-        ESP.BoxType = option
-    end
-})
-ESP_Section:Slider({Name = "Text Size", Minimum = 8, Maximum = 24, Default = 14, Decimals = 0, Pointer = "ESP_TextSize",
-    Callback = function(value)
-        ESP.TextSize = value
-    end
-})
+-- ESP Section
+ESP:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
+ESP:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
+ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
+ESP:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
+ESP:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
+ESP:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
+ESP:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
 
-ESP_Section:Label({Name = "ESP Features", Middle = false})
-ESP_Section:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names",
-    Callback = function(state)
-        ESP.ShowNames = state
-    end
-})
-:Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor",
-    Callback = function(color)
-        ESP.NameColor = color
-    end
-})
-ESP_Section:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box",
-    Callback = function(state)
-        ESP.ShowBoxes = state
-    end
-})
-:Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor",
-    Callback = function(color)
-        ESP.BoxColor = color
-    end
-})
-ESP_Section:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar",
-    Callback = function(state)
-        ESP.ShowHealthBars = state
-    end
-})
-ESP_Section:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance",
-    Callback = function(state)
-        ESP.ShowDistance = state
-    end
-})
-:Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor",
-    Callback = function(color)
-        ESP.DistanceColor = color
-    end
-})
+ESP:Label({Name = "ESP Features", Middle = false})
+ESP:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
+:Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor"})
+ESP:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box"})
+:Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor"})
+ESP:Toggle({Name = "Bone", Default = false, Pointer = "ESP_Bone"})
+:Colorpicker({Info = "Bone Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoneColor"})
+ESP:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar"})
+:Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(127, 255, 0), Pointer = "ESP_HealthBarColor"})
+ESP:Toggle({Name = "Armor Bar", Default = false, Pointer = "ESP_ArmorBar"})
+:Colorpicker({Info = "Armor Bar Color", Default = Color3.fromRGB(0, 255, 255), Pointer = "ESP_ArmorBarColor"})
+ESP:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance"})
+:Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor"})
+ESP:Toggle({Name = "Weapon", Default = false, Pointer = "ESP_Weapon"})
+:Colorpicker({Info = "Weapon Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_WeaponColor"})
+ESP:Toggle({Name = "Flags", Default = false, Pointer = "ESP_Flags"})
+:Colorpicker({Info = "Flags Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_FlagsColor"})
 
--- Atmosphere Section
+ESP:Toggle({Name = "Bullet Tracers", Default = false, Pointer = "ESP_BulletTracers"})
+:Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor"})
+ESP:Slider({Name = "Duration", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration"})
+
+-- Atmosphere Section (New)
 Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
 Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
 :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
@@ -159,11 +118,11 @@ Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
 :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
 Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
 
--- Rain Section
+-- Rain Section (New)
 Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
 :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
 
--- // Settings Section
+-- // Settings Section (kept from original example)
 local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
 Settings_Main:ConfigBox({})
 Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
@@ -173,21 +132,34 @@ Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end
 -- // Initialisation
 Window:Initialize()
 
--- Update ESP settings after initialization
-ESP:UpdateSettings({
-    Enabled = Library.pointers.ESP_Enabled:Get(),
-    TeamCheck = Library.pointers.ESP_TeamCheck:Get(),
-    SelfESP = Library.pointers.ESP_Self:Get(),
-    Distance = Library.pointers.ESP_MaxDistance:Get(),
-    BoxType = Library.pointers.ESP_BoxType:Get(),
-    TextSize = Library.pointers.ESP_TextSize:Get(),
-    ShowNames = Library.pointers.ESP_Names:Get(),
-    NameColor = Library.pointers.ESP_NameColor:Get(),
-    ShowBoxes = Library.pointers.ESP_Box:Get(),
-    BoxColor = Library.pointers.ESP_BoxColor:Get(),
-    ShowHealthBars = Library.pointers.ESP_HealthBar:Get(),
-    ShowDistance = Library.pointers.ESP_Distance:Get(),
-    DistanceColor = Library.pointers.ESP_DistanceColor:Get()
-})
+-- // ESP Integration
+local ESP = require("esp")
 
-print("ESP system initialized and connected to UI")
+-- Initialize ESP settings based on UI values
+ESP.Enabled = Window.Pointers.ESP_Enabled.Value
+ESP.Names = Window.Pointers.ESP_Names.Value
+ESP.Boxes = Window.Pointers.ESP_Box.Value
+ESP.TeamColor = false -- You can add a toggle for this if needed
+ESP.TeamMates = not Window.Pointers.ESP_Self.Value
+ESP.Players = true
+
+-- Set up listeners for ESP settings
+Window.Pointers.ESP_Enabled:OnChanged(function(value)
+    ESP.Enabled = value
+end)
+
+Window.Pointers.ESP_Names:OnChanged(function(value)
+    ESP.Names = value
+end)
+
+Window.Pointers.ESP_Box:OnChanged(function(value)
+    ESP.Boxes = value
+end)
+
+Window.Pointers.ESP_Self:OnChanged(function(value)
+    ESP.TeamMates = not value
+end)
+
+-- Add more listeners for other ESP settings as needed
+
+-- You can add more ESP configuration here based on your UI settings
