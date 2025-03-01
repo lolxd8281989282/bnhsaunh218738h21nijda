@@ -84,14 +84,14 @@ return function(Library, ESP)
         ESP.SelfESP = value
     end})
     ESP_Section:Slider({
-        Name = "Max Distance", 
-        Minimum = 0, 
-        Maximum = 2000, 
-        Default = 0, 
-        Decimals = 0, 
-        Suffix = "m", 
-        Pointer = "ESP_MaxDistance", 
-        callback = function(value)
+        Name = "Max Distance",
+        Default = 0,
+        Minimum = 0,
+        Maximum = 2000,
+        Measurement = "m",
+        Decimals = 0,
+        Pointer = "ESP_MaxDistance",
+        Callback = function(value)
             ESP.MaxDistance = value
         end
     })
@@ -103,13 +103,14 @@ return function(Library, ESP)
         ESP.TextFont = Drawing.Fonts[value]
     end})
     ESP_Section:Slider({
-        Name = "Text Size", 
-        Minimum = 0, 
-        Maximum = 24, 
-        Default = 0, 
-        Decimals = 0, 
-        Pointer = "ESP_TextSize", 
-        callback = function(value)
+        Name = "Text Size",
+        Default = 0,
+        Minimum = 0,
+        Maximum = 24,
+        Measurement = "",
+        Decimals = 0,
+        Pointer = "ESP_TextSize",
+        Callback = function(value)
             ESP.TextSize = value
         end
     })
