@@ -10,7 +10,11 @@ return function(Library, ESP)
    end
 
    -- Remove assertions since we'll handle ESP differently according to documentation
-   local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
+   local Window = Library:New({
+       Name = "dracula.lol | beta", 
+       Accent = Color3.fromRGB(255, 255, 255),
+       Size = Vector2.new(600, 400) -- Add default size
+   })
 
    -- // Pages
    local Main = Window:Page({Name = "aim-assist"})
@@ -25,8 +29,19 @@ return function(Library, ESP)
    local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
 
    -- // Target Aim Section
-   TargetAim:Toggle({Name = "Enabled", Default = false, Pointer = "TargetEnabled"})
-   :Keybind({Default = Enum.KeyCode.E, KeybindName = "Target", Mode = "Toggle", Pointer = "TargetBind"})
+   TargetAim:Toggle({
+       Name = "Enabled", 
+       Default = false, 
+       Pointer = "TargetEnabled",
+       Callback = function() end -- Add empty callback if none needed
+   })
+   :Keybind({
+       Default = Enum.KeyCode.E, 
+       KeybindName = "Target", 
+       Mode = "Toggle", 
+       Pointer = "TargetBind",
+       Callback = function() end
+   })
    TargetAim:Dropdown({Name = "Method", Options = {"Silent", "Sticky"}, Default = "Silent", Pointer = "TargetMethod"})
    TargetAim:Toggle({Name = "Index (Mouse M1)", Default = false, Pointer = "TargetIndex"})
    TargetAim:Toggle({Name = "Notifications", Default = false, Pointer = "TargetNotifications"})
@@ -256,5 +271,9 @@ return function(Library, ESP)
    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
    -- // Initialisation
-   Window:Initialize()
+   task.spawn(function()
+       Window:Initialize()
+   end)
+
+   return Window -- Return window for external reference
 end
