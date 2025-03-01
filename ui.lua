@@ -1,5 +1,4 @@
 return function(Library, ESP)
-    -- First, ensure ESP has the proper Toggle function
     if ESP then
         if not ESP.Toggle then
             ESP.Toggle = function(self, state)
@@ -8,11 +7,9 @@ return function(Library, ESP)
         end
     end
 
-    -- Create window with fixed size to prevent overflow
     local Window = Library:New({
         Name = "dracula.lol | beta",
-        Accent = Color3.fromRGB(255, 255, 255),
-        Size = Vector2.new(504, 604) -- Added fixed size
+        Accent = Color3.fromRGB(255, 255, 255)
     })
 
     -- Pages
@@ -45,7 +42,7 @@ return function(Library, ESP)
     local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
     local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
 
-    -- ESP Section
+    -- ESP Section with fixed sliders
     ESP_Section:Toggle({
         Name = "Enabled",
         Default = false,
@@ -71,11 +68,11 @@ return function(Library, ESP)
     -- Fixed Max Distance slider
     ESP_Section:Slider({
         Name = "Max Distance",
-        Minimum = 100,
-        Maximum = 2000,
+        Min = 100,
+        Max = 2000,
         Default = 1000,
+        Suffix = "m",
         Decimals = 0,
-        Measurement = "m",
         Pointer = "ESP_MaxDistance",
         Callback = function(value)
             if ESP then
@@ -93,8 +90,8 @@ return function(Library, ESP)
 
     ESP_Section:Slider({
         Name = "Outline Transparency",
-        Minimum = 0,
-        Maximum = 1,
+        Min = 0,
+        Max = 1,
         Default = 1,
         Decimals = 1,
         Pointer = "ESP_OutlineTransparency"
@@ -110,11 +107,10 @@ return function(Library, ESP)
     -- Fixed Text Size slider
     ESP_Section:Slider({
         Name = "Text Size",
-        Minimum = 8,
-        Maximum = 24,
+        Min = 8,
+        Max = 24,
         Default = 14,
         Decimals = 0,
-        Measurement = "",
         Pointer = "ESP_TextSize",
         Callback = function(value)
             if ESP then
@@ -130,12 +126,7 @@ return function(Library, ESP)
         ESP_Section:Toggle({
             Name = name,
             Default = false,
-            Pointer = "ESP_" .. property,
-            Callback = function(state)
-                if ESP then
-                    ESP["Show" .. property] = state
-                end
-            end
+            Pointer = "ESP_" .. property
         }):Colorpicker({
             Info = name .. " Color",
             Default = default_color,
@@ -143,7 +134,6 @@ return function(Library, ESP)
         })
     end
 
-    -- Create ESP features
     createESPFeature("Names", "Names", Color3.fromRGB(255, 255, 255))
     createESPFeature("Box", "Boxes", Color3.fromRGB(255, 255, 255))
     createESPFeature("Health Bar", "HealthBars", Color3.fromRGB(0, 255, 0))
@@ -166,17 +156,28 @@ return function(Library, ESP)
 
     ESP_Section:Slider({
         Name = "Duration",
-        Minimum = 0.1,
-        Maximum = 5,
+        Min = 0.1,
+        Max = 5,
         Default = 1.5,
         Decimals = 1,
-        Measurement = "s",
+        Suffix = "s",
         Pointer = "ESP_TracerDuration"
     })
 
     -- Atmosphere Section
     local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
     local Rain = Visuals:Section({Name = "Rain", Side = "Left"})
+
+    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
+    Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
+        :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
+    Atmosphere:Toggle({Name = "Time Modifier", Default = false, Pointer = "Atmosphere_TimeModifier"})
+    Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
+        :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
+    Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
+
+    Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
+        :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
 
     -- Settings
     local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
