@@ -9,7 +9,22 @@ local ESP = {
     DistanceColor = Color3.fromRGB(255, 255, 255),
     TextSize = 13,
     Distance = 1000,
-    Drawings = {}
+    Drawings = {},
+    new = function(self, options)
+        local esp = setmetatable({}, { __index = self })
+        esp.Enabled = options.Enabled or false
+        esp.ShowNames = options.ShowNames or false
+        esp.ShowBoxes = options.ShowBoxes or false
+        esp.ShowDistance = options.ShowDistance or false
+        esp.ShowHealthBars = options.ShowHealthBars or false
+        esp.BoxColor = options.BoxColor or Color3.fromRGB(255, 255, 255)
+        esp.NameColor = options.NameColor or Color3.fromRGB(255, 255, 255)
+        esp.DistanceColor = options.DistanceColor or Color3.fromRGB(255, 255, 255)
+        esp.TextSize = options.TextSize or 13
+        esp.Distance = options.Distance or 1000
+        esp.Drawings = {}
+        return esp
+    end
 }
 
 local RunService = game:GetService("RunService")
@@ -171,7 +186,15 @@ function ESP:Initialize()
         self:UpdateESP()
     end)
     
-    return true
+    return self
+end
+
+function ESP:UpdateSettings(settings)
+    for key, value in pairs(settings) do
+        if self[key] ~= nil then
+            self[key] = value
+        end
+    end
 end
 
 return ESP
