@@ -1,126 +1,183 @@
-return function(Window, Library, ESP)
-    -- // Pages
-    local Main = Window:Page({Name = "aim-assist"})
-    local Visuals = Window:Page({Name = "visuals"})
-    local Players = Window:Page({Name = "players-list"})
-    local Settings = Window:Page({Name = "settings"})
+local ESP = {
+    Enabled = false,
+    ShowNames = false,
+    ShowBoxes = false,
+    ShowDistance = false,
+    ShowHealthBars = false,
+    BoxColor = Color3.fromRGB(255, 255, 255),
+    NameColor = Color3.fromRGB(255, 255, 255),
+    DistanceColor = Color3.fromRGB(255, 255, 255),
+    TextSize = 13,
+    Distance = 1000,
+    Drawings = {}
+}
 
-    -- // Sections
-    local TargetAim = Main:Section({Name = "Target Aim", Side = "Left"})
-    local FOV = Main:Section({Name = "Field of View", Side = "Right"})
-    local Prediction = Main:Section({Name = "Prediction", Side = "Left"})
-    local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
 
-    -- // Target Aim Section
-    TargetAim:Toggle({Name = "Enabled", Default = false, Pointer = "TargetEnabled"})
-    :Keybind({Default = Enum.KeyCode.E, KeybindName = "Target", Mode = "Toggle", Pointer = "TargetBind"})
-    TargetAim:Dropdown({Name = "Method", Options = {"Silent", "Sticky"}, Default = "Silent", Pointer = "TargetMethod"})
-    TargetAim:Toggle({Name = "Index (Mouse M1)", Default = false, Pointer = "TargetIndex"})
-    TargetAim:Toggle({Name = "Notifications", Default = false, Pointer = "TargetNotifications"})
-    TargetAim:Toggle({Name = "Resolver", Default = false, Pointer = "TargetResolver"})
-    :Keybind({Default = Enum.KeyCode.T, KeybindName = "Resolver", Mode = "Toggle", Pointer = "ResolverBind"})
-    TargetAim:Dropdown({Name = "Target Hit Part:", Options = {"Head", "Neck", "Body", "Right Arm", "Left Arm", "Pelvis", "Right Leg", "Left Leg"}, Default = "Head", Pointer = "TargetAim"})
-    TargetAim:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetJumpOffset"})
-
-    -- // Field of View Section
-    FOV:Dropdown({Name = "Mode", Options = {"Static", "Dynamic"}, Default = "Static", Pointer = "FOVMode"})
-    FOV:Toggle({Name = "Visible", Default = false, Pointer = "FOVVisible"})
-    FOV:Toggle({Name = "Filled", Default = false, Pointer = "FOVFilled"})
-    FOV:Colorpicker({Name = "FOV Color", Info = "Field of View Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "FOVColor"})
-    FOV:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Smoothness"})
-    FOV:Slider({Name = "Visibility", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Visibility"})
-    FOV:Slider({Name = "Fluctuation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Fluctuation"})
-    FOV:Slider({Name = "Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Transparency"})
-    FOV:Slider({Name = "Rotation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Rotation"})
-    FOV:Toggle({Name = "Auto Select", Default = false, Pointer = "FOVAutoSelect"})
-
-    -- // Prediction Section
-    Prediction:Toggle({Name = "Use Prediction", Default = false, Pointer = "PredictionEnabled"})
-    Prediction:Toggle({Name = "Ping Based", Default = false, Pointer = "PredictionPingBased"})
-    Prediction:Label({Name = "X Axis Prediction"})
-    Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionX"})
-    Prediction:Label({Name = "Y Axis Prediction"})
-    Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionY"})
-    Prediction:Toggle({Name = "Strafe", Default = false, Pointer = "PredictionStrafe"})
-    Prediction:Toggle({Name = "Destroy Cheaters Bypass", Default = false, Pointer = "PredictionBypass"})
-    Prediction:Toggle({Name = "Vehicle Strafe", Default = false, Pointer = "PredictionVehicle"})
-
-    -- // Gun Exploits Section
-    GunMods:Toggle({Name = "No Recoil", Default = false, Pointer = "GunNoRecoil"})
-    GunMods:Toggle({Name = "Rapid Fire", Default = false, Pointer = "GunRapidFire"})
-    GunMods:Slider({Name = "Fire Rate Modification", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "GunFireRate"})
-    GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
-
-    -- // Visuals Section
-    local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
-    local ESP = Visuals:Section({Name = "ESP", Side = "Right"})
-    local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
-    local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
-
-    -- Target UI Section
-    Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
-    Target_UI:Slider({Name = "Target UI Offset", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_Offset"})
-
-    Target_UI:Label({Name = "Target Visuals", Middle = false})
-    Target_UI:Toggle({Name = "Highlight", Default = false, Pointer = "TargetUI_Highlight"})
-    :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "TargetUI_HighlightColor"})
-    Target_UI:Slider({Name = "Fill Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_FillTransparency"})
-
-    Target_UI:Label({Name = "Hit Feedback", Middle = false})
-    Target_UI:Toggle({Name = "Hit Marker", Default = false, Pointer = "TargetUI_HitMarker"})
-    Target_UI:Toggle({Name = "Chams", Default = false, Pointer = "TargetUI_Chams"})
-    :Colorpicker({Info = "Chams Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Tagret_UI_ChamsColor"})
-    Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
-    Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
-
-    -- ESP Section
-    ESP:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
-    ESP:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
-    ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
-    ESP:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-    ESP:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
-    ESP:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
-    ESP:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
-
-    ESP:Label({Name = "ESP Features", Middle = false})
-    ESP:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
-    :Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor"})
-    ESP:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box"})
-    :Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor"})
-    ESP:Toggle({Name = "Bone", Default = false, Pointer = "ESP_Bone"})
-    :Colorpicker({Info = "Bone Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoneColor"})
-    ESP:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar"})
-    :Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(127, 255, 0), Pointer = "ESP_HealthBarColor"})
-    ESP:Toggle({Name = "Armor Bar", Default = false, Pointer = "ESP_ArmorBar"})
-    :Colorpicker({Info = "Armor Bar Color", Default = Color3.fromRGB(0, 255, 255), Pointer = "ESP_ArmorBarColor"})
-    ESP:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance"})
-    :Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor"})
-    ESP:Toggle({Name = "Weapon", Default = false, Pointer = "ESP_Weapon"})
-    :Colorpicker({Info = "Weapon Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_WeaponColor"})
-    ESP:Toggle({Name = "Flags", Default = false, Pointer = "ESP_Flags"})
-    :Colorpicker({Info = "Flags Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_FlagsColor"})
-
-    ESP:Toggle({Name = "Bullet Tracers", Default = false, Pointer = "ESP_BulletTracers"})
-    :Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor"})
-    ESP:Slider({Name = "Duration", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration"})
-
-    -- Atmosphere Section
-    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
-    Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
-    :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
-    Atmosphere:Toggle({Name = "Time Modifier", Default = false, Pointer = "Atmosphere_TimeModifier"})
-    Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
-    :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
-    Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
-
-    -- Rain Section
-    Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
-    :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
-
-    -- // Settings Section
-    local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
-    Settings_Main:ConfigBox({})
-    Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
-    Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
-    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
+function ESP:CreateDrawings(player)
+    if self.Drawings[player] then return end
+    
+    self.Drawings[player] = {
+        Box = Drawing.new("Square"),
+        Name = Drawing.new("Text"),
+        Distance = Drawing.new("Text"),
+        HealthBar = Drawing.new("Square")
+    }
+    
+    local drawings = self.Drawings[player]
+    
+    -- Box
+    drawings.Box.Visible = false
+    drawings.Box.Thickness = 1
+    drawings.Box.Filled = false
+    drawings.Box.Color = self.BoxColor
+    drawings.Box.ZIndex = 1
+    
+    -- Name
+    drawings.Name.Visible = false
+    drawings.Name.Center = true
+    drawings.Name.Outline = true
+    drawings.Name.Size = self.TextSize
+    drawings.Name.Color = self.NameColor
+    drawings.Name.ZIndex = 2
+    
+    -- Distance
+    drawings.Distance.Visible = false
+    drawings.Distance.Center = true
+    drawings.Distance.Outline = true
+    drawings.Distance.Size = self.TextSize
+    drawings.Distance.Color = self.DistanceColor
+    drawings.Distance.ZIndex = 2
+    
+    -- Health Bar
+    drawings.HealthBar.Visible = false
+    drawings.HealthBar.Thickness = 1
+    drawings.HealthBar.Filled = true
+    drawings.HealthBar.ZIndex = 1
 end
+
+function ESP:RemoveDrawings(player)
+    if self.Drawings[player] then
+        for _, drawing in pairs(self.Drawings[player]) do
+            drawing:Remove()
+        end
+        self.Drawings[player] = nil
+    end
+end
+
+function ESP:UpdateESP()
+    for player, drawings in pairs(self.Drawings) do
+        if not self.Enabled then
+            for _, drawing in pairs(drawings) do
+                drawing.Visible = false
+            end
+            continue
+        end
+        
+        if player == LocalPlayer then continue end
+        
+        local character = player.Character
+        local humanoid = character and character:FindFirstChild("Humanoid")
+        local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+        
+        if not character or not humanoid or not rootPart or not humanoid.Health > 0 then
+            for _, drawing in pairs(drawings) do
+                drawing.Visible = false
+            end
+            continue
+        end
+        
+        local pos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+        local distance = (Camera.CFrame.Position - rootPart.Position).Magnitude
+        
+        if not onScreen or distance > self.Distance then
+            for _, drawing in pairs(drawings) do
+                drawing.Visible = false
+            end
+            continue
+        end
+        
+        -- Calculate box size based on distance
+        local size = Vector2.new(2000 / distance, 3000 / distance)
+        
+        -- Update Box
+        if self.ShowBoxes then
+            drawings.Box.Size = size
+            drawings.Box.Position = Vector2.new(pos.X - size.X / 2, pos.Y - size.Y / 2)
+            drawings.Box.Color = self.BoxColor
+            drawings.Box.Visible = true
+        else
+            drawings.Box.Visible = false
+        end
+        
+        -- Update Name
+        if self.ShowNames then
+            drawings.Name.Text = player.Name
+            drawings.Name.Position = Vector2.new(pos.X, pos.Y - size.Y / 2 - 15)
+            drawings.Name.Color = self.NameColor
+            drawings.Name.Size = self.TextSize
+            drawings.Name.Visible = true
+        else
+            drawings.Name.Visible = false
+        end
+        
+        -- Update Distance
+        if self.ShowDistance then
+            drawings.Distance.Text = math.floor(distance) .. " studs"
+            drawings.Distance.Position = Vector2.new(pos.X, pos.Y + size.Y / 2 + 5)
+            drawings.Distance.Color = self.DistanceColor
+            drawings.Distance.Size = self.TextSize
+            drawings.Distance.Visible = true
+        else
+            drawings.Distance.Visible = false
+        end
+        
+        -- Update Health Bar
+        if self.ShowHealthBars and humanoid then
+            local health = humanoid.Health / humanoid.MaxHealth
+            drawings.HealthBar.Size = Vector2.new(3, size.Y * health)
+            drawings.HealthBar.Position = Vector2.new(pos.X - size.X / 2 - 5, pos.Y - size.Y / 2 + (size.Y - drawings.HealthBar.Size.Y))
+            drawings.HealthBar.Color = Color3.fromRGB(255 * (1 - health), 255 * health, 0)
+            drawings.HealthBar.Visible = true
+        else
+            drawings.HealthBar.Visible = false
+        end
+    end
+end
+
+function ESP:UpdateSettings(settings)
+    for setting, value in pairs(settings) do
+        self[setting] = value
+    end
+end
+
+function ESP:Initialize()
+    -- Create drawings for existing players
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            self:CreateDrawings(player)
+        end
+    end
+    
+    -- Handle new players
+    Players.PlayerAdded:Connect(function(player)
+        self:CreateDrawings(player)
+    end)
+    
+    -- Handle players leaving
+    Players.PlayerRemoving:Connect(function(player)
+        self:RemoveDrawings(player)
+    end)
+    
+    -- Update ESP
+    RunService:BindToRenderStep("ESP", Enum.RenderPriority.Camera.Value, function()
+        self:UpdateESP()
+    end)
+    
+    return true
+end
+
+return ESP
