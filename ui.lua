@@ -211,6 +211,22 @@ return function(Library, ESP)
    createESPFeature("Flags", "Flags", Color3.fromRGB(255, 255, 255))
    createESPFeature("Skeleton", "Bone", Color3.fromRGB(255, 255, 255))
    createESPFeature("Bullet Tracers", "BulletTracers", Color3.fromRGB(139, 0, 0))
+   createESPFeature("Head Circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
+
+   ESP_Section:Slider({
+       Name = "Tracer Duration", 
+       Minimum = 0.1, 
+       Maximum = 5, 
+       Default = 1.5, 
+       Decimals = 0.1, 
+       Suffix = "s", 
+       Pointer = "ESP_TracerDuration", 
+       callback = function(value)
+           if ESP and type(ESP) == "table" then
+               ESP.TracerDuration = value
+           end
+       end
+   })
 
    -- Atmosphere Section
    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
