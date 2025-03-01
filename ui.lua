@@ -180,5 +180,3 @@ return function(Library, ESP)
     -- // Initialisation
     Window:Initialize()
 end
-
-return Window
