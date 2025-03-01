@@ -132,10 +132,14 @@ function ESPObject:Update()
     -- Update Head Circle
     if ESP.ShowHeadCircle and head then
         local headPos = CurrentCamera:WorldToViewportPoint(head.Position)
-        self.Drawings.HeadCircle.Position = Vector2.new(headPos.X, headPos.Y)
-        self.Drawings.HeadCircle.Radius = size * 0.5
-        self.Drawings.HeadCircle.Color = ESP.HeadCircleColor
-        self.Drawings.HeadCircle.Visible = true
+        if headPos.Z > 0 then  -- Only show if head is in front of camera
+            self.Drawings.HeadCircle.Position = Vector2.new(headPos.X, headPos.Y)
+            self.Drawings.HeadCircle.Radius = size * 0.5
+            self.Drawings.HeadCircle.Color = ESP.HeadCircleColor
+            self.Drawings.HeadCircle.Visible = true
+        else
+            self.Drawings.HeadCircle.Visible = false
+        end
     else
         self.Drawings.HeadCircle.Visible = false
     end
@@ -320,6 +324,37 @@ function ESP:Init()
     end)
 
     return self
+end
+
+function ESP:UpdateProperty(property, value)
+    if self[property] ~= nil then
+        self[property] = value
+        -- Force refresh all ESP objects when a property changes
+        for _, object in pairs(self.Objects) do
+            object:Update()
+        end
+    end
+end
+
+function ESP:UpdateColor(property, color)
+    if self[property.."Color"] ~= nil then
+        self[property.."Color"] = color
+        -- Force refresh all ESP objects when a color changes
+        for _, object in pairs(self.Objects) do
+            object:Update()
+        end
+    end
+end
+
+-- Modify the Toggle function to handle individual features
+function ESP:ToggleFeature(feature, enabled)
+    if self["Show"..feature] ~= nil then
+        self["Show"..feature] = enabled
+        -- Force refresh all ESP objects when a feature is toggled
+        for _, object in pairs(self.Objects) do
+            object:Update()
+        end
+    end
 end
 
 return ESP
