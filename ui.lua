@@ -184,8 +184,8 @@ return function(Library, ESP)
            Default = false, 
            Pointer = "ESP_" .. property, 
            callback = function(state)
-               if ESP and type(ESP) == "table" then
-                   ESP["Show" .. property] = state
+               if ESP and type(ESP.ToggleFeature) == "function" then
+                   ESP:ToggleFeature(property, state)
                end
            end
        })
@@ -194,8 +194,8 @@ return function(Library, ESP)
            Default = default_color, 
            Pointer = "ESP_" .. property .. "Color", 
            callback = function(color)
-               if ESP and type(ESP) == "table" then
-                   ESP[property .. "Color"] = color
+               if ESP and type(ESP.UpdateColor) == "function" then
+                   ESP:UpdateColor(property, color)
                end
            end
        })
