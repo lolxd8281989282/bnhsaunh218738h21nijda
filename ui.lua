@@ -28,17 +28,17 @@ return function(Library, ESP)
    local Prediction = Main:Section({Name = "Prediction", Side = "Left"})
    local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
 
-   -- // Target Aim Section with fixed Toggle implementation
-   local targetEnabled = TargetAim:Toggle({
+   -- // Target Aim Section with simplified Toggle implementation
+   TargetAim:Toggle({
        Name = "Enabled",
        Default = false,
        Pointer = "TargetEnabled",
-       Callback = function(Value)
-           print("Target Enabled:", Value) -- Debug print
+       Callback = function(state)
+           -- Simple callback
        end
    })
 
-   targetEnabled:Keybind({
+   TargetAim:Keybind({
        Default = Enum.KeyCode.E,
        KeybindName = "Target",
        Mode = "Toggle",
@@ -86,16 +86,16 @@ return function(Library, ESP)
 
    -- // Visuals Section
    local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
+   -- // ESP Section with simplified Toggle implementation
    local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
 
    ESP_Section:Toggle({
        Name = "Enabled",
        Default = false,
        Pointer = "ESP_Enabled",
-       Callback = function(Value)
-           if ESP and type(ESP.Toggle) == "function" then
-               ESP:Toggle(Value)
-               print("ESP Toggle:", Value) -- Debug print
+       Callback = function(state)
+           if ESP then
+               ESP:Toggle(state)
            end
        end
    })
@@ -273,7 +273,7 @@ return function(Library, ESP)
    Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
-   -- // Initialisation
+   -- Initialize without any wrappers or extra handling
    Window:Initialize()
 
    return Window -- Return window for external reference
