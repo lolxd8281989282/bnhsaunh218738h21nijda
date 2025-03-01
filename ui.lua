@@ -80,17 +80,17 @@ return function(Window, Library, ESP)
     ESP:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self", callback = function(value)
         ESP.SelfESP = value
     end})
-    ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 5000, Default = 1000, Decimals = 1, Pointer = "ESP_MaxDistance", callback = function(value)
+    ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance", callback = function(value)
         ESP.MaxDistance = value
     end})
     ESP:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-    ESP:Slider({Name = "Outline Transparency", Minimum = 0, Maximum = 1, Default = 1, Decimals = 0.1, Pointer = "ESP_OutlineTransparency", callback = function(value)
+    ESP:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency", callback = function(value)
         ESP.OutlineTransparency = value
     end})
     ESP:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont", callback = function(value)
         ESP.TextFont = Drawing.Fonts[value]
     end})
-    ESP:Slider({Name = "Text Size", Minimum = 8, Maximum = 24, Default = 14, Decimals = 0, Pointer = "ESP_TextSize", callback = function(value)
+    ESP:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize", callback = function(value)
         ESP.TextSize = value
     end})
 
@@ -150,11 +150,11 @@ return function(Window, Library, ESP)
     :Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor", callback = function(value)
         ESP.BulletTracersColor = value
     end})
-    ESP:Slider({Name = "Duration", Minimum = 0.1, Maximum = 5, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration", callback = function(value)
+    ESP:Slider({Name = "Duration", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration", callback = function(value)
         ESP.TracerDuration = value
     end})
 
-    -- Atmosphere Section
+    -- Atmosphere Section (New)
     Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
     Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
     :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
@@ -163,11 +163,11 @@ return function(Window, Library, ESP)
     :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
     Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
 
-    -- Rain Section
+    -- Rain Section (New)
     Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
     :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
 
-    -- // Settings Section
+    -- // Settings Section (kept from original example)
     local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
     Settings_Main:ConfigBox({})
     Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
