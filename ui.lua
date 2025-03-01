@@ -82,6 +82,7 @@ return function(Library, ESP)
         Default = 0,
         Minimum = 0,
         Maximum = 2000,
+        Measurement = "m",
         Decimals = 0,
         Pointer = "ESP_MaxDistance",
         callback = function(value)
@@ -103,6 +104,7 @@ return function(Library, ESP)
         Default = 13,
         Minimum = 0,
         Maximum = 24,
+        Measurement = "",
         Decimals = 0,
         Pointer = "ESP_TextSize",
         callback = function(value)
