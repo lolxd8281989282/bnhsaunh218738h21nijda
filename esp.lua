@@ -30,6 +30,8 @@ end
 
 -- Create ESP components for a player
 function ESP:CreateESP(player)
+    if self.PlayerData[player.Name] then return end
+    
     -- Create drawings for this player
     local data = {
         box = {
@@ -99,6 +101,7 @@ function ESP:UpdateESP()
         data.healthBar.Visible = false
         data.healthBarBG.Visible = false
 
+        -- Check if ESP is enabled
         if not self.Settings.Enabled then continue end
         if player == players.LocalPlayer then continue end
 
