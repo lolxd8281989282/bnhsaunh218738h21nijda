@@ -195,6 +195,7 @@ return function(Library, ESP)
            Pointer = "ESP_" .. property .. "Color", 
            callback = function(color)
                if ESP and type(ESP.UpdateColor) == "function" then
+                   -- Pass the correct property name for color updates
                    ESP:UpdateColor(property, color)
                end
            end
