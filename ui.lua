@@ -16,51 +16,32 @@ local FOV = Main:Section({Name = "Field of View", Side = "Right"})
 local Prediction = Main:Section({Name = "Prediction", Side = "Left"})
 local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
 
--- // Target Aim Section
-TargetAim:Toggle({Name = "Enabled", Default = false, Pointer = "TargetEnabled"})
-:Keybind({Default = Enum.KeyCode.E, KeybindName = "Target", Mode = "Toggle", Pointer = "TargetBind"})
-TargetAim:Dropdown({Name = "Method", Options = {"Silent", "Sticky"}, Default = "Silent", Pointer = "TargetMethod"})
-TargetAim:Toggle({Name = "Index (Mouse M1)", Default = false, Pointer = "TargetIndex"})
-TargetAim:Toggle({Name = "Notifications", Default = false, Pointer = "TargetNotifications"})
-TargetAim:Toggle({Name = "Resolver", Default = false, Pointer = "TargetResolver"})
-:Keybind({Default = Enum.KeyCode.T, KeybindName = "Resolver", Mode = "Toggle", Pointer = "ResolverBind"})
-TargetAim:Dropdown({Name = "Target Hit Part:", Options = {"Head", "Neck", "Body", "Right Arm", "Left Arm", "Pelvis", "Right Leg", "Left Leg"}, Default = "Head", Pointer = "TargetAim"})
-TargetAim:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetJumpOffset"})
+-- // ESP Section
+local ESP = Visuals:Section({Name = "ESP", Side = "Left"})
 
--- // Field of View Section
-FOV:Dropdown({Name = "Mode", Options = {"Static", "Dynamic"}, Default = "Static", Pointer = "FOVMode"})
-FOV:Toggle({Name = "Visible", Default = false, Pointer = "FOVVisible"})
-FOV:Toggle({Name = "Filled", Default = false, Pointer = "FOVFilled"})
-FOV:Colorpicker({Name = "FOV Color", Info = "Field of View Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "FOVColor"})
-FOV:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Smoothness"})
-FOV:Slider({Name = "Visibility", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Visibility"})
-FOV:Slider({Name = "Fluctuation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Fluctuation"})
-FOV:Slider({Name = "Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Transparency"})
-FOV:Slider({Name = "Rotation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Rotation"})
-FOV:Toggle({Name = "Auto Select", Default = false, Pointer = "FOVAutoSelect"})
+-- ESP Toggle
+ESP:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
 
--- // Prediction Section
-Prediction:Toggle({Name = "Use Prediction", Default = false, Pointer = "PredictionEnabled"})
-Prediction:Toggle({Name = "Ping Based", Default = false, Pointer = "PredictionPingBased"})
-Prediction:Label({Name = "X Axis Prediction"})
-Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionX"})
-Prediction:Label({Name = "Y Axis Prediction"})
-Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionY"})
-Prediction:Toggle({Name = "Strafe", Default = false, Pointer = "PredictionStrafe"})
-Prediction:Toggle({Name = "Destroy Cheaters Bypass", Default = false, Pointer = "PredictionBypass"})
-Prediction:Toggle({Name = "Vehicle Strafe", Default = false, Pointer = "PredictionVehicle"})
+-- ESP Features
+ESP:Toggle({Name = "Boxes", Default = false, Pointer = "ESP_Boxes"})
+ESP:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
+ESP:Toggle({Name = "Tracers", Default = false, Pointer = "ESP_Tracers"})
+ESP:Toggle({Name = "Team Check", Default = true, Pointer = "ESP_TeamCheck"})
 
--- // Gun Exploits Section
-GunMods:Toggle({Name = "No Recoil", Default = false, Pointer = "GunNoRecoil"})
-GunMods:Toggle({Name = "Rapid Fire", Default = false, Pointer = "GunRapidFire"})
-GunMods:Slider({Name = "Fire Rate Modification", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "GunFireRate"})
-GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
+-- ESP Colors
+ESP:Colorpicker({Name = "ESP Color", Info = "ESP Main Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_Color"})
+ESP:Colorpicker({Name = "Team Color", Info = "ESP Team Color", Default = Color3.fromRGB(0, 255, 0), Pointer = "ESP_TeamColor"})
+ESP:Colorpicker({Name = "Enemy Color", Info = "ESP Enemy Color", Default = Color3.fromRGB(255, 0, 0), Pointer = "ESP_EnemyColor"})
 
--- // Visuals Section
+-- ESP Settings
+ESP:Slider({Name = "ESP Distance", Min = 0, Max = 2000, Default = 1000, Decimals = 0, Suffix = " studs", Pointer = "ESP_Distance"})
+ESP:Slider({Name = "Text Size", Min = 8, Max = 24, Default = 14, Decimals = 0, Pointer = "ESP_TextSize"})
+ESP:Dropdown({Name = "Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "Plex", Pointer = "ESP_Font"})
+
+-- // Other sections (kept from original example)
 local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
-local ESP = Visuals:Section({Name = "ESP", Side = "Right"})
 local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
-local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
+local Rain = Visuals:Section({Name = "Rain", Side = "Left"})
 
 -- Target UI Section
 Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
@@ -77,37 +58,6 @@ Target_UI:Toggle({Name = "Chams", Default = false, Pointer = "TargetUI_Chams"})
 :Colorpicker({Info = "Chams Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Tagret_UI_ChamsColor"})
 Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
 Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
-
--- ESP Section
-ESP:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
-ESP:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
-ESP:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
-ESP:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-ESP:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
-ESP:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
-ESP:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
-
-ESP:Label({Name = "ESP Features", Middle = false})
-ESP:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
-:Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor"})
-ESP:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box"})
-:Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor"})
-ESP:Toggle({Name = "Bone", Default = false, Pointer = "ESP_Bone"})
-:Colorpicker({Info = "Bone Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoneColor"})
-ESP:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar"})
-:Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(127, 255, 0), Pointer = "ESP_HealthBarColor"})
-ESP:Toggle({Name = "Armor Bar", Default = false, Pointer = "ESP_ArmorBar"})
-:Colorpicker({Info = "Armor Bar Color", Default = Color3.fromRGB(0, 255, 255), Pointer = "ESP_ArmorBarColor"})
-ESP:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance"})
-:Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor"})
-ESP:Toggle({Name = "Weapon", Default = false, Pointer = "ESP_Weapon"})
-:Colorpicker({Info = "Weapon Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_WeaponColor"})
-ESP:Toggle({Name = "Flags", Default = false, Pointer = "ESP_Flags"})
-:Colorpicker({Info = "Flags Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_FlagsColor"})
-
-ESP:Toggle({Name = "Bullet Tracers", Default = false, Pointer = "ESP_BulletTracers"})
-:Colorpicker({Info = "Bullet Tracers Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "ESP_BulletTracersColor"})
-ESP:Slider({Name = "Duration", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TracerDuration"})
 
 -- Atmosphere Section (New)
 Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
@@ -136,30 +86,63 @@ Window:Initialize()
 local ESP = require("esp")
 
 -- Initialize ESP settings based on UI values
-ESP.Enabled = Window.Pointers.ESP_Enabled.Value
-ESP.Names = Window.Pointers.ESP_Names.Value
-ESP.Boxes = Window.Pointers.ESP_Box.Value
-ESP.TeamColor = false -- You can add a toggle for this if needed
-ESP.TeamMates = not Window.Pointers.ESP_Self.Value
-ESP.Players = true
+ESP.Enabled = Window.pointers.ESP_Enabled.Value
+ESP.Boxes = Window.pointers.ESP_Boxes.Value
+ESP.Names = Window.pointers.ESP_Names.Value
+ESP.Tracers = Window.pointers.ESP_Tracers.Value
+ESP.TeamColor = Window.pointers.ESP_TeamCheck.Value
+ESP.Color = Window.pointers.ESP_Color.Value
+ESP.TeamColor = Window.pointers.ESP_TeamColor.Value
+ESP.EnemyColor = Window.pointers.ESP_EnemyColor.Value
+ESP.MaxDistance = Window.pointers.ESP_Distance.Value
+ESP.TextSize = Window.pointers.ESP_TextSize.Value
+ESP.Font = Drawing.Fonts[Window.pointers.ESP_Font.Value]
 
 -- Set up listeners for ESP settings
-Window.Pointers.ESP_Enabled:OnChanged(function(value)
+Window.pointers.ESP_Enabled:OnChanged(function(value)
     ESP.Enabled = value
 end)
 
-Window.Pointers.ESP_Names:OnChanged(function(value)
-    ESP.Names = value
-end)
-
-Window.Pointers.ESP_Box:OnChanged(function(value)
+Window.pointers.ESP_Boxes:OnChanged(function(value)
     ESP.Boxes = value
 end)
 
-Window.Pointers.ESP_Self:OnChanged(function(value)
-    ESP.TeamMates = not value
+Window.pointers.ESP_Names:OnChanged(function(value)
+    ESP.Names = value
 end)
 
--- Add more listeners for other ESP settings as needed
+Window.pointers.ESP_Tracers:OnChanged(function(value)
+    ESP.Tracers = value
+end)
+
+Window.pointers.ESP_TeamCheck:OnChanged(function(value)
+    ESP.TeamColor = value
+end)
+
+Window.pointers.ESP_Color:OnChanged(function(value)
+    ESP.Color = value
+end)
+
+Window.pointers.ESP_TeamColor:OnChanged(function(value)
+    ESP.TeamColor = value
+end)
+
+Window.pointers.ESP_EnemyColor:OnChanged(function(value)
+    ESP.EnemyColor = value
+end)
+
+Window.pointers.ESP_Distance:OnChanged(function(value)
+    ESP.MaxDistance = value
+end)
+
+Window.pointers.ESP_TextSize:OnChanged(function(value)
+    ESP.TextSize = value
+end)
+
+Window.pointers.ESP_Font:OnChanged(function(value)
+    ESP.Font = Drawing.Fonts[value]
+end)
 
 -- You can add more ESP configuration here based on your UI settings
+
+return Window
