@@ -92,7 +92,9 @@ return function(Library, ESP)
        Default = false, 
        Pointer = "ESP_Enabled", 
        callback = function(state)
-           ESP:Toggle(state)
+           if ESP and type(ESP.Toggle) == "function" then
+               ESP:Toggle(state)
+           end
        end
    })
 
@@ -102,7 +104,9 @@ return function(Library, ESP)
        Default = false, 
        Pointer = "ESP_Self", 
        callback = function(state)
-           ESP.Self = state
+           if ESP and type(ESP) == "table" then
+               ESP.SelfESP = state
+           end
        end
    })
 
@@ -181,7 +185,7 @@ return function(Library, ESP)
            Pointer = "ESP_" .. property, 
            callback = function(state)
                if ESP and type(ESP) == "table" then
-                   ESP[property] = state
+                   ESP["Show" .. property] = state
                end
            end
        })
@@ -200,7 +204,7 @@ return function(Library, ESP)
    -- Create ESP features with their respective colors
    createESPFeature("Names", "Names", Color3.fromRGB(255, 255, 255))
    createESPFeature("Box", "Boxes", Color3.fromRGB(255, 255, 255))
-   createESPFeature("Health Bar", "HealthBar", Color3.fromRGB(0, 255, 0))
+   createESPFeature("Health Bar", "HealthBars", Color3.fromRGB(0, 255, 0))
    createESPFeature("Armor Bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
    createESPFeature("Distance", "Distance", Color3.fromRGB(255, 255, 255))
    createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
