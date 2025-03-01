@@ -6,29 +6,42 @@ local ESP = {
     ShowNames = false,
     ShowBoxes = false,
     ShowHealthBars = false,
+    ShowEquippedItem = false,
+    ShowSkeleton = false,
     ShowArmorBar = false,
     ShowHeadDot = false,
+    FillBox = false,
     ShowDistance = false,
-    ShowWeapon = false,
-    ShowFlags = false,
-    ShowBone = false,
-    BulletTracers = false,
+    OutlineColor = Color3.new(1, 1, 1),
+    OutlineThickness = 3,
     BoxColor = Color3.fromRGB(255, 255, 255),
+    BoxThickness = 1.4,
+    BoxTransparency = 1,
+    TextColor = Color3.fromRGB(255, 255, 255),
+    TextSize = 14,
+    Distance = 1000,
+    BoxType = "Corners",
+    ArmorBarColor = Color3.fromRGB(0, 150, 255),
     NameColor = Color3.fromRGB(255, 255, 255),
-    HealthBarColor = Color3.fromRGB(127, 255, 0),
-    ArmorBarColor = Color3.fromRGB(0, 255, 255),
+    EquippedItemColor = Color3.fromRGB(255, 255, 255),
+    SkeletonColor = Color3.fromRGB(255, 255, 255),
     HeadDotColor = Color3.fromRGB(255, 255, 255),
     DistanceColor = Color3.fromRGB(255, 255, 255),
-    WeaponColor = Color3.fromRGB(255, 255, 255),
-    FlagsColor = Color3.fromRGB(255, 255, 255),
-    BoneColor = Color3.fromRGB(255, 255, 255),
-    BulletTracersColor = Color3.fromRGB(139, 0, 0),
-    BoxThickness = 1,
-    TextSize = 14,
-    TextFont = Drawing.Fonts.UI,
-    MaxDistance = 1000,
-    OutlineTransparency = 1,
-    TracerDuration = 1.5
+    ShowWatermark = true,
+    ShowKeybindList = true,
+    ThirdPerson = false,
+    CameraFOV = 70,
+    CameraAmount = 50,
+    AntiClipping = false,
+    CustomFog = false,
+    FogDistance = 500,
+    CustomBrightness = false,
+    BrightnessStrength = 50,
+    SpeedEnabled = false,
+    SpeedAmount = 50,
+    FlightEnabled = false,
+    FlightAmount = 50,
+    StreamProof = false,
 }
 
 -- Services
@@ -67,16 +80,19 @@ function ESPObject.new(player)
     self.Player = player
     self.Character = player.Character or player.CharacterAdded:Wait()
     self.Drawings = {
-        Box = CreateDrawing("Square", {Thickness = 1, Filled = false, Transparency = 1, Color = ESP.BoxColor, Visible = false}),
+        Box = CreateDrawing("Square", {Thickness = ESP.BoxThickness, Filled = false, Transparency = ESP.BoxTransparency, Color = ESP.BoxColor, Visible = false}),
         Name = CreateDrawing("Text", {Text = player.Name, Size = ESP.TextSize, Center = true, Outline = true, Color = ESP.NameColor, Visible = false}),
         HealthBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.HealthBarColor, Visible = false}),
         ArmorBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.ArmorBarColor, Visible = false}),
         HeadDot = CreateDrawing("Circle", {Radius = 3, Filled = true, Color = ESP.HeadDotColor, Visible = false}),
         Distance = CreateDrawing("Text", {Size = ESP.TextSize, Center = true, Outline = true, Color = ESP.DistanceColor, Visible = false}),
-        Weapon = CreateDrawing("Text", {Size = ESP.TextSize, Center = true, Outline = true, Color = ESP.WeaponColor, Visible = false}),
-        Flags = CreateDrawing("Text", {Size = ESP.TextSize, Center = true, Outline = true, Color = ESP.FlagsColor, Visible = false}),
-        Bone = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+        EquippedItem = CreateDrawing("Text", {Size = ESP.TextSize, Center = true, Outline = true, Color = ESP.EquippedItemColor, Visible = false}),
+        Skeleton = {},
     }
+    
+    for _, boneName in ipairs({"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}) do
+        self.Drawings.Skeleton[boneName] = CreateDrawing("Line", {Thickness = 1, Color = ESP.SkeletonColor, Visible = false})
+    end
     
     player.CharacterAdded:Connect(function(char)
         self.Character = char
@@ -105,7 +121,7 @@ function ESPObject:Update()
     end
 
     local position, onScreen = CurrentCamera:WorldToViewportPoint(humanoidRootPart.Position)
-    if not onScreen or GetDistanceFromCamera(humanoidRootPart.Position) > ESP.MaxDistance then
+    if not onScreen or GetDistanceFromCamera(humanoidRootPart.Position) > ESP.Distance then
         self:Hide()
         return true
     end
@@ -117,6 +133,7 @@ function ESPObject:Update()
         self.Drawings.Box.Size = Vector2.new(size * 1.5, size * 1.8)
         self.Drawings.Box.Position = Vector2.new(position.X - size * 1.5 / 2, position.Y - size * 1.8 / 2)
         self.Drawings.Box.Color = ESP.BoxColor
+        self.Drawings.Box.Transparency = ESP.BoxTransparency
         self.Drawings.Box.Visible = true
     else
         self.Drawings.Box.Visible = false
@@ -181,53 +198,87 @@ function ESPObject:Update()
         self.Drawings.Distance.Visible = false
     end
 
-    -- Update Weapon
-    if ESP.ShowWeapon then
-        local weapon = character:FindFirstChildOfClass("Tool")
-        if weapon then
-            self.Drawings.Weapon.Text = weapon.Name
-            self.Drawings.Weapon.Position = Vector2.new(position.X, position.Y + size * 1.8 / 2 + 20)
-            self.Drawings.Weapon.Color = ESP.WeaponColor
-            self.Drawings.Weapon.Visible = true
+    -- Update Equipped Item
+    if ESP.ShowEquippedItem then
+        local equippedItem = character:FindFirstChildOfClass("Tool")
+        if equippedItem then
+            self.Drawings.EquippedItem.Text = equippedItem.Name
+            self.Drawings.EquippedItem.Position = Vector2.new(position.X, position.Y + size * 1.8 / 2 + 20)
+            self.Drawings.EquippedItem.Color = ESP.EquippedItemColor
+            self.Drawings.EquippedItem.Visible = true
         else
-            self.Drawings.Weapon.Visible = false
+            self.Drawings.EquippedItem.Visible = false
         end
     else
-        self.Drawings.Weapon.Visible = false
+        self.Drawings.EquippedItem.Visible = false
     end
 
-    -- Update Flags
-    if ESP.ShowFlags then
-        local flags = {}
-        if humanoid.Jump then
-            table.insert(flags, "Jumping")
-        end
-        if #flags > 0 then
-            self.Drawings.Flags.Text = table.concat(flags, ", ")
-            self.Drawings.Flags.Position = Vector2.new(position.X, position.Y + size * 1.8 / 2 + 35)
-            self.Drawings.Flags.Color = ESP.FlagsColor
-            self.Drawings.Flags.Visible = true
-        else
-            self.Drawings.Flags.Visible = false
-        end
-    else
-        self.Drawings.Flags.Visible = false
-    end
-
-    -- Update Bone ESP
-    if ESP.ShowBone then
+    -- Update Skeleton
+    if ESP.ShowSkeleton then
         local head = character:FindFirstChild("Head")
-        if head then
-            local headPosition = CurrentCamera:WorldToViewportPoint(head.Position)
-            self.Drawings.Bone.From = Vector2.new(position.X, position.Y)
-            self.Drawings.Bone.To = Vector2.new(headPosition.X, headPosition.Y)
-            self.Drawings.Bone.Color = ESP.BoneColor
-            self.Drawings.Bone.Visible = true
+        local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+        local leftArm = character:FindFirstChild("LeftUpperArm")
+        local rightArm = character:FindFirstChild("RightUpperArm")
+        local leftLeg = character:FindFirstChild("LeftUpperLeg")
+        local rightLeg = character:FindFirstChild("RightUpperLeg")
+
+        if head and torso then
+            local headPos = CurrentCamera:WorldToViewportPoint(head.Position)
+            local torsoPos = CurrentCamera:WorldToViewportPoint(torso.Position)
+
+            self.Drawings.Skeleton.Head.From = Vector2.new(headPos.X, headPos.Y)
+            self.Drawings.Skeleton.Head.To = Vector2.new(torsoPos.X, torsoPos.Y)
+            self.Drawings.Skeleton.Head.Color = ESP.SkeletonColor
+            self.Drawings.Skeleton.Head.Visible = true
+
+            if leftArm then
+                local leftArmPos = CurrentCamera:WorldToViewportPoint(leftArm.Position)
+                self.Drawings.Skeleton["Left Arm"].From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.Skeleton["Left Arm"].To = Vector2.new(leftArmPos.X, leftArmPos.Y)
+                self.Drawings.Skeleton["Left Arm"].Color = ESP.SkeletonColor
+                self.Drawings.Skeleton["Left Arm"].Visible = true
+            else
+                self.Drawings.Skeleton["Left Arm"].Visible = false
+            end
+
+            if rightArm then
+                local rightArmPos = CurrentCamera:WorldToViewportPoint(rightArm.Position)
+                self.Drawings.Skeleton["Right Arm"].From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.Skeleton["Right Arm"].To = Vector2.new(rightArmPos.X, rightArmPos.Y)
+                self.Drawings.Skeleton["Right Arm"].Color = ESP.SkeletonColor
+                self.Drawings.Skeleton["Right Arm"].Visible = true
+            else
+                self.Drawings.Skeleton["Right Arm"].Visible = false
+            end
+
+            if leftLeg then
+                local leftLegPos = CurrentCamera:WorldToViewportPoint(leftLeg.Position)
+                self.Drawings.Skeleton["Left Leg"].From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.Skeleton["Left Leg"].To = Vector2.new(leftLegPos.X, leftLegPos.Y)
+                self.Drawings.Skeleton["Left Leg"].Color = ESP.SkeletonColor
+                self.Drawings.Skeleton["Left Leg"].Visible = true
+            else
+                self.Drawings.Skeleton["Left Leg"].Visible = false
+            end
+
+            if rightLeg then
+                local rightLegPos = CurrentCamera:WorldToViewportPoint(rightLeg.Position)
+                self.Drawings.Skeleton["Right Leg"].From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.Skeleton["Right Leg"].To = Vector2.new(rightLegPos.X, rightLegPos.Y)
+                self.Drawings.Skeleton["Right Leg"].Color = ESP.SkeletonColor
+                self.Drawings.Skeleton["Right Leg"].Visible = true
+            else
+                self.Drawings.Skeleton["Right Leg"].Visible = false
+            end
         else
-            self.Drawings.Bone.Visible = false
+            for _, bone in pairs(self.Drawings.Skeleton) do
+                bone.Visible = false
+            end
         end
     else
-        self.Drawings.Bone.Visible = false
+        for _, bone in pairs(self.Drawings.Skeleton) do
+            bone.Visible = false
+        end
     end
 
     return true
@@ -235,13 +286,25 @@ end
 
 function ESPObject:Hide()
     for _, drawing in pairs(self.Drawings) do
-        drawing.Visible = false
+        if type(drawing) == "table" then
+            for _, subDrawing in pairs(drawing) do
+                subDrawing.Visible = false
+            end
+        else
+            drawing.Visible = false
+        end
     end
 end
 
 function ESPObject:Remove()
     for _, drawing in pairs(self.Drawings) do
-        drawing:Remove()
+        if type(drawing) == "table" then
+            for _, subDrawing in pairs(drawing) do
+                subDrawing:Remove()
+            end
+        else
+            drawing:Remove()
+        end
     end
     ESP.Objects[self.Player] = nil
 end
@@ -291,5 +354,37 @@ RunService.RenderStepped:Connect(function()
         ESP:Update()
     end
 end)
+
+-- Stream Proof functionality
+local function setupStreamProof()
+    local function updateStreamProof()
+        for _, obj in pairs(game:GetDescendants()) do
+            if obj:IsA("Frame") and obj.Name:find("ESP") then
+                if ESP.StreamProof then
+                    obj.ClipsDescendants = true
+                    obj.BackgroundTransparency = 1
+                    obj.Visible = false
+                    obj:SetAttribute("StreamProof", true)
+                else
+                    obj.ClipsDescendants = false
+                    obj.BackgroundTransparency = 0
+                    obj.Visible = true
+                    obj:SetAttribute("StreamProof", false)
+                end
+            end
+        end
+    end
+    
+    return updateStreamProof
+end
+
+-- Initialize stream proof
+local updateStreamProof = setupStreamProof()
+
+-- Update stream proof when the setting changes
+function ESP:SetStreamProof(value)
+    self.StreamProof = value
+    updateStreamProof()
+end
 
 return ESP
