@@ -66,7 +66,7 @@ local function NewCircle()
     circle.Visible = false
     circle.Radius = 3
     circle.Color = ESP.BoxColor
-    line.Thickness = 1
+    circle.Thickness = 1
     circle.Filled = true
     return circle
 end
