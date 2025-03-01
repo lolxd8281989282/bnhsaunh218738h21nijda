@@ -268,13 +268,8 @@ return function(Library, ESP)
    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
    -- // Watermark
-   Library:Watermark({
-       Title = "dracula.lol | beta",
-       Subtitle = "v1.0.0",
-       SizeX = 250,
-       SizeY = 50,
-       Position = "TopRight"
-   })
+   Window.watermark:Update("Text", "dracula.lol | beta")
+   Window.watermark:Update("Visible", true)
 
    -- // Initialisation
    Window:Initialize()
