@@ -86,26 +86,23 @@ return function(Library, ESP)
    Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
    Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
-   -- ESP Section with correct Toggle implementation
+   -- ESP Section with simplified toggle
    ESP_Section:Toggle({
        Name = "Enabled", 
        Default = false, 
        Pointer = "ESP_Enabled", 
        callback = function(state)
-           if ESP and ESP.Toggle then
-               ESP:Toggle(state)
-           end
+           ESP:Toggle(state)
        end
    })
-   
+
+   -- Rest of ESP settings
    ESP_Section:Toggle({
        Name = "Self", 
        Default = false, 
        Pointer = "ESP_Self", 
        callback = function(state)
-           if ESP and type(ESP) == "table" then
-               ESP.Self = state
-           end
+           ESP.Self = state
        end
    })
 
