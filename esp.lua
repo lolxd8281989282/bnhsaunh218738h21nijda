@@ -17,9 +17,6 @@ local Players = game:GetService("Players")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
--- Debug flag
-local DEBUG = false -- Changed to false to stop spam
-
 function ESP:CreateDrawings(player)
     if self.Drawings[player] then return end
     
