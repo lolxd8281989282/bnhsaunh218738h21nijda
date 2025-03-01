@@ -1,4 +1,14 @@
 return function(Library, ESP)
+   -- First, ensure ESP has the proper Toggle function
+   if ESP then
+       -- Only create Toggle function if it doesn't exist
+       if not ESP.Toggle then
+           ESP.Toggle = function(self, state)
+               self.Enabled = state
+           end
+       end
+   end
+
    -- Remove assertions since we'll handle ESP differently according to documentation
    local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
@@ -76,14 +86,14 @@ return function(Library, ESP)
    Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
    Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
-   -- ESP Section with fixed implementation
+   -- ESP Section with correct Toggle implementation
    ESP_Section:Toggle({
        Name = "Enabled", 
        Default = false, 
        Pointer = "ESP_Enabled", 
        callback = function(state)
-           if ESP and type(ESP) == "table" then
-               ESP.Enabled = state
+           if ESP and ESP.Toggle then
+               ESP:Toggle(state)
            end
        end
    })
