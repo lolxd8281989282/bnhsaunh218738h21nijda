@@ -77,12 +77,6 @@ return function(Library, ESP)
     Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
     -- ESP Section
-    ESP_Section:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled", callback = function(value)
-        ESP:Toggle(value)
-    end})
-    ESP_Section:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self", callback = function(value)
-        ESP.SelfESP = value
-    end})
     ESP_Section:Slider({
         Name = "Max Distance",
         Default = 0,
@@ -91,10 +85,13 @@ return function(Library, ESP)
         Measurement = "m",
         Decimals = 0,
         Pointer = "ESP_MaxDistance",
-        Callback = function(value)
+        callback = function(value)
             ESP.MaxDistance = value
         end
     })
+    ESP_Section:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self", callback = function(value)
+        ESP.SelfESP = value
+    end})
     ESP_Section:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
     ESP_Section:Slider({Name = "Outline Transparency", Minimum = 0, Maximum = 1, Default = 1, Decimals = 0.1, Pointer = "ESP_OutlineTransparency", callback = function(value)
         ESP.OutlineTransparency = value
@@ -104,7 +101,7 @@ return function(Library, ESP)
     end})
     ESP_Section:Slider({
         Name = "Text Size",
-        Default = 0,
+        Default = 13,
         Minimum = 0,
         Maximum = 24,
         Measurement = "",
