@@ -7,7 +7,7 @@ local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281
 -- Initialize ESP
 ESP:Init()
 
--- Load and execute the UI
-loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/ui.lua"))()
+-- Load and execute the UI, passing the Library and ESP module
+loadstring(game:HttpGet("https://raw.githubusercontent.com/lolxd8281989282/bnhsaunh218738h21nijda/refs/heads/main/ui.lua"))()(Library, ESP)
 
 print("Main script executed successfully")
