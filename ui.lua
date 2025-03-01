@@ -1,4 +1,4 @@
-return function(Library, ESP)
+local function InitUI(Library, ESP)
     -- // Init
     local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
@@ -180,3 +180,5 @@ return function(Library, ESP)
     -- // Initialisation
     Window:Initialize()
 end
+
+return InitUI
