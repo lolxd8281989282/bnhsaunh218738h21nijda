@@ -108,19 +108,19 @@ return function(Library, ESP)
 
    -- Fixed Max Distance slider
    ESP_Section:Slider({
-       Name = "Max Distance", 
-       Minimum = 100, 
-       Maximum = 2000, 
-       Default = 1000, 
-       Suffix = "m", 
-       Decimals = 0,
-       Pointer = "ESP_MaxDistance", 
-       callback = function(value)
-           if ESP and type(ESP) == "table" then
-               ESP.MaxDistance = value
-           end
-       end
-   })
+    Name = "Max Distance",
+    Minimum = 100,
+    Maximum = 2000,
+    Default = 1000,
+    Measurement = "m", -- Changed from Suffix to Measurement
+    Decimals = 0,
+    Pointer = "ESP_MaxDistance",
+    callback = function(value)
+        if ESP and type(ESP) == "table" then
+            ESP.MaxDistance = value
+        end
+    end
+})
 
    ESP_Section:Dropdown({
        Name = "Distance Mode", 
@@ -162,18 +162,19 @@ return function(Library, ESP)
 
    -- Fixed Text Size slider
    ESP_Section:Slider({
-       Name = "Text Size", 
-       Minimum = 8, 
-       Maximum = 24, 
-       Default = 14, 
-       Decimals = 0,
-       Pointer = "ESP_TextSize", 
-       callback = function(value)
-           if ESP and type(ESP) == "table" then
-               ESP.TextSize = value
-           end
-       end
-   })
+    Name = "Text Size",
+    Minimum = 8,
+    Maximum = 24,
+    Default = 14,
+    Measurement = "", -- Added Measurement instead of letting it default
+    Decimals = 0,
+    Pointer = "ESP_TextSize",
+    callback = function(value)
+        if ESP and type(ESP) == "table" then
+            ESP.TextSize = value
+        end
+    end
+})
 
    ESP_Section:Label({Name = "ESP Features", Middle = false})
    
