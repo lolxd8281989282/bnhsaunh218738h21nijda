@@ -39,48 +39,58 @@ local ESP = {
 local PlayerESP = {}
 
 -- Drawing Functions
+local function CreateDrawing(type, properties)
+    local drawing = Drawing.new(type)
+    for property, value in pairs(properties) do
+        drawing[property] = value
+    end
+    return drawing
+end
+
 local function NewLine()
-    local line = Drawing.new("Line")
-    line.Visible = false
-    line.From = Vector2.new(0, 0)
-    line.To = Vector2.new(1, 1)
-    line.Color = ESP.BoxColor
-    line.Thickness = ESP.BoxThickness
-    line.Transparency = ESP.BoxTransparency
-    return line
+    return CreateDrawing("Line", {
+        Visible = false,
+        From = Vector2.new(0, 0),
+        To = Vector2.new(1, 1),
+        Color = ESP.BoxColor,
+        Thickness = ESP.BoxThickness,
+        Transparency = 1
+    })
 end
 
 local function NewText()
-    local text = Drawing.new("Text")
-    text.Visible = false
-    text.Center = true
-    text.Outline = true
-    text.Color = ESP.TextColor
-    text.Size = 13
-    text.Font = Drawing.Fonts.Monospace
-    return text
+    return CreateDrawing("Text", {
+        Visible = false,
+        Center = true,
+        Outline = true,
+        Color = ESP.TextColor,
+        Size = ESP.TextSize,
+        Font = Drawing.Fonts.Monospace,
+        Transparency = 1
+    })
 end
 
 local function NewCircle()
-    local circle = Drawing.new("Circle")
-    circle.Visible = false
-    circle.Radius = 3
-    circle.Color = ESP.BoxColor
-    circle.Thickness = 1
-    circle.Filled = true
-    return circle
+    return CreateDrawing("Circle", {
+        Visible = false,
+        Radius = 3,
+        Color = ESP.BoxColor,
+        Thickness = 1,
+        Filled = true,
+        Transparency = 1
+    })
 end
 
--- Cleanup function for ESP objects
+-- Cleanup function
 local function CleanupESP(plr)
     if PlayerESP[plr] then
         for _, drawing in pairs(PlayerESP[plr]) do
             if type(drawing) == "table" then
                 for _, obj in pairs(drawing) do
-                    obj:Remove()
+                    pcall(function() obj:Remove() end)
                 end
             else
-                drawing:Remove()
+                pcall(function() drawing:Remove() end)
             end
         end
         PlayerESP[plr] = nil
@@ -89,34 +99,30 @@ end
 
 -- ESP Function
 local function CreateESP(plr)
-    if PlayerESP[plr] then return end -- Prevent duplicate ESP
+    if PlayerESP[plr] then return end
 
-    local lines = {
-        box = {NewLine(), NewLine(), NewLine(), NewLine(), NewLine(), NewLine(), NewLine(), NewLine()},
+    local esp = {
+        box = {NewLine(), NewLine(), NewLine(), NewLine()},
         name = NewText(),
         healthBar = NewLine(),
         healthBarBG = NewLine(),
-        armorBar = NewLine(),
-        armorBarBG = NewLine(),
-        itemText = NewText(),
-        headDot = NewCircle(),
+        distance = NewText(),
+        headDot = NewCircle()
     }
     
-    PlayerESP[plr] = lines
+    PlayerESP[plr] = esp
 
-    local connection
-    connection = runService.RenderStepped:Connect(function()
+    local function UpdateESP()
         if not plr or not plr.Parent then
             CleanupESP(plr)
-            connection:Disconnect()
             return
         end
 
         if not ESP.Enabled then
-            for _, drawing in pairs(lines) do
+            for _, drawing in pairs(esp) do
                 if type(drawing) == "table" then
-                    for _, line in pairs(drawing) do
-                        line.Visible = false
+                    for _, obj in pairs(drawing) do
+                        obj.Visible = false
                     end
                 else
                     drawing.Visible = false
@@ -125,27 +131,104 @@ local function CreateESP(plr)
             return
         end
 
-        if plr.Character and plr.Character:FindFirstChild("Humanoid") and 
-           plr.Character:FindFirstChild("HumanoidRootPart") and 
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and 
+           plr.Character:FindFirstChild("Humanoid") and 
            plr.Character.Humanoid.Health > 0 then
             
             local humanoid = plr.Character.Humanoid
             local rootPart = plr.Character.HumanoidRootPart
             local head = plr.Character:FindFirstChild("Head")
-
+            
             if not head then return end
 
             local pos, onScreen = camera:WorldToViewportPoint(rootPart.Position)
             local distance = (camera.CFrame.Position - rootPart.Position).Magnitude
 
             if onScreen and distance <= ESP.Distance then
-                -- ESP drawing code remains the same
-                -- ... (rest of the ESP drawing code)
+                local size = Vector2.new(2000 / distance, 2000 / distance)
+                local boxSize = Vector2.new(size.X * 1.5, size.Y * 3)
+                local boxPos = Vector2.new(pos.X - boxSize.X / 2, pos.Y - boxSize.Y / 2)
+
+                -- Box ESP
+                if ESP.ShowBoxes then
+                    esp.box[1].From = Vector2.new(boxPos.X, boxPos.Y)
+                    esp.box[1].To = Vector2.new(boxPos.X + boxSize.X, boxPos.Y)
+                    esp.box[2].From = Vector2.new(boxPos.X + boxSize.X, boxPos.Y)
+                    esp.box[2].To = Vector2.new(boxPos.X + boxSize.X, boxPos.Y + boxSize.Y)
+                    esp.box[3].From = Vector2.new(boxPos.X, boxPos.Y + boxSize.Y)
+                    esp.box[3].To = Vector2.new(boxPos.X + boxSize.X, boxPos.Y + boxSize.Y)
+                    esp.box[4].From = Vector2.new(boxPos.X, boxPos.Y)
+                    esp.box[4].To = Vector2.new(boxPos.X, boxPos.Y + boxSize.Y)
+
+                    for _, line in pairs(esp.box) do
+                        line.Color = ESP.BoxColor
+                        line.Thickness = ESP.BoxThickness
+                        line.Visible = true
+                    end
+                else
+                    for _, line in pairs(esp.box) do
+                        line.Visible = false
+                    end
+                end
+
+                -- Name ESP
+                if ESP.ShowNames then
+                    esp.name.Position = Vector2.new(pos.X, boxPos.Y - esp.name.TextBounds.Y - 2)
+                    esp.name.Text = plr.Name
+                    esp.name.Color = ESP.NameColor
+                    esp.name.Size = ESP.TextSize
+                    esp.name.Visible = true
+                else
+                    esp.name.Visible = false
+                end
+
+                -- Health Bar
+                if ESP.ShowHealthBars then
+                    local healthPercent = humanoid.Health / humanoid.MaxHealth
+                    local barHeight = boxSize.Y
+                    local barPos = Vector2.new(boxPos.X - 5, boxPos.Y)
+
+                    esp.healthBarBG.From = barPos
+                    esp.healthBarBG.To = barPos + Vector2.new(0, barHeight)
+                    esp.healthBarBG.Color = Color3.fromRGB(0, 0, 0)
+                    esp.healthBarBG.Thickness = 3
+                    esp.healthBarBG.Visible = true
+
+                    esp.healthBar.From = barPos + Vector2.new(0, barHeight * (1 - healthPercent))
+                    esp.healthBar.To = barPos + Vector2.new(0, barHeight)
+                    esp.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
+                    esp.healthBar.Thickness = 1
+                    esp.healthBar.Visible = true
+                else
+                    esp.healthBar.Visible = false
+                    esp.healthBarBG.Visible = false
+                end
+
+                -- Distance ESP
+                if ESP.ShowDistance then
+                    esp.distance.Position = Vector2.new(pos.X, boxPos.Y + boxSize.Y + 2)
+                    esp.distance.Text = string.format("[%d]", math.floor(distance))
+                    esp.distance.Color = ESP.DistanceColor
+                    esp.distance.Size = ESP.TextSize
+                    esp.distance.Visible = true
+                else
+                    esp.distance.Visible = false
+                end
+
+                -- Head Dot
+                if ESP.ShowHeadDot and head then
+                    local headPos = camera:WorldToViewportPoint(head.Position)
+                    esp.headDot.Position = Vector2.new(headPos.X, headPos.Y)
+                    esp.headDot.Color = ESP.HeadDotColor
+                    esp.headDot.Visible = true
+                else
+                    esp.headDot.Visible = false
+                end
             else
-                for _, drawing in pairs(lines) do
+                for _, drawing in pairs(esp) do
                     if type(drawing) == "table" then
-                        for _, line in pairs(drawing) do
-                            line.Visible = false
+                        for _, obj in pairs(drawing) do
+                            obj.Visible = false
                         end
                     else
                         drawing.Visible = false
@@ -153,19 +236,20 @@ local function CreateESP(plr)
                 end
             end
         else
-            for _, drawing in pairs(lines) do
+            for _, drawing in pairs(esp) do
                 if type(drawing) == "table" then
-                    for _, line in pairs(drawing) do
-                        line.Visible = false
+                    for _, obj in pairs(drawing) do
+                        obj.Visible = false
                     end
                 else
                     drawing.Visible = false
                 end
             end
         end
-    end)
+    end
 
-    -- Clean up ESP when player leaves
+    local connection = runService.RenderStepped:Connect(UpdateESP)
+    
     plr.AncestryChanged:Connect(function(_, parent)
         if not parent then
             CleanupESP(plr)
@@ -174,26 +258,21 @@ local function CreateESP(plr)
     end)
 end
 
--- Initialize ESP for existing players
-for _, v in pairs(players:GetChildren()) do
+-- Initialize ESP
+for _, v in pairs(players:GetPlayers()) do
     if v ~= player then
         CreateESP(v)
     end
 end
 
--- Initialize ESP for new players
 players.PlayerAdded:Connect(function(plr)
     if plr ~= player then
         CreateESP(plr)
     end
 end)
 
--- Clean up ESP when players leave
-players.PlayerRemoving:Connect(function(plr)
-    CleanupESP(plr)
-end)
+players.PlayerRemoving:Connect(CleanupESP)
 
--- Update ESP settings
 function ESP:UpdateSettings(settings)
     for key, value in pairs(settings) do
         if self[key] ~= nil then
