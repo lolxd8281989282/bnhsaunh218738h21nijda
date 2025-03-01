@@ -24,7 +24,6 @@ return function(Window, Library, ESP)
     ESPSection:Toggle({Name = "Show Distance", Default = ESP.Settings.ShowDistance, Pointer = "ShowDistance"})
     ESPSection:Slider({Name = "Max Distance", Minimum = 100, Maximum = 2000, Default = ESP.Settings.Distance, Decimals = 0, Pointer = "Distance"})
     ESPSection:Colorpicker({Name = "Box Color", Info = "ESP Box Color", Default = ESP.Settings.BoxColor, Pointer = "BoxColor"})
-    ESPSection:Colorpicker({Name = "Name Color", Info = "ESP  Pointer = "BoxColor"})
     ESPSection:Colorpicker({Name = "Name Color", Info = "ESP Name Color", Default = ESP.Settings.NameColor, Pointer = "NameColor"})
     ESPSection:Colorpicker({Name = "Health Bar Color", Info = "ESP Health Bar Color", Default = Color3.fromRGB(0, 255, 0), Pointer = "HealthBarColor"})
 
@@ -78,4 +77,3 @@ return function(Window, Library, ESP)
 
     return ESP
 end
-
