@@ -3830,6 +3830,7 @@ do
 end
 
 return sections
+end
     --
     function sections:ConfigBox(info)
         local info = info or {}
