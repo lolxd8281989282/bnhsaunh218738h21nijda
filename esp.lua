@@ -33,16 +33,19 @@ function ESP:CreateDrawings(player)
     drawings.Box.Visible = false
     drawings.Box.Thickness = 1
     drawings.Box.Filled = false
+    drawings.Box.Color = self.BoxColor
     
     drawings.Name.Visible = false
     drawings.Name.Center = true
     drawings.Name.Outline = true
-    drawings.Name.Size = 13
+    drawings.Name.Size = self.TextSize
+    drawings.Name.Color = self.NameColor
     
     drawings.Distance.Visible = false
     drawings.Distance.Center = true
     drawings.Distance.Outline = true
-    drawings.Distance.Size = 13
+    drawings.Distance.Size = self.TextSize
+    drawings.Distance.Color = self.DistanceColor
     
     drawings.HealthBar.Visible = false
     drawings.HealthBar.Thickness = 1
