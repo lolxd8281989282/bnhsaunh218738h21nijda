@@ -1,6 +1,16 @@
 return function(Library, ESP)
-    -- // Init
-    local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
+   -- First, ensure ESP has the proper Toggle function
+   if ESP then
+       -- Only create Toggle function if it doesn't exist
+       if not ESP.Toggle then
+           ESP.Toggle = function(self, state)
+               self.Enabled = state
+           end
+       end
+   end
+
+   -- Remove assertions since we'll handle ESP differently according to documentation
+   local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
    -- // Pages
    local Main = Window:Page({Name = "aim-assist"})
@@ -92,16 +102,18 @@ return function(Library, ESP)
        Default = false, 
        Pointer = "ESP_Self", 
        callback = function(state)
-           ESP.Self = state
+           ESP.SelfESP = state
        end
    })
 
+   -- Fixed Max Distance slider
    ESP_Section:Slider({
        Name = "Max Distance", 
        Minimum = 100, 
        Maximum = 2000, 
        Default = 1000, 
        Suffix = "m", 
+       Decimals = 0,
        Pointer = "ESP_MaxDistance", 
        callback = function(value)
            if ESP and type(ESP) == "table" then
@@ -148,11 +160,13 @@ return function(Library, ESP)
        end
    })
 
+   -- Fixed Text Size slider
    ESP_Section:Slider({
        Name = "Text Size", 
        Minimum = 8, 
        Maximum = 24, 
        Default = 14, 
+       Decimals = 0,
        Pointer = "ESP_TextSize", 
        callback = function(value)
            if ESP and type(ESP) == "table" then
@@ -171,7 +185,7 @@ return function(Library, ESP)
            Pointer = "ESP_" .. property, 
            callback = function(state)
                if ESP and type(ESP) == "table" then
-                   ESP[property] = state
+                   ESP["Show" .. property] = state
                end
            end
        })
@@ -190,7 +204,8 @@ return function(Library, ESP)
    -- Create ESP features with their respective colors
    createESPFeature("Names", "Names", Color3.fromRGB(255, 255, 255))
    createESPFeature("Box", "Boxes", Color3.fromRGB(255, 255, 255))
-   createESPFeature("Health Bar", "HealthBar", Color3.fromRGB(0, 255, 0))
+   createESPFeature("Bone", "Bone", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Health Bar", "HealthBars", Color3.fromRGB(0, 255, 0))
    createESPFeature("Armor Bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
    createESPFeature("Distance", "Distance", Color3.fromRGB(255, 255, 255))
    createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
