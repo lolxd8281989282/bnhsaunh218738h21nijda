@@ -38,47 +38,70 @@ local ESP = {
 -- Store ESP objects for each player
 local PlayerESP = {}
 
--- Drawing Functions
-local function CreateDrawing(type, properties)
-    local drawing = Drawing.new(type)
-    for property, value in pairs(properties) do
-        drawing[property] = value
+-- Safe Drawing Creation
+local function SafeNewDrawing(drawingType)
+    local success, drawing = pcall(function()
+        return Drawing.new(drawingType)
+    end)
+    
+    if success and drawing then
+        return drawing
+    else
+        warn("Failed to create drawing of type:", drawingType)
+        return nil
     end
-    return drawing
 end
 
+-- Drawing Functions
 local function NewLine()
-    return CreateDrawing("Line", {
-        Visible = false,
-        From = Vector2.new(0, 0),
-        To = Vector2.new(1, 1),
-        Color = ESP.BoxColor,
-        Thickness = ESP.BoxThickness,
-        Transparency = 1
-    })
+    local line = SafeNewDrawing("Line")
+    if line then
+        line.Visible = false
+        line.From = Vector2.new(0, 0)
+        line.To = Vector2.new(1, 1)
+        line.Color = ESP.BoxColor
+        line.Thickness = ESP.BoxThickness
+        line.Transparency = 1
+    end
+    return line
 end
 
 local function NewText()
-    return CreateDrawing("Text", {
-        Visible = false,
-        Center = true,
-        Outline = true,
-        Color = ESP.TextColor,
-        Size = ESP.TextSize,
-        Font = Drawing.Fonts.Monospace,
-        Transparency = 1
-    })
+    local text = SafeNewDrawing("Text")
+    if text then
+        text.Visible = false
+        text.Center = true
+        text.Outline = true
+        text.Color = ESP.TextColor
+        text.Size = ESP.TextSize
+        text.Font = 3 -- Monospace
+        text.Transparency = 1
+    end
+    return text
 end
 
 local function NewCircle()
-    return CreateDrawing("Circle", {
-        Visible = false,
-        Radius = 3,
-        Color = ESP.BoxColor,
-        Thickness = 1,
-        Filled = true,
-        Transparency = 1
-    })
+    local circle = SafeNewDrawing("Circle")
+    if circle then
+        circle.Visible = false
+        circle.Position = Vector2.new(0, 0)
+        circle.Radius = 3
+        circle.Color = ESP.BoxColor
+        circle.Thickness = 1
+        circle.Filled = true
+        circle.Transparency = 1
+        circle.NumSides = 30
+    end
+    return circle
+end
+
+-- Safe Drawing Removal
+local function SafeRemoveDrawing(drawing)
+    if drawing then
+        pcall(function()
+            drawing:Remove()
+        end)
+    end
 end
 
 -- Cleanup function
@@ -87,10 +110,10 @@ local function CleanupESP(plr)
         for _, drawing in pairs(PlayerESP[plr]) do
             if type(drawing) == "table" then
                 for _, obj in pairs(drawing) do
-                    pcall(function() obj:Remove() end)
+                    SafeRemoveDrawing(obj)
                 end
             else
-                pcall(function() drawing:Remove() end)
+                SafeRemoveDrawing(drawing)
             end
         end
         PlayerESP[plr] = nil
@@ -101,13 +124,38 @@ end
 local function CreateESP(plr)
     if PlayerESP[plr] then return end
 
+    -- Create ESP objects with error checking
+    local box = {NewLine(), NewLine(), NewLine(), NewLine()}
+    local name = NewText()
+    local healthBar = NewLine()
+    local healthBarBG = NewLine()
+    local distance = NewText()
+    local headDot = NewCircle()
+
+    -- Verify all drawings were created successfully
+    for _, line in pairs(box) do
+        if not line then return end
+    end
+    if not (name and healthBar and healthBarBG and distance and headDot) then
+        -- Cleanup any successfully created drawings
+        for _, line in pairs(box) do
+            SafeRemoveDrawing(line)
+        end
+        SafeRemoveDrawing(name)
+        SafeRemoveDrawing(healthBar)
+        SafeRemoveDrawing(healthBarBG)
+        SafeRemoveDrawing(distance)
+        SafeRemoveDrawing(headDot)
+        return
+    end
+
     local esp = {
-        box = {NewLine(), NewLine(), NewLine(), NewLine()},
-        name = NewText(),
-        healthBar = NewLine(),
-        healthBarBG = NewLine(),
-        distance = NewText(),
-        headDot = NewCircle()
+        box = box,
+        name = name,
+        healthBar = healthBar,
+        healthBarBG = healthBarBG,
+        distance = distance,
+        headDot = headDot
     }
     
     PlayerESP[plr] = esp
@@ -122,127 +170,127 @@ local function CreateESP(plr)
             for _, drawing in pairs(esp) do
                 if type(drawing) == "table" then
                     for _, obj in pairs(drawing) do
-                        obj.Visible = false
+                        if obj then obj.Visible = false end
                     end
                 else
-                    drawing.Visible = false
+                    if drawing then drawing.Visible = false end
                 end
             end
             return
         end
 
-        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and 
-           plr.Character:FindFirstChild("Humanoid") and 
-           plr.Character.Humanoid.Health > 0 then
-            
-            local humanoid = plr.Character.Humanoid
-            local rootPart = plr.Character.HumanoidRootPart
-            local head = plr.Character:FindFirstChild("Head")
-            
-            if not head then return end
+        local character = plr.Character
+        local humanoid = character and character:FindFirstChild("Humanoid")
+        local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+        local head = character and character:FindFirstChild("Head")
 
-            local pos, onScreen = camera:WorldToViewportPoint(rootPart.Position)
-            local distance = (camera.CFrame.Position - rootPart.Position).Magnitude
+        if not (character and humanoid and rootPart and head and humanoid.Health > 0) then
+            for _, drawing in pairs(esp) do
+                if type(drawing) == "table" then
+                    for _, obj in pairs(drawing) do
+                        if obj then obj.Visible = false end
+                    end
+                else
+                    if drawing then drawing.Visible = false end
+                end
+            end
+            return
+        end
 
-            if onScreen and distance <= ESP.Distance then
-                local size = Vector2.new(2000 / distance, 2000 / distance)
-                local boxSize = Vector2.new(size.X * 1.5, size.Y * 3)
-                local boxPos = Vector2.new(pos.X - boxSize.X / 2, pos.Y - boxSize.Y / 2)
+        local pos, onScreen = camera:WorldToViewportPoint(rootPart.Position)
+        local distance = (camera.CFrame.Position - rootPart.Position).Magnitude
 
-                -- Box ESP
-                if ESP.ShowBoxes then
-                    esp.box[1].From = Vector2.new(boxPos.X, boxPos.Y)
-                    esp.box[1].To = Vector2.new(boxPos.X + boxSize.X, boxPos.Y)
-                    esp.box[2].From = Vector2.new(boxPos.X + boxSize.X, boxPos.Y)
-                    esp.box[2].To = Vector2.new(boxPos.X + boxSize.X, boxPos.Y + boxSize.Y)
-                    esp.box[3].From = Vector2.new(boxPos.X, boxPos.Y + boxSize.Y)
-                    esp.box[3].To = Vector2.new(boxPos.X + boxSize.X, boxPos.Y + boxSize.Y)
-                    esp.box[4].From = Vector2.new(boxPos.X, boxPos.Y)
-                    esp.box[4].To = Vector2.new(boxPos.X, boxPos.Y + boxSize.Y)
+        if onScreen and distance <= ESP.Distance then
+            local size = Vector2.new(2000 / distance, 2000 / distance)
+            local boxSize = Vector2.new(size.X * 1.5, size.Y * 3)
+            local boxPos = Vector2.new(pos.X - boxSize.X / 2, pos.Y - boxSize.Y / 2)
 
-                    for _, line in pairs(esp.box) do
+            -- Box ESP
+            if ESP.ShowBoxes then
+                local boxPoints = {
+                    {boxPos.X, boxPos.Y},
+                    {boxPos.X + boxSize.X, boxPos.Y},
+                    {boxPos.X + boxSize.X, boxPos.Y + boxSize.Y},
+                    {boxPos.X, boxPos.Y + boxSize.Y}
+                }
+
+                for i = 1, 4 do
+                    local line = esp.box[i]
+                    if line then
+                        line.From = Vector2.new(boxPoints[i][1], boxPoints[i][2])
+                        line.To = Vector2.new(boxPoints[i % 4 + 1][1], boxPoints[i % 4 + 1][2])
                         line.Color = ESP.BoxColor
                         line.Thickness = ESP.BoxThickness
                         line.Visible = true
                     end
-                else
-                    for _, line in pairs(esp.box) do
-                        line.Visible = false
-                    end
-                end
-
-                -- Name ESP
-                if ESP.ShowNames then
-                    esp.name.Position = Vector2.new(pos.X, boxPos.Y - esp.name.TextBounds.Y - 2)
-                    esp.name.Text = plr.Name
-                    esp.name.Color = ESP.NameColor
-                    esp.name.Size = ESP.TextSize
-                    esp.name.Visible = true
-                else
-                    esp.name.Visible = false
-                end
-
-                -- Health Bar
-                if ESP.ShowHealthBars then
-                    local healthPercent = humanoid.Health / humanoid.MaxHealth
-                    local barHeight = boxSize.Y
-                    local barPos = Vector2.new(boxPos.X - 5, boxPos.Y)
-
-                    esp.healthBarBG.From = barPos
-                    esp.healthBarBG.To = barPos + Vector2.new(0, barHeight)
-                    esp.healthBarBG.Color = Color3.fromRGB(0, 0, 0)
-                    esp.healthBarBG.Thickness = 3
-                    esp.healthBarBG.Visible = true
-
-                    esp.healthBar.From = barPos + Vector2.new(0, barHeight * (1 - healthPercent))
-                    esp.healthBar.To = barPos + Vector2.new(0, barHeight)
-                    esp.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
-                    esp.healthBar.Thickness = 1
-                    esp.healthBar.Visible = true
-                else
-                    esp.healthBar.Visible = false
-                    esp.healthBarBG.Visible = false
-                end
-
-                -- Distance ESP
-                if ESP.ShowDistance then
-                    esp.distance.Position = Vector2.new(pos.X, boxPos.Y + boxSize.Y + 2)
-                    esp.distance.Text = string.format("[%d]", math.floor(distance))
-                    esp.distance.Color = ESP.DistanceColor
-                    esp.distance.Size = ESP.TextSize
-                    esp.distance.Visible = true
-                else
-                    esp.distance.Visible = false
-                end
-
-                -- Head Dot
-                if ESP.ShowHeadDot and head then
-                    local headPos = camera:WorldToViewportPoint(head.Position)
-                    esp.headDot.Position = Vector2.new(headPos.X, headPos.Y)
-                    esp.headDot.Color = ESP.HeadDotColor
-                    esp.headDot.Visible = true
-                else
-                    esp.headDot.Visible = false
                 end
             else
-                for _, drawing in pairs(esp) do
-                    if type(drawing) == "table" then
-                        for _, obj in pairs(drawing) do
-                            obj.Visible = false
-                        end
-                    else
-                        drawing.Visible = false
-                    end
+                for _, line in pairs(esp.box) do
+                    if line then line.Visible = false end
                 end
+            end
+
+            -- Name ESP
+            if ESP.ShowNames and esp.name then
+                esp.name.Position = Vector2.new(pos.X, boxPos.Y - 16)
+                esp.name.Text = plr.Name
+                esp.name.Color = ESP.NameColor
+                esp.name.Size = ESP.TextSize
+                esp.name.Visible = true
+            elseif esp.name then
+                esp.name.Visible = false
+            end
+
+            -- Health Bar
+            if ESP.ShowHealthBars and esp.healthBar and esp.healthBarBG then
+                local healthPercent = humanoid.Health / humanoid.MaxHealth
+                local barHeight = boxSize.Y
+                local barPos = Vector2.new(boxPos.X - 5, boxPos.Y)
+
+                esp.healthBarBG.From = barPos
+                esp.healthBarBG.To = barPos + Vector2.new(0, barHeight)
+                esp.healthBarBG.Color = Color3.fromRGB(0, 0, 0)
+                esp.healthBarBG.Thickness = 3
+                esp.healthBarBG.Visible = true
+
+                esp.healthBar.From = barPos + Vector2.new(0, barHeight * (1 - healthPercent))
+                esp.healthBar.To = barPos + Vector2.new(0, barHeight)
+                esp.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
+                esp.healthBar.Thickness = 1
+                esp.healthBar.Visible = true
+            else
+                if esp.healthBar then esp.healthBar.Visible = false end
+                if esp.healthBarBG then esp.healthBarBG.Visible = false end
+            end
+
+            -- Distance ESP
+            if ESP.ShowDistance and esp.distance then
+                esp.distance.Position = Vector2.new(pos.X, boxPos.Y + boxSize.Y + 2)
+                esp.distance.Text = string.format("[%d]", math.floor(distance))
+                esp.distance.Color = ESP.DistanceColor
+                esp.distance.Size = ESP.TextSize
+                esp.distance.Visible = true
+            elseif esp.distance then
+                esp.distance.Visible = false
+            end
+
+            -- Head Dot
+            if ESP.ShowHeadDot and esp.headDot then
+                local headPos = camera:WorldToViewportPoint(head.Position)
+                esp.headDot.Position = Vector2.new(headPos.X, headPos.Y)
+                esp.headDot.Color = ESP.HeadDotColor
+                esp.headDot.Visible = true
+            elseif esp.headDot then
+                esp.headDot.Visible = false
             end
         else
             for _, drawing in pairs(esp) do
                 if type(drawing) == "table" then
                     for _, obj in pairs(drawing) do
-                        obj.Visible = false
+                        if obj then obj.Visible = false end
                     end
                 else
-                    drawing.Visible = false
+                    if drawing then drawing.Visible = false end
                 end
             end
         end
