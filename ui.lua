@@ -65,34 +65,20 @@ return function(Library, ESP)
    GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
 
    -- // Visuals Section
-   local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
+   local Visuals = Window:Page({Name = "visuals"})
    local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
-   local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
-   local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
 
-   -- Target UI Section
-   Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
-   Target_UI:Slider({Name = "Target UI Offset", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_Offset"})
-
-   Target_UI:Label({Name = "Target Visuals", Middle = false})
-   Target_UI:Toggle({Name = "Highlight", Default = false, Pointer = "TargetUI_Highlight"})
-   :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "TargetUI_HighlightColor"})
-   Target_UI:Slider({Name = "Fill Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_FillTransparency"})
-
-   Target_UI:Label({Name = "Hit Feedback", Middle = false})
-   Target_UI:Toggle({Name = "Hit Marker", Default = false, Pointer = "TargetUI_HitMarker"})
-   Target_UI:Toggle({Name = "Chams", Default = false, Pointer = "TargetUI_Chams"})
-   :Colorpicker({Info = "Chams Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Target_UI_ChamsColor"})
-   Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
-   Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
-
-   -- ESP Section with simplified toggle
+   -- ESP Section with correct implementation
    ESP_Section:Toggle({
        Name = "Enabled", 
        Default = false, 
        Pointer = "ESP_Enabled", 
-       callback = function(state)
-           ESP:Toggle(state)
+       Callback = function(state)
+           if ESP and type(ESP.Toggle) == "function" then
+               ESP:Toggle(state)
+           else
+               warn("ESP or ESP.Toggle is not available")
+           end
        end
    })
 
@@ -101,8 +87,10 @@ return function(Library, ESP)
        Name = "Self", 
        Default = false, 
        Pointer = "ESP_Self", 
-       callback = function(state)
-           ESP.Self = state
+       Callback = function(state)
+           if ESP then
+               ESP.Self = state
+           end
        end
    })
 
@@ -111,10 +99,11 @@ return function(Library, ESP)
        Minimum = 100, 
        Maximum = 2000, 
        Default = 1000, 
-       Suffix = "m", 
+       Measurement = "m", 
+       Decimals = 0,
        Pointer = "ESP_MaxDistance", 
-       callback = function(value)
-           if ESP and type(ESP) == "table" then
+       Callback = function(value)
+           if ESP then
                ESP.MaxDistance = value
            end
        end
@@ -244,6 +233,9 @@ return function(Library, ESP)
    })
 
    -- Atmosphere Section
+   local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
+   local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
+
    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
    Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
    :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
