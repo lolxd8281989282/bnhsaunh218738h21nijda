@@ -326,29 +326,37 @@ function ESP:Init()
     return self
 end
 
-function ESP:UpdateProperty(property, value)
-    if self[property] ~= nil then
-        self[property] = value
-        -- Force refresh all ESP objects when a property changes
+-- Update the ESP:UpdateColor function to handle the correct property names
+function ESP:UpdateColor(property, color)
+    -- Map UI property names to ESP property names
+    local propertyMap = {
+        Names = "NameColor",
+        Boxes = "BoxColor",
+        HealthBars = "HealthBarColor",
+        ArmorBar = "ArmorBarColor",
+        Distance = "DistanceColor",
+        Weapon = "WeaponColor",
+        Flags = "FlagsColor",
+        Bone = "BoneColor",
+        HeadCircle = "HeadCircleColor",
+        BulletTracers = "BulletTracersColor"
+    }
+
+    -- Get the correct property name from the map
+    local espProperty = propertyMap[property]
+    if espProperty then
+        -- Update the color in ESP settings
+        self[espProperty] = color
+        
+        -- Force refresh all ESP objects
         for _, object in pairs(self.Objects) do
+            -- Update the color in the drawings immediately
+            if object.Drawings[property] then
+                object.Drawings[property].Color = color
+            end
+            -- Force a full update
             object:Update()
         end
-    end
-end
-
-function ESP:UpdateColor(property, color)
-    if property == "Box" then
-        self.BoxColor = color
-    elseif property == "Names" then
-        self.NameColor = color
-    elseif property == "HealthBars" then
-        self.HealthBarColor = color
-    -- Add other color properties as needed
-    end
-
-    -- Force refresh all ESP objects when a color changes
-    for _, object in pairs(self.Objects) do
-        object:Update()
     end
 end
 
