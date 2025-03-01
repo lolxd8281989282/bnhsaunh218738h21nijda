@@ -1,4 +1,4 @@
-return function(Window, Library, esp)
+return function(Window, Library, ESP)
     -- // Pages
     local Main = Window:Page({Name = "aim-assist"})
     local Visuals = Window:Page({Name = "visuals"})
@@ -11,104 +11,71 @@ return function(Window, Library, esp)
     local Prediction = Main:Section({Name = "Prediction", Side = "Left"})
     local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
 
-    -- // Target Aim Section
-    TargetAim:Toggle({Name = "Enabled", Default = false, Pointer = "TargetEnabled"})
-    :Keybind({Default = Enum.KeyCode.E, KeybindName = "Target", Mode = "Toggle", Pointer = "TargetBind"})
-    TargetAim:Dropdown({Name = "Method", Options = {"Silent", "Sticky"}, Default = "Silent", Pointer = "TargetMethod"})
-    TargetAim:Toggle({Name = "Index (Mouse M1)", Default = false, Pointer = "TargetIndex"})
-    TargetAim:Toggle({Name = "Notifications", Default = false, Pointer = "TargetNotifications"})
-    TargetAim:Toggle({Name = "Resolver", Default = false, Pointer = "TargetResolver"})
-    :Keybind({Default = Enum.KeyCode.T, KeybindName = "Resolver", Mode = "Toggle", Pointer = "ResolverBind"})
-    TargetAim:Dropdown({Name = "Target Hit Part:", Options = {"Head", "Neck", "Body", "Right Arm", "Left Arm", "Pelvis", "Right Leg", "Left Leg"}, Default = "Head", Pointer = "TargetAim"})
-    TargetAim:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetJumpOffset"})
+    -- // ESP Section
+    local ESPSection = Visuals:Section({Name = "ESP", Side = "Left"})
+    ESPSection:Toggle({Name = "Enabled", Default = ESP.Settings.Enabled, Pointer = "Enabled"})
+    ESPSection:Toggle({Name = "Team Check", Default = ESP.Settings.TeamCheck, Pointer = "TeamCheck"})
+    ESPSection:Toggle({Name = "Show Names", Default = ESP.Settings.ShowNames, Pointer = "ShowNames"})
+    ESPSection:Toggle({Name = "Show Boxes", Default = ESP.Settings.ShowBoxes, Pointer = "ShowBoxes"})
+    ESPSection:Toggle({Name = "Show Health Bars", Default = ESP.Settings.ShowHealthBars, Pointer = "ShowHealthBars"})
+    ESPSection:Toggle({Name = "Show Equipped Item", Default = ESP.Settings.ShowEquippedItem, Pointer = "ShowEquippedItem"})
+    ESPSection:Toggle({Name = "Show Skeleton", Default = ESP.Settings.ShowSkeleton, Pointer = "ShowSkeleton"})
+    ESPSection:Toggle({Name = "Show Head Dot", Default = ESP.Settings.ShowHeadDot, Pointer = "ShowHeadDot"})
+    ESPSection:Toggle({Name = "Show Distance", Default = ESP.Settings.ShowDistance, Pointer = "ShowDistance"})
+    ESPSection:Slider({Name = "Max Distance", Minimum = 100, Maximum = 2000, Default = ESP.Settings.Distance, Decimals = 0, Pointer = "Distance"})
+    ESPSection:Colorpicker({Name = "Box Color", Info = "ESP Box Color", Default = ESP.Settings.BoxColor, Pointer = "BoxColor"})
+    ESPSection:Colorpicker({Name = "Name Color", Info = "ESP  Pointer = "BoxColor"})
+    ESPSection:Colorpicker({Name = "Name Color", Info = "ESP Name Color", Default = ESP.Settings.NameColor, Pointer = "NameColor"})
+    ESPSection:Colorpicker({Name = "Health Bar Color", Info = "ESP Health Bar Color", Default = Color3.fromRGB(0, 255, 0), Pointer = "HealthBarColor"})
 
-    -- // Field of View Section
-    FOV:Dropdown({Name = "Mode", Options = {"Static", "Dynamic"}, Default = "Static", Pointer = "FOVMode"})
-    FOV:Toggle({Name = "Visible", Default = false, Pointer = "FOVVisible"})
-    FOV:Toggle({Name = "Filled", Default = false, Pointer = "FOVFilled"})
-    FOV:Colorpicker({Name = "FOV Color", Info = "Field of View Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "FOVColor"})
-    FOV:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Smoothness"})
-    FOV:Slider({Name = "Visibility", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Visibility"})
-    FOV:Slider({Name = "Fluctuation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Fluctuation"})
-    FOV:Slider({Name = "Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Transparency"})
-    FOV:Slider({Name = "Rotation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Rotation"})
-    FOV:Toggle({Name = "Auto Select", Default = false, Pointer = "FOVAutoSelect"})
+    -- // Other Visuals Section
+    local OtherVisualsSection = Visuals:Section({Name = "Other Visuals", Side = "Right"})
+    OtherVisualsSection:Toggle({Name = "Third Person", Default = ESP.Settings.ThirdPerson, Pointer = "ThirdPerson"})
+    OtherVisualsSection:Slider({Name = "Camera FOV", Minimum = 30, Maximum = 120, Default = ESP.Settings.CameraFOV, Decimals = 0, Pointer = "CameraFOV"})
+    OtherVisualsSection:Slider({Name = "Camera Amount", Minimum = 0, Maximum = 100, Default = ESP.Settings.CameraAmount, Decimals = 0, Pointer = "CameraAmount"})
+    OtherVisualsSection:Toggle({Name = "Custom Fog", Default = ESP.Settings.CustomFog, Pointer = "CustomFog"})
+    OtherVisualsSection:Slider({Name = "Fog Distance", Minimum = 0, Maximum = 1000, Default = ESP.Settings.FogDistance, Decimals = 0, Pointer = "FogDistance"})
+    OtherVisualsSection:Toggle({Name = "Custom Brightness", Default = ESP.Settings.CustomBrightness, Pointer = "CustomBrightness"})
+    OtherVisualsSection:Slider({Name = "Brightness Strength", Minimum = 0, Maximum = 100, Default = ESP.Settings.BrightnessStrength, Decimals = 0, Pointer = "BrightnessStrength"})
 
-    -- // Prediction Section
-    Prediction:Toggle({Name = "Use Prediction", Default = false, Pointer = "PredictionEnabled"})
-    Prediction:Toggle({Name = "Ping Based", Default = false, Pointer = "PredictionPingBased"})
-    Prediction:Label({Name = "X Axis Prediction"})
-    Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionX"})
-    Prediction:Label({Name = "Y Axis Prediction"})
-    Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionY"})
-    Prediction:Toggle({Name = "Strafe", Default = false, Pointer = "PredictionStrafe"})
-    Prediction:Toggle({Name = "Destroy Cheaters Bypass", Default = false, Pointer = "PredictionBypass"})
-    Prediction:Toggle({Name = "Vehicle Strafe", Default = false, Pointer = "PredictionVehicle"})
-
-    -- // Gun Exploits Section
-    GunMods:Toggle({Name = "No Recoil", Default = false, Pointer = "GunNoRecoil"})
-    GunMods:Toggle({Name = "Rapid Fire", Default = false, Pointer = "GunRapidFire"})
-    GunMods:Slider({Name = "Fire Rate Modification", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "GunFireRate"})
-    GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
-
-    -- // Visuals Section
-    local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
-    local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
-    local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
-    local Rain= Visuals:Section({Name = "Rain", Side = "Left"})
-
-    -- Target UI Section
-    Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
-    Target_UI:Slider({Name = "Target UI Offset", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_Offset"})
-
-    Target_UI:Label({Name = "Target Visuals", Middle = false})
-    Target_UI:Toggle({Name = "Highlight", Default = false, Pointer = "TargetUI_Highlight"})
-    :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "TargetUI_HighlightColor"})
-    Target_UI:Slider({Name = "Fill Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_FillTransparency"})
-
-    Target_UI:Label({Name = "Hit Feedback", Middle = false})
-    Target_UI:Toggle({Name = "Hit Marker", Default = false, Pointer = "TargetUI_HitMarker"})
-    Target_UI:Toggle({Name = "Chams", Default = false, Pointer = "TargetUI_Chams"})
-    :Colorpicker({Info = "Chams Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Tagret_UI_ChamsColor"})
-    Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
-    Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
-
-    -- ESP Section
-    ESP_Section:Toggle({Name = "Enabled", Default = false, Pointer = "ESP_Enabled"})
-    ESP_Section:Toggle({Name = "Self", Default = false, Pointer = "ESP_Self"})
-    ESP_Section:Slider({Name = "Max Distance", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_MaxDistance"})
-    ESP_Section:Dropdown({Name = "Distance Mode", Options = {"Dynamic", "Static"}, Default = "Dynamic", Pointer = "ESP_DistanceMode"})
-    ESP_Section:Slider({Name = "Outline Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_OutlineTransparency"})
-    ESP_Section:Dropdown({Name = "Text Font", Options = {"UI", "System", "Plex", "Monospace"}, Default = "UI", Pointer = "ESP_TextFont"})
-    ESP_Section:Slider({Name = "Text Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "ESP_TextSize"})
-
-    ESP_Section:Label({Name = "ESP Features", Middle = false})
-    ESP_Section:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names"})
-    :Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_NameColor"})
-    ESP_Section:Toggle({Name = "Box", Default = false, Pointer = "ESP_Box"})
-    :Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_BoxColor"})
-    ESP_Section:Toggle({Name = "Health Bar", Default = false, Pointer = "ESP_HealthBar"})
-    :Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(127, 255, 0), Pointer = "ESP_HealthBarColor"})
-    ESP_Section:Toggle({Name = "Distance", Default = false, Pointer = "ESP_Distance"})
-    :Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_DistanceColor"})
-
-    -- Atmosphere Section
-    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
-    Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
-    :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
-    Atmosphere:Toggle({Name = "Time Modifier", Default = false, Pointer = "Atmosphere_TimeModifier"})
-    Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
-    :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
-    Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
-
-    -- Rain Section
-    Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
-    :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
+    -- // Movement Section
+    local MovementSection = Main:Section({Name = "Movement", Side = "Left"})
+    MovementSection:Toggle({Name = "Speed Enabled", Default = ESP.Settings.SpeedEnabled, Pointer = "SpeedEnabled"})
+    MovementSection:Slider({Name = "Speed Amount", Minimum = 0, Maximum = 100, Default = ESP.Settings.SpeedAmount, Decimals = 0, Pointer = "SpeedAmount"})
+    MovementSection:Toggle({Name = "Flight Enabled", Default = ESP.Settings.FlightEnabled, Pointer = "FlightEnabled"})
+    MovementSection:Slider({Name = "Flight Amount", Minimum = 0, Maximum = 100, Default = ESP.Settings.FlightAmount, Decimals = 0, Pointer = "FlightAmount"})
 
     -- // Settings Section
-    local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
-    Settings_Main:ConfigBox({})
-    Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
-    Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
-    Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
+    local SettingsSection = Settings:Section({Name = "Settings", Side = "Left"})
+    SettingsSection:Toggle({Name = "Stream Proof", Default = ESP.Settings.StreamProof, Pointer = "StreamProof"})
+
+    -- Function to save config
+    local function SaveConfig()
+        local config = {}
+        for setting, value in pairs(ESP.Settings) do
+            config[setting] = value
+        end
+        writefile("ESP_Config.json", game:GetService("HttpService"):JSONEncode(config))
+    end
+
+    -- Function to load config
+    local function LoadConfig()
+        if isfile("ESP_Config.json") then
+            local config = game:GetService("HttpService"):JSONDecode(readfile("ESP_Config.json"))
+            for setting, value in pairs(config) do
+                if ESP.Settings[setting] ~= nil then
+                    ESP.Settings[setting] = value
+                    if Library.pointers[setting] then
+                        Library.pointers[setting]:Set(value)
+                    end
+                end
+            end
+        end
+    end
+
+    SettingsSection:Button({Name = "Save Config", Callback = SaveConfig})
+    SettingsSection:Button({Name = "Load Config", Callback = LoadConfig})
+
+    return ESP
 end
+
