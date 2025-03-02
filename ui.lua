@@ -1,7 +1,5 @@
 return function(Library, ESP)
- -- First, ensure ESP has the proper Toggle function
  if ESP then
-     -- Only create Toggle function if it doesn't exist
      if not ESP.Toggle then
          ESP.Toggle = function(self, state)
              self.Enabled = state
@@ -53,123 +51,26 @@ return function(Library, ESP)
  Visualization:Toggle({Name = "view target", Default = false, Pointer = "Vis_ViewTarget"})
  Visualization:Toggle({Name = "face target", Default = false, Pointer = "Vis_FaceTarget"})
 
- -- // Visuals Sections
- local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
- local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
- local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
- local Rain = Visuals:Section({Name = "Rain", Side = "Left"})
+ -- // Visuals Sections (Updated layout)
+ local PlayerESP = Visuals:Section({Name = "player esp", Side = "Left"})
+ local LocalCharacter = Visuals:Section({Name = "local character", Side = "Left"})
  local World = Visuals:Section({Name = "world", Side = "Right"})
- local Other = Visuals:Section({Name = "other", Side = "Right"})
+ local Game = Visuals:Section({Name = "game", Side = "Right"})
+ local HUD = Visuals:Section({Name = "hud", Side = "Right"})
+ local Other = Visuals:Section({Name = "other", Side = "Left"})
 
- -- Target UI Section
- Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
- Target_UI:Slider({Name = "Target UI Offset", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_Offset"})
-
- Target_UI:Label({Name = "Target Visuals", Middle = false})
- Target_UI:Toggle({Name = "Highlight", Default = false, Pointer = "TargetUI_Highlight"})
- :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "TargetUI_HighlightColor"})
- Target_UI:Slider({Name = "Fill Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetUI_FillTransparency"})
-
- Target_UI:Label({Name = "Hit Feedback", Middle = false})
- Target_UI:Toggle({Name = "Hit Marker", Default = false, Pointer = "TargetUI_HitMarker"})
- Target_UI:Toggle({Name = "Chams", Default = false, Pointer = "TargetUI_Chams"})
- :Colorpicker({Info = "Chams Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Target_UI_ChamsColor"})
- Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
- Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
-
- -- ESP Section with simplified toggle
- ESP_Section:Toggle({
-     Name = "Enabled", 
-     Default = false, 
-     Pointer = "ESP_Enabled", 
+ -- Player ESP Section
+ PlayerESP:Toggle({Name = "enabled", Default = false, Pointer = "ESP_Enabled",
      callback = function(state)
          if ESP and type(ESP.Toggle) == "function" then
              ESP:Toggle(state)
          end
      end
  })
+ :Colorpicker({Info = "ESP Color", Default = Color3.fromRGB(255, 255, 255)})
 
- ESP_Section:Toggle({
-     Name = "Self", 
-     Default = false, 
-     Pointer = "ESP_Self", 
-     callback = function(state)
-         if ESP and type(ESP) == "table" then
-             ESP.SelfESP = state
-         end
-     end
- })
-
- ESP_Section:Slider({
-     Name = "Max Distance", 
-     Minimum = 100, 
-     Maximum = 2000, 
-     Default = 1000, 
-     Suffix = "m", 
-     Pointer = "ESP_MaxDistance", 
-     callback = function(value)
-         if ESP and type(ESP) == "table" then
-             ESP.MaxDistance = value
-         end
-     end
- })
-
- ESP_Section:Dropdown({
-     Name = "Distance Mode", 
-     Options = {"Dynamic", "Static"}, 
-     Default = "Dynamic", 
-     Pointer = "ESP_DistanceMode",
-     callback = function(value)
-         if ESP and type(ESP) == "table" then
-             ESP.DistanceMode = value
-         end
-     end
- })
-
- ESP_Section:Slider({
-     Name = "Outline Transparency", 
-     Minimum = 0, 
-     Maximum = 1, 
-     Default = 1, 
-     Decimals = 0.1, 
-     Pointer = "ESP_OutlineTransparency", 
-     callback = function(value)
-         if ESP and type(ESP) == "table" then
-             ESP.OutlineTransparency = value
-         end
-     end
- })
-
- ESP_Section:Dropdown({
-     Name = "Text Font", 
-     Options = {"UI", "System", "Plex", "Monospace"}, 
-     Default = "UI", 
-     Pointer = "ESP_TextFont", 
-     callback = function(value)
-         if ESP and type(ESP) == "table" and Drawing and Drawing.Fonts then
-             ESP.TextFont = Drawing.Fonts[value]
-         end
-     end
- })
-
- ESP_Section:Slider({
-     Name = "Text Size", 
-     Minimum = 8, 
-     Maximum = 24, 
-     Default = 14, 
-     Pointer = "ESP_TextSize", 
-     callback = function(value)
-         if ESP and type(ESP) == "table" then
-             ESP.TextSize = value
-         end
-     end
- })
-
- ESP_Section:Label({Name = "ESP Features", Middle = false})
- 
- -- ESP Features with proper implementation
  local function createESPFeature(name, property, default_color)
-     ESP_Section:Toggle({
+     PlayerESP:Toggle({
          Name = name, 
          Default = false, 
          Pointer = "ESP_" .. property, 
@@ -192,44 +93,74 @@ return function(Library, ESP)
  end
 
  -- Create ESP features with their respective colors
- createESPFeature("Names", "Names", Color3.fromRGB(255, 255, 255))
- createESPFeature("Box", "Boxes", Color3.fromRGB(255, 255, 255))
- createESPFeature("Health Bar", "HealthBars", Color3.fromRGB(0, 255, 0))
- createESPFeature("Armor Bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
- createESPFeature("Distance", "Distance", Color3.fromRGB(255, 255, 255))
- createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
- createESPFeature("Flags", "Flags", Color3.fromRGB(255, 255, 255))
- createESPFeature("Skeleton", "Bone", Color3.fromRGB(255, 255, 255))
- createESPFeature("Bullet Tracers", "BulletTracers", Color3.fromRGB(139, 0, 0))
- createESPFeature("Head Circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
+ createESPFeature("box", "Boxes", Color3.fromRGB(255, 255, 255))
+ createESPFeature("name", "Names", Color3.fromRGB(255, 255, 255))
+ createESPFeature("image", "Image", Color3.fromRGB(255, 255, 255))
+ createESPFeature("chams", "Chams", Color3.fromRGB(255, 255, 255))
+ createESPFeature("material", "Material", Color3.fromRGB(255, 255, 255))
+ createESPFeature("tool text", "ToolText", Color3.fromRGB(255, 255, 255))
+ createESPFeature("tool icon", "ToolIcon", Color3.fromRGB(255, 255, 255))
+ createESPFeature("highlight", "Highlight", Color3.fromRGB(255, 255, 255))
+ createESPFeature("armor bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
+ createESPFeature("health bar", "HealthBar", Color3.fromRGB(0, 255, 0))
+ createESPFeature("health text", "HealthText", Color3.fromRGB(255, 255, 255))
+ PlayerESP:Toggle({Name = "fonts", Default = false, Pointer = "ESP_Fonts"})
+ :Colorpicker({Info = "Font Color", Default = Color3.fromRGB(255, 255, 255)})
 
- ESP_Section:Slider({
-     Name = "Tracer Duration", 
-     Minimum = 0.1, 
-     Maximum = 5, 
-     Default = 1.5, 
-     Decimals = 0.1, 
-     Suffix = "s", 
-     Pointer = "ESP_TracerDuration", 
-     callback = function(value)
-         if ESP and type(ESP) == "table" then
-             ESP.TracerDuration = value
-         end
-     end
- })
+ -- Local Character Section
+ LocalCharacter:Toggle({Name = "show arms in first person", Default = false, Pointer = "Local_ShowArms"})
+ LocalCharacter:Toggle({Name = "character highlight", Default = false, Pointer = "Local_CharHighlight"})
+ :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255)})
+ LocalCharacter:Toggle({Name = "character material", Default = false, Pointer = "Local_CharMaterial"})
+ :Colorpicker({Info = "Material Color", Default = Color3.fromRGB(255, 255, 255)})
+ LocalCharacter:Toggle({Name = "custom character", Default = false, Pointer = "Local_CustomChar"})
+ :Colorpicker({Info = "Character Color", Default = Color3.fromRGB(255, 255, 255)})
+ LocalCharacter:Toggle({Name = "material tools", Default = false, Pointer = "Local_MaterialTools"})
+ :Colorpicker({Info = "Tools Color", Default = Color3.fromRGB(255, 255, 255)})
+ LocalCharacter:Toggle({Name = "particle aura", Default = false, Pointer = "Local_ParticleAura"})
+ :Colorpicker({Info = "Aura Color", Default = Color3.fromRGB(255, 255, 255)})
 
- -- Atmosphere Section
- Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
- Atmosphere:Toggle({Name = "Ambient", Default = false, Pointer = "Atmosphere_Ambient"})
- :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_AmbientColor"})
- Atmosphere:Toggle({Name = "Time Modifier", Default = false, Pointer = "Atmosphere_TimeModifier"})
- Atmosphere:Toggle({Name = "Fog", Default = false, Pointer = "Atmosphere_Fog"})
- :Colorpicker({Info = "Fog Color", Default = Color3.fromRGB(139, 0, 0), Pointer = "Atmosphere_FogColor"})
- Atmosphere:Toggle({Name = "Brightness", Default = false, Pointer = "Atmosphere_Brightness"})
+ -- World Section
+ World:Toggle({Name = "lighting mode", Default = false, Pointer = "World_LightingMode"})
+ World:Toggle({Name = "shadowmap", Default = false, Pointer = "World_Shadowmap"})
+ World:Slider({Name = "world time", Minimum = 0, Maximum = 24, Default = 4.5, Decimals = 0.1, Suffix = "", Pointer = "World_Time"})
+ World:Toggle({Name = "atmosphere", Default = false, Pointer = "World_Atmosphere"})
+ :Colorpicker({Info = "Atmosphere Color", Default = Color3.fromRGB(255, 255, 255)})
+ World:Slider({Name = "saturation", Minimum = 0, Maximum = 1, Default = 0.1, Decimals = 0.01, Pointer = "World_Saturation"})
+ World:Slider({Name = "contrast", Minimum = 0, Maximum = 1, Default = 0.05, Decimals = 0.01, Pointer = "World_Contrast"})
+ World:Toggle({Name = "textures", Default = false, Pointer = "World_Textures"})
+ World:Toggle({Name = "ambient", Default = false, Pointer = "World_Ambient"})
+ :Colorpicker({Info = "Ambient Color", Default = Color3.fromRGB(255, 255, 255)})
+ World:Toggle({Name = "weather", Default = false, Pointer = "World_Weather"})
+ World:Toggle({Name = "skybox", Default = false, Pointer = "World_Skybox"})
+ World:Toggle({Name = "tint", Default = false, Pointer = "World_Tint"})
+ :Colorpicker({Info = "Tint Color", Default = Color3.fromRGB(255, 255, 255)})
 
- -- Rain Section
- Rain:Toggle({Name = "Enabled", Default = false, Pointer = "Rain_Enabled"})
- :Colorpicker({Info = "Rain Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "Rain_RainColor"})
+ -- Game Section
+ Game:Slider({Name = "player bullet volume", Minimum = 0, Maximum = 1, Default = 0.5, Decimals = 0.1, Suffix = "", Pointer = "Game_BulletVolume"})
+ Game:Toggle({Name = "player bullet tracers", Default = false, Pointer = "Game_PlayerTracers"})
+ :Colorpicker({Info = "Tracer Color", Default = Color3.fromRGB(255, 255, 255)})
+ Game:Toggle({Name = "local bullet tracers", Default = false, Pointer = "Game_LocalTracers"})
+ :Colorpicker({Info = "Local Tracer Color", Default = Color3.fromRGB(255, 255, 255)})
+ Game:Toggle({Name = "override armor pos", Default = false, Pointer = "Game_ArmorPos"})
+ Game:Toggle({Name = "shot notifications", Default = false, Pointer = "Game_ShotNotifs"})
+ Game:Toggle({Name = "local bullet sound", Default = false, Pointer = "Game_BulletSound"})
+ Game:Toggle({Name = "damage number", Default = false, Pointer = "Game_DamageNumber"})
+ Game:Toggle({Name = "3d hit marker", Default = false, Pointer = "Game_3DHitMarker"})
+ Game:Toggle({Name = "2d hit marker", Default = false, Pointer = "Game_2DHitMarker"})
+ Game:Toggle({Name = "hit particle", Default = false, Pointer = "Game_HitParticle"})
+ Game:Toggle({Name = "hit overlay", Default = false, Pointer = "Game_HitOverlay"})
+ Game:Toggle({Name = "hit sound", Default = false, Pointer = "Game_HitSound"})
+ Game:Toggle({Name = "hit chams", Default = false, Pointer = "Game_HitChams"})
+
+ -- HUD Section
+ HUD:Toggle({Name = "server position indicator", Default = false, Pointer = "HUD_ServerPos"})
+ HUD:Toggle({Name = "center panel", Default = false, Pointer = "HUD_CenterPanel"})
+ HUD:Slider({Name = "aspect ratio", Minimum = 0, Maximum = 2, Default = 1, Decimals = 0.1, Suffix = "x", Pointer = "HUD_AspectRatio"})
+ HUD:Toggle({Name = "show chat", Default = false, Pointer = "HUD_ShowChat"})
+
+ -- Other Section
+ Other:Toggle({Name = "hide player nametags", Default = false, Pointer = "Other_HideNametags"})
 
  -- // Settings Section
  local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
