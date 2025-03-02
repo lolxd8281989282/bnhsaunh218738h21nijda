@@ -54,14 +54,12 @@ return function(Library, ESP)
  Visualization:Toggle({Name = "face target", Default = false, Pointer = "Vis_FaceTarget"})
 
  -- // Visuals Sections
- local PlayerESP = Visuals:Section({Name = "player esp", Side = "Left"})
- local LocalCharacter = Visuals:Section({Name = "local character", Side = "Left"})
- local World = Visuals:Section({Name = "world", Side = "Right"})
- local Other = Visuals:Section({Name = "other", Side = "Right"})
  local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
  local ESP_Section = Visuals:Section({Name = "ESP", Side = "Right"})
  local Atmosphere = Visuals:Section({Name = "Atmosphere", Side = "Left"})
  local Rain = Visuals:Section({Name = "Rain", Side = "Left"})
+ local World = Visuals:Section({Name = "world", Side = "Right"})
+ local Other = Visuals:Section({Name = "other", Side = "Right"})
 
  -- Target UI Section
  Target_UI:Toggle({Name = "Enabled", Default = false, Pointer = "TargetUI_Enabled"})
