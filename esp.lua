@@ -1,4 +1,5 @@
-local ESP = {
+```typescriptreact file="esp.lua"
+[v0-no-op-code-block-prefix]local ESP = {
     Enabled = false,
     TeamCheck = false,
     SelfESP = false,
@@ -241,17 +242,116 @@ function ESPObject:Update()
     -- Update Bone ESP
     if ESP.ShowBone then
         local head = character:FindFirstChild("Head")
-        if head then
-            local headPosition = CurrentCamera:WorldToViewportPoint(head.Position)
-            self.Drawings.Bone.From = Vector2.new(position.X, position.Y)
-            self.Drawings.Bone.To = Vector2.new(headPosition.X, headPosition.Y)
+        local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+        local leftArm = character:FindFirstChild("LeftUpperArm")
+        local rightArm = character:FindFirstChild("RightUpperArm")
+        local leftLeg = character:FindFirstChild("LeftUpperLeg")
+        local rightLeg = character:FindFirstChild("RightUpperLeg")
+        local leftForeArm = character:FindFirstChild("LeftLowerArm")
+        local rightForeArm = character:FindFirstChild("RightLowerArm")
+        local leftForeLeg = character:FindFirstChild("LeftLowerLeg")
+        local rightForeLeg = character:FindFirstChild("RightLowerLeg")
+
+        if head and torso then
+            -- Convert all positions to screen space
+            local headPos = CurrentCamera:WorldToViewportPoint(head.Position)
+            local torsoPos = CurrentCamera:WorldToViewportPoint(torso.Position)
+            
+            -- Draw head circle using actual head size
+            if ESP.ShowHeadCircle then
+                self.Drawings.HeadCircle.Position = Vector2.new(headPos.X, headPos.Y)
+                self.Drawings.HeadCircle.Radius = (CurrentCamera:WorldToViewportPoint(head.Position + head.Size/2).X - CurrentCamera:WorldToViewportPoint(head.Position - head.Size/2).X) / 2
+                self.Drawings.HeadCircle.Color = ESP.HeadCircleColor
+                self.Drawings.HeadCircle.Visible = true
+            end
+
+            -- Head to Torso
+            self.Drawings.Bone.From = Vector2.new(headPos.X, headPos.Y + head.Size.Y/2)
+            self.Drawings.Bone.To = Vector2.new(torsoPos.X, torsoPos.Y)
             self.Drawings.Bone.Color = ESP.BoneColor
             self.Drawings.Bone.Visible = true
+
+            -- Create additional bones for arms and legs if they don't exist
+            if not self.Drawings.LeftArm then
+                self.Drawings.LeftArm = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.RightArm = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.LeftLeg = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.RightLeg = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.LeftForeArm = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.RightForeArm = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.LeftForeLeg = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+                self.Drawings.RightForeLeg = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false})
+            end
+
+            -- Draw limbs
+            if leftArm and leftForeArm then
+                local leftArmPos = CurrentCamera:WorldToViewportPoint(leftArm.Position)
+                local leftForeArmPos = CurrentCamera:WorldToViewportPoint(leftForeArm.Position)
+                self.Drawings.LeftArm.From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.LeftArm.To = Vector2.new(leftArmPos.X, leftArmPos.Y)
+                self.Drawings.LeftArm.Visible = true
+                self.Drawings.LeftForeArm.From = Vector2.new(leftArmPos.X, leftArmPos.Y)
+                self.Drawings.LeftForeArm.To = Vector2.new(leftForeArmPos.X, leftForeArmPos.Y)
+                self.Drawings.LeftForeArm.Visible = true
+            end
+
+            if rightArm and rightForeArm then
+                local rightArmPos = CurrentCamera:WorldToViewportPoint(rightArm.Position)
+                local rightForeArmPos = CurrentCamera:WorldToViewportPoint(rightForeArm.Position)
+                self.Drawings.RightArm.From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.RightArm.To = Vector2.new(rightArmPos.X, rightArmPos.Y)
+                self.Drawings.RightArm.Visible = true
+                self.Drawings.RightForeArm.From = Vector2.new(rightArmPos.X, rightArmPos.Y)
+                self.Drawings.RightForeArm.To = Vector2.new(rightForeArmPos.X, rightForeArmPos.Y)
+                self.Drawings.RightForeArm.Visible = true
+            end
+
+            if leftLeg and leftForeLeg then
+                local leftLegPos = CurrentCamera:WorldToViewportPoint(leftLeg.Position)
+                local leftForeLegPos = CurrentCamera:WorldToViewportPoint(leftForeLeg.Position)
+                self.Drawings.LeftLeg.From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.LeftLeg.To = Vector2.new(leftLegPos.X, leftLegPos.Y)
+                self.Drawings.LeftLeg.Visible = true
+                self.Drawings.LeftForeLeg.From = Vector2.new(leftLegPos.X, leftLegPos.Y)
+                self.Drawings.LeftForeLeg.To = Vector2.new(leftForeLegPos.X, leftForeLegPos.Y)
+                self.Drawings.LeftForeLeg.Visible = true
+            end
+
+            if rightLeg and rightForeLeg then
+                local rightLegPos = CurrentCamera:WorldToViewportPoint(rightLeg.Position)
+                local rightForeLegPos = CurrentCamera:WorldToViewportPoint(rightForeLeg.Position)
+                self.Drawings.RightLeg.From = Vector2.new(torsoPos.X, torsoPos.Y)
+                self.Drawings.RightLeg.To = Vector2.new(rightLegPos.X, rightLegPos.Y)
+                self.Drawings.RightLeg.Visible = true
+                self.Drawings.RightForeLeg.From = Vector2.new(rightLegPos.X, rightLegPos.Y)
+                self.Drawings.RightForeLeg.To = Vector2.new(rightForeLegPos.X, rightForeLegPos.Y)
+                self.Drawings.RightForeLeg.Visible = true
+            end
         else
             self.Drawings.Bone.Visible = false
+            if self.Drawings.LeftArm then
+                self.Drawings.LeftArm.Visible = false
+                self.Drawings.RightArm.Visible = false
+                self.Drawings.LeftLeg.Visible = false
+                self.Drawings.RightLeg.Visible = false
+                self.Drawings.LeftForeArm.Visible = false
+                self.Drawings.RightForeArm.Visible = false
+                self.Drawings.LeftForeLeg.Visible = false
+                self.Drawings.RightForeLeg.Visible = false
+            end
         end
     else
         self.Drawings.Bone.Visible = false
+        if self.Drawings.LeftArm then
+            self.Drawings.LeftArm.Visible = false
+            self.Drawings.RightArm.Visible = false
+            self.Drawings.LeftLeg.Visible = false
+            self.Drawings.RightLeg.Visible = false
+            self.Drawings.LeftForeArm.Visible = false
+            self.Drawings.RightForeArm.Visible = false
+            self.Drawings.LeftForeLeg.Visible = false
+            self.Drawings.RightForeLeg.Visible = false
+        end
     end
 
     return true
