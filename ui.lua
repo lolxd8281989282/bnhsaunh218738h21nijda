@@ -198,13 +198,17 @@ return function(Library, ESP)
 
  -- Keybind with toggle callback
  Settings_Main:Keybind({
-     Name = "Toggle UI",
-     Default = Enum.KeyCode.End,
-     Callback = function()
-         Window:Toggle() -- This should toggle the UI visibility
-     end
- })
+    Name = "Toggle UI",
+    Default = Enum.KeyCode.End,
+    Flag = "ToggleUI",
+    Callback = function()
+        print("Toggle UI keybind pressed") -- Add this debug line
+        Window:Toggle()
+    end
+})
 
  -- // Initialisation
  Window:Initialize()
+ Library.ToggleKeybind = Enum.KeyCode.End
+print("UI initialized with toggle keybind: " .. tostring(Library.ToggleKeybind))
 end
