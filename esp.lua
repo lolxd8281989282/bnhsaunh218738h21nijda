@@ -11,6 +11,7 @@ local ESP = {
     ShowFlags = false,
     ShowBone = false,
     ShowHeadCircle = false,
+    ShowChams = false,
     BulletTracers = false,
     BoxColor = Color3.fromRGB(255, 255, 255),
     NameColor = Color3.fromRGB(255, 255, 255),
@@ -21,13 +22,14 @@ local ESP = {
     FlagsColor = Color3.fromRGB(255, 255, 255),
     BoneColor = Color3.fromRGB(255, 255, 255),
     HeadCircleColor = Color3.fromRGB(255, 255, 255),
+    ChamsColor = Color3.fromRGB(147, 112, 219),
     BulletTracersColor = Color3.fromRGB(139, 0, 0),
-    ChamsColor = Color3.fromRGB(147, 112, 219), -- Purple color for chams
     TextSize = 14,
     TextFont = Drawing.Fonts.UI,
     MaxDistance = 1000,
     OutlineTransparency = 1,
-    TracerDuration = 1.5
+    TracerDuration = 1.5,
+    ChamsCache = {}
 }
 
 -- Services
@@ -78,20 +80,9 @@ function ESPObject.new(player)
         BulletTracer = CreateDrawing("Line", {Thickness = 1, Color = ESP.BulletTracersColor, Visible = false})
     }
     
-    -- Chams
-    self.Chams = Instance.new("Highlight")
-    self.Chams.FillColor = ESP.ChamsColor
-    self.Chams.OutlineColor = ESP.ChamsColor
-    self.Chams.FillTransparency = 0.5
-    self.Chams.OutlineTransparency = 1
-    self.Chams.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    self.Chams.Enabled = false
-    self.Chams.Parent = self.Character
-    
     -- Handle character changes
     player.CharacterAdded:Connect(function(char)
         self.Character = char
-        self.Chams.Parent = char
     end)
     
     return self
@@ -249,16 +240,6 @@ function ESPObject:Update()
         self.Drawings.Bone.Visible = false
     end
 
-    -- Update Chams
-    if ESP.ShowChams then
-        self.Chams.Enabled = true
-        self.Chams.FillColor = ESP.ChamsColor
-        self.Chams.OutlineColor = ESP.ChamsColor
-        self.Chams.FillTransparency = 0.5 + math.sin(tick() * 2) * 0.2 -- Animated transparency
-    else
-        self.Chams.Enabled = false
-    end
-
     return true
 end
 
@@ -266,15 +247,77 @@ function ESPObject:Hide()
     for _, drawing in pairs(self.Drawings) do
         drawing.Visible = false
     end
-    self.Chams.Enabled = false
 end
 
 function ESPObject:Remove()
     for _, drawing in pairs(self.Drawings) do
         drawing:Remove()
     end
-    self.Chams:Destroy()
     ESP.Objects[self.Player] = nil
+end
+
+-- Chams Functions
+function ESP:CreateChams(player)
+    if not self.ChamsCache[player] then
+        local character = player.Character
+        if character then
+            local highlight = Instance.new("Highlight")
+            highlight.FillColor = self.ChamsColor
+            highlight.OutlineColor = self.ChamsColor
+            highlight.FillTransparency = 0.5
+            highlight.OutlineTransparency = 1
+            highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            highlight.Parent = character
+            
+            -- Store in cache
+            self.ChamsCache[player] = {
+                Highlight = highlight,
+                Connection = RunService.Heartbeat:Connect(function()
+                    if not self.ShowChams or not self.Enabled then
+                        highlight.Enabled = false
+                        return
+                    end
+                    
+                    highlight.Enabled = true
+                    highlight.FillTransparency = 0.3 + math.sin(tick() * 2) * 0.2
+                    highlight.FillColor = self.ChamsColor
+                    highlight.OutlineColor = self.ChamsColor
+                end)
+            }
+
+            -- Handle character changes
+            player.CharacterAdded:Connect(function(char)
+                if self.ChamsCache[player] then
+                    self.ChamsCache[player].Highlight.Parent = char
+                end
+            end)
+        end
+    end
+end
+
+function ESP:RemoveChams(player)
+    local cache = self.ChamsCache[player]
+    if cache then
+        if cache.Connection then
+            cache.Connection:Disconnect()
+        end
+        if cache.Highlight then
+            cache.Highlight:Destroy()
+        end
+        self.ChamsCache[player] = nil
+    end
+end
+
+function ESP:UpdateChams()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            if self.ShowChams and self.Enabled then
+                self:CreateChams(player)
+            else
+                self:RemoveChams(player)
+            end
+        end
+    end
 end
 
 -- Bullet Tracer Implementation
@@ -309,11 +352,17 @@ function ESP:Toggle(state)
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer or self.SelfESP then
                 self.Objects[player] = ESPObject.new(player)
+                if self.ShowChams then
+                    self:CreateChams(player)
+                end
             end
         end
     else
         for _, object in pairs(self.Objects) do
             object:Hide()
+        end
+        for player, _ in pairs(self.ChamsCache) do
+            self:RemoveChams(player)
         end
     end
 end
@@ -325,6 +374,7 @@ function ESP:Update()
             self.Objects[player] = nil
         end
     end
+    self:UpdateChams()
 end
 
 function ESP:Init()
@@ -332,6 +382,9 @@ function ESP:Init()
     Players.PlayerAdded:Connect(function(player)
         if player ~= LocalPlayer or ESP.SelfESP then
             ESP.Objects[player] = ESPObject.new(player)
+            if ESP.ShowChams and ESP.Enabled then
+                ESP:CreateChams(player)
+            end
         end
     end)
 
@@ -339,6 +392,7 @@ function ESP:Init()
         if ESP.Objects[player] then
             ESP.Objects[player]:Remove()
         end
+        ESP:RemoveChams(player)
     end)
 
     RunService.RenderStepped:Connect(function()
@@ -350,43 +404,30 @@ function ESP:Init()
     return self
 end
 
-function ESP:UpdateColor(property, color)
-    local propertyMap = {
-        Names = "NameColor",
-        Boxes = "BoxColor",
-        HealthBars = "HealthBarColor",
-        ArmorBar = "ArmorBarColor",
-        Distance = "DistanceColor",
-        Weapon = "WeaponColor",
-        Flags = "FlagsColor",
-        Bone = "BoneColor",
-        HeadCircle = "HeadCircleColor",
-        BulletTracers = "BulletTracersColor",
-        Chams = "ChamsColor"
-    }
-
-    local espProperty = propertyMap[property]
-    if espProperty then
-        self[espProperty] = color
-        
-        for _, object in pairs(self.Objects) do
-            if object.Drawings[property] then
-                object.Drawings[property].Color = color
+function ESP:UpdateColor(feature, color)
+    if feature == "Chams" then
+        self.ChamsColor = color
+        for _, cache in pairs(self.ChamsCache) do
+            if cache.Highlight then
+                cache.Highlight.FillColor = color
+                cache.Highlight.OutlineColor = color
             end
-            if property == "Chams" then
-                object.Chams.FillColor = color
-                object.Chams.OutlineColor = color
-            end
-            object:Update()
+        end
+    else
+        local propertyName = feature.."Color"
+        if self[propertyName] then
+            self[propertyName] = color
         end
     end
 end
 
-function ESP:ToggleFeature(feature, enabled)
-    if self["Show"..feature] ~= nil then
-        self["Show"..feature] = enabled
-        for _, object in pairs(self.Objects) do
-            object:Update()
+function ESP:ToggleFeature(feature, state)
+    if feature == "Chams" then
+        self.ShowChams = state
+        self:UpdateChams()
+    else
+        if self["Show"..feature] ~= nil then
+            self["Show"..feature] = state
         end
     end
 end
