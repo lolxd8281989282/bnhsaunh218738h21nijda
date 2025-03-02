@@ -162,37 +162,28 @@ function ESPObject:Update()
         local health = humanoid.Health / humanoid.MaxHealth
         self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
         self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2)
-        self.Drawings.HealthBar.Color = ESP.HealthBarColor
+        self.Drawings.HealthBar.Color = Color3.new(1 - health, health, 0) -- Red to Green gradient
+        self.Drawings.HealthBar.Transparency = 1 - health -- Gradient effect
         self.Drawings.HealthBar.Visible = true
-        
-        -- Create gradient effect
-        if health > 0.5 then
-            self.Drawings.HealthBar.Color = Color3.fromRGB(
-                255 * (2 - 2 * health), -- R
-                255,                    -- G
-                0                       -- B
-            )
-        else
-            self.Drawings.HealthBar.Color = Color3.fromRGB(
-                255,                    -- R
-                255 * (2 * health),     -- G
-                0                       -- B
-            )
-        end
     else
         self.Drawings.HealthBar.Visible = false
     end
 
     -- Update Armor Bar
     if ESP.ShowArmorBar then
-        local armor = humanoid:GetAttribute("Armor") or 0
-        local maxArmor = humanoid:GetAttribute("MaxArmor") or 100
-        local armorPercentage = armor / maxArmor
+        local armor = humanoid:GetAttribute("Armor")
+        local maxArmor = humanoid:GetAttribute("MaxArmor")
         
-        self.Drawings.ArmorBar.From = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y + size * 1.8 / 2)
-        self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y - size * 1.8 / 2 * armorPercentage)
-        self.Drawings.ArmorBar.Color = ESP.ArmorBarColor
-        self.Drawings.ArmorBar.Visible = true
+        if armor and maxArmor and maxArmor > 0 then
+            local armorPercentage = armor / maxArmor
+            self.Drawings.ArmorBar.From = Vector2.new(position.X - size * 1.5 / 2 - 3, position.Y + size * 1.8 / 2)
+            self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 3, position.Y - size * 1.8 / 2)
+            self.Drawings.ArmorBar.Color = Color3.new(0, 1 - armorPercentage, armorPercentage) -- Blue to Cyan gradient
+            self.Drawings.ArmorBar.Transparency = 1 - armorPercentage -- Gradient effect
+            self.Drawings.ArmorBar.Visible = true
+        else
+            self.Drawings.ArmorBar.Visible = false
+        end
     else
         self.Drawings.ArmorBar.Visible = false
     end
