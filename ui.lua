@@ -10,7 +10,11 @@ return function(Library, ESP)
    end
 
    -- Remove assertions since we'll handle ESP differently according to documentation
-   local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
+   local Window = Library:New({
+       Name = "dracula.lol [private beta]", 
+       Accent = Color3.fromRGB(255, 255, 255),
+       Center = true  -- Add this line to center the title
+   })
 
    -- // Pages
    local Main = Window:Page({Name = "aim-assist"})
