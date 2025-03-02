@@ -377,7 +377,7 @@ function ESP:UpdateChams()
             end
         end
     end
-end  -- Added the missing 'end' statement here
+end
 
 -- Bullet Tracer Implementation
 function ESP:CreateBulletTracer(origin, destination)
