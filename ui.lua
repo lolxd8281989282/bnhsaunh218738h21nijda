@@ -13,7 +13,7 @@ return function(Library, ESP)
    local Window = Library:New({
        Name = "dracula.lol [private beta]", 
        Accent = Color3.fromRGB(255, 255, 255),
-       Center = true  -- Add this line to center the title
+       TextXAlignment = Enum.TextXAlignment.Center  -- Center the title text
    })
 
    -- // Pages
@@ -199,7 +199,6 @@ return function(Library, ESP)
            Pointer = "ESP_" .. property .. "Color", 
            callback = function(color)
                if ESP and type(ESP.UpdateColor) == "function" then
-                   -- Pass the correct property name for color updates
                    ESP:UpdateColor(property, color)
                end
            end
