@@ -8,7 +8,7 @@ return function(Library, ESP)
    end
 
    local Window = Library:New({
-       Name = "dracula.lol [private beta]", 
+       Name = "dracula.lol [private beta]        |        https://dracula.lol", 
        Accent = Color3.fromRGB(255, 255, 255),
        TextXAlignment = Enum.TextXAlignment.Center
    })
