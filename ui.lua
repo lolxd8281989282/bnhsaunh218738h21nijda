@@ -54,8 +54,8 @@ return function(Library, ESP)
    -- // Visuals Section
    local PlayerESP = Visuals:Section({Name = "player esp", Side = "Left"})
    local LocalCharacter = Visuals:Section({Name = "local character", Side = "Right"})
-   local World = Visuals:Section({Name = "world", Side = "Left"})
-   local Other = Visuals:Section({Name = "other", Side = "Left"})
+   local World = Visuals:Section({Name = "world", Side = "Right"})
+   local Other = Visuals:Section({Name = "other", Side = "Right"})
 
    -- Player ESP Section with working ESP features
    PlayerESP:Toggle({
