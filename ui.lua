@@ -10,13 +10,7 @@ return function(Library, ESP)
    end
 
    -- Remove assertions since we'll handle ESP differently according to documentation
-   local Window = Library:New({
-       Name = "                                                 dracula.lol [private beta]", 
-       Accent = Color3.fromRGB(255, 255, 255),
-       Position = UDim2.new(0.5, 0, 0, 0),  -- Center horizontally
-       AnchorPoint = Vector2.new(0.5, 0),   -- Set anchor point for centering
-       TextAlign = Enum.TextXAlignment.Center -- Center the text
-   })
+   local Window = Library:New({Name = "dracula.lol [private beta]", Accent = Color3.fromRGB(255, 255, 255)})
 
    -- // Pages
    local Main = Window:Page({Name = "aim-assist"})
