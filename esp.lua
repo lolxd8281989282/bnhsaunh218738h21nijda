@@ -257,12 +257,10 @@ function ESPObject:Remove()
 end
 
 -- Chams Functions
--- Update the CreateChams function to properly handle character parts
 function ESP:CreateChams(player)
     if not self.ChamsCache[player] then
         local character = player.Character
         if character then
-            -- Create highlight for the whole character
             local highlight = Instance.new("Highlight")
             highlight.FillColor = self.ChamsColor
             highlight.OutlineColor = self.ChamsColor
@@ -271,37 +269,30 @@ function ESP:CreateChams(player)
             highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
             highlight.Parent = character
 
-            -- Function to apply transparency to character parts
             local function updatePartTransparency(part)
                 if part:IsA("BasePart") then
-                    -- Check if the part belongs to a tool
                     local tool = part:FindFirstAncestorWhichIsA("Tool")
                     if not tool then
-                        -- If not part of a tool, apply transparency
                         part.Transparency = 0.8
                     end
                 end
             end
 
-            -- Apply initial transparency to all parts except tools
             for _, part in pairs(character:GetDescendants()) do
                 updatePartTransparency(part)
             end
 
-            -- Handle new parts being added
             local connections = {}
             
             connections[1] = character.DescendantAdded:Connect(function(child)
                 updatePartTransparency(child)
             end)
 
-            -- Store in cache
             self.ChamsCache[player] = {
                 Highlight = highlight,
                 Connections = connections
             }
 
-            -- Handle character changes
             player.CharacterAdded:Connect(function(char)
                 if self.ChamsCache[player] then
                     self:RemoveChams(player)
@@ -314,7 +305,6 @@ function ESP:CreateChams(player)
     end
 end
 
--- Update RemoveChams to properly clean up
 function ESP:RemoveChams(player)
     local cache = self.ChamsCache[player]
     if cache then
@@ -327,7 +317,6 @@ function ESP:RemoveChams(player)
             cache.Highlight:Destroy()
         end
         
-        -- Reset transparency for all parts
         local character = player.Character
         if character then
             for _, part in pairs(character:GetDescendants()) do
@@ -341,7 +330,6 @@ function ESP:RemoveChams(player)
     end
 end
 
--- Update UpdateChams to properly update colors
 function ESP:UpdateChams()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -349,7 +337,6 @@ function ESP:UpdateChams()
                 if not self.ChamsCache[player] then
                     self:CreateChams(player)
                 else
-                    -- Update existing chams
                     local cache = self.ChamsCache[player]
                     if cache.Highlight then
                         cache.Highlight.FillColor = self.ChamsColor
@@ -381,7 +368,6 @@ function ESP:CreateBulletTracer(origin, destination)
     tracer.From = Vector2.new(startPos.X, startPos.Y)
     tracer.To = Vector2.new(endPos.X, endPos.Y)
     
-    -- Remove tracer after duration
     spawn(function()
         wait(ESP.TracerDuration)
         tracer:Remove()
@@ -423,7 +409,6 @@ function ESP:Update()
 end
 
 function ESP:Init()
-    -- Connections
     Players.PlayerAdded:Connect(function(player)
         if player ~= LocalPlayer or ESP.SelfESP then
             ESP.Objects[player] = ESPObject.new(player)
@@ -453,13 +438,9 @@ function ESP:UpdateColor(feature, color)
     if feature == "Chams" then
         self.ChamsColor = color
         for _, cache in pairs(self.ChamsCache) do
-            if cache.ChamsFolder then
-                for _, highlight in pairs(cache.ChamsFolder:GetChildren()) do
-                    if highlight:IsA("Highlight") then
-                        highlight.FillColor = color
-                        highlight.OutlineColor = color
-                    end
-                end
+            if cache.Highlight then
+                cache.Highlight.FillColor = color
+                cache.Highlight.OutlineColor = color
             end
         end
     else
@@ -474,14 +455,12 @@ function ESP:ToggleFeature(feature, state)
     if feature == "Chams" then
         self.ShowChams = state
         if state then
-            -- Create chams for all players immediately when enabled
             for _, player in ipairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer then
                     self:CreateChams(player)
                 end
             end
         else
-            -- Remove chams when disabled
             for player, _ in pairs(self.ChamsCache) do
                 self:RemoveChams(player)
             end
