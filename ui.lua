@@ -13,7 +13,9 @@ return function(Library, ESP)
    local Window = Library:New({
        Name = "dracula.lol [private beta]", 
        Accent = Color3.fromRGB(255, 255, 255),
-       TextXAlignment = Enum.TextXAlignment.Center  -- Center the title text
+       Position = UDim2.new(0.5, 0, 0, 0),  -- Center horizontally
+       AnchorPoint = Vector2.new(0.5, 0),   -- Set anchor point for centering
+       TextAlign = Enum.TextXAlignment.Center -- Center the text
    })
 
    -- // Pages
