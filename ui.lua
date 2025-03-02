@@ -91,13 +91,26 @@ return function(Library, ESP)
      })
  end
 
- -- Create ESP features with their respective colors
- createESPFeature("box", "Boxes", Color3.fromRGB(255, 255, 255))
+ -- Box with dropdown
+ PlayerESP:Toggle({Name = "box", Default = false, Pointer = "ESP_Boxes"})
+ :Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255)})
+ PlayerESP:Dropdown({
+     Name = "box type",
+     Options = {"2D", "3D", "corner"},
+     Default = "2D",
+     Pointer = "ESP_BoxType",
+     callback = function(value)
+         if ESP and type(ESP.UpdateBoxType) == "function" then
+             ESP:UpdateBoxType(value:lower())
+         end
+     end
+ })
+
+ -- Rest of ESP features
  createESPFeature("name", "Names", Color3.fromRGB(255, 255, 255))
  createESPFeature("distance", "Distance", Color3.fromRGB(255, 255, 255))
  createESPFeature("chams", "Chams", Color3.fromRGB(255, 255, 255))
- createESPFeature("material", "Material", Color3.fromRGB(255, 255, 255))
- createESPFeature("skeleton", "Bone", Color3.fromRGB(255, 255, 255)) -- Changed from "Skeleton" to "Bone"
+ createESPFeature("skeleton", "Bone", Color3.fromRGB(255, 255, 255))
  createESPFeature("head circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
  createESPFeature("highlight", "Highlight", Color3.fromRGB(255, 255, 255))
  createESPFeature("armor bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
@@ -106,20 +119,20 @@ return function(Library, ESP)
  PlayerESP:Toggle({
      Name = "health bar",
      Default = false,
-     Pointer = "ESP_HealthBars", -- Changed from HealthBar to HealthBars
+     Pointer = "ESP_HealthBars",
      callback = function(state)
          if ESP and type(ESP.ToggleFeature) == "function" then
-             ESP:ToggleFeature("HealthBars", state) -- Changed from HealthBar to HealthBars
+             ESP:ToggleFeature("HealthBars", state)
          end
      end
  })
  :Colorpicker({
      Info = "Health Bar Color",
      Default = Color3.fromRGB(0, 255, 0),
-     Pointer = "ESP_HealthBarsColor", -- Changed from HealthBarColor to HealthBarsColor
+     Pointer = "ESP_HealthBarsColor",
      callback = function(color)
          if ESP and type(ESP.UpdateColor) == "function" then
-             ESP:UpdateColor("HealthBars", color) -- Changed from HealthBar to HealthBars
+             ESP:UpdateColor("HealthBars", color)
          end
      end
  })
@@ -128,14 +141,14 @@ return function(Library, ESP)
  PlayerESP:Toggle({Name = "fonts", Default = false, Pointer = "ESP_Fonts"})
  :Colorpicker({Info = "Font Color", Default = Color3.fromRGB(255, 255, 255)})
 
- -- Local Character Section
+ -- Local Character Section (Updated)
  LocalCharacter:Toggle({Name = "show arms in first person", Default = false, Pointer = "Local_ShowArms"})
  LocalCharacter:Toggle({Name = "character highlight", Default = false, Pointer = "Local_CharHighlight"})
  :Colorpicker({Info = "Highlight Color", Default = Color3.fromRGB(255, 255, 255)})
- LocalCharacter:Toggle({Name = "character material", Default = false, Pointer = "Local_CharMaterial"})
- :Colorpicker({Info = "Material Color", Default = Color3.fromRGB(255, 255, 255)})
- LocalCharacter:Toggle({Name = "custom character", Default = false, Pointer = "Local_CustomChar"})
- :Colorpicker({Info = "Character Color", Default = Color3.fromRGB(255, 255, 255)})
+ LocalCharacter:Toggle({Name = "character chams", Default = false, Pointer = "Local_CharacterChams"})
+ :Colorpicker({Info = "Chams Color", Default = Color3.fromRGB(255, 255, 255)})
+ LocalCharacter:Toggle({Name = "weapon chams", Default = false, Pointer = "Local_WeaponChams"})
+ :Colorpicker({Info = "Weapon Color", Default = Color3.fromRGB(255, 255, 255)})
  LocalCharacter:Toggle({Name = "material tools", Default = false, Pointer = "Local_MaterialTools"})
  :Colorpicker({Info = "Tools Color", Default = Color3.fromRGB(255, 255, 255)})
  LocalCharacter:Toggle({Name = "particle aura", Default = false, Pointer = "Local_ParticleAura"})
