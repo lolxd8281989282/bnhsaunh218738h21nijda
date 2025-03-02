@@ -24,8 +24,8 @@ local ESP = {
     HeadCircleColor = Color3.fromRGB(255, 255, 255),
     ChamsColor = Color3.fromRGB(147, 112, 219),
     BulletTracersColor = Color3.fromRGB(139, 0, 0),
-    TextSize = 11,
-    TextFont = Enum.Font.Code,
+    TextSize = 14,
+    TextFont = Drawing.Fonts.UI,
     MaxDistance = 1000,
     OutlineTransparency = 1,
     TracerDuration = 1.5,
@@ -67,11 +67,12 @@ function ESPObject.new(player)
     local self = setmetatable({}, ESPObject)
     self.Player = player
     self.Character = player.Character or player.CharacterAdded:Wait()
+    
     self.Drawings = {
         Box = CreateDrawing("Square", {Thickness = 1, Filled = false, Transparency = 1, Color = ESP.BoxColor, Visible = false}),
         Name = CreateDrawing("Text", {Text = player.Name, Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.NameColor, Visible = false}),
-        HealthBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.HealthBarColor, Visible = false}),
-        ArmorBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.ArmorBarColor, Visible = false}),
+        HealthBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.HealthBarColor, Transparency = 1, Visible = false}),
+        ArmorBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.ArmorBarColor, Transparency = 1, Visible = false}),
         Distance = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.DistanceColor, Visible = false}),
         Weapon = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.WeaponColor, Visible = false}),
         Flags = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.FlagsColor, Visible = false}),
@@ -160,9 +161,24 @@ function ESPObject:Update()
     if ESP.ShowHealthBars and humanoid then
         local health = humanoid.Health / humanoid.MaxHealth
         self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
-        self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2 * health)
+        self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2)
         self.Drawings.HealthBar.Color = ESP.HealthBarColor
         self.Drawings.HealthBar.Visible = true
+        
+        -- Create gradient effect
+        if health > 0.5 then
+            self.Drawings.HealthBar.Color = Color3.fromRGB(
+                255 * (2 - 2 * health), -- R
+                255,                    -- G
+                0                       -- B
+            )
+        else
+            self.Drawings.HealthBar.Color = Color3.fromRGB(
+                255,                    -- R
+                255 * (2 * health),     -- G
+                0                       -- B
+            )
+        end
     else
         self.Drawings.HealthBar.Visible = false
     end
@@ -172,8 +188,9 @@ function ESPObject:Update()
         local armor = humanoid:GetAttribute("Armor") or 0
         local maxArmor = humanoid:GetAttribute("MaxArmor") or 100
         local armorPercentage = armor / maxArmor
-        self.Drawings.ArmorBar.From = Vector2.new(position.X + size * 1.5 / 2 + 5, position.Y + size * 1.8 / 2)
-        self.Drawings.ArmorBar.To = Vector2.new(position.X + size * 1.5 / 2 + 5, position.Y - size * 1.8 / 2 * armorPercentage)
+        
+        self.Drawings.ArmorBar.From = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y + size * 1.8 / 2)
+        self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y - size * 1.8 / 2 * armorPercentage)
         self.Drawings.ArmorBar.Color = ESP.ArmorBarColor
         self.Drawings.ArmorBar.Visible = true
     else
@@ -257,7 +274,6 @@ function ESPObject:Remove()
 end
 
 -- Chams Functions
--- Update the CreateChams function to properly handle character parts
 function ESP:CreateChams(player)
     if not self.ChamsCache[player] then
         local character = player.Character
@@ -314,7 +330,6 @@ function ESP:CreateChams(player)
     end
 end
 
--- Update RemoveChams to properly clean up
 function ESP:RemoveChams(player)
     local cache = self.ChamsCache[player]
     if cache then
@@ -341,7 +356,6 @@ function ESP:RemoveChams(player)
     end
 end
 
--- Update UpdateChams to properly update colors
 function ESP:UpdateChams()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -453,13 +467,9 @@ function ESP:UpdateColor(feature, color)
     if feature == "Chams" then
         self.ChamsColor = color
         for _, cache in pairs(self.ChamsCache) do
-            if cache.ChamsFolder then
-                for _, highlight in pairs(cache.ChamsFolder:GetChildren()) do
-                    if highlight:IsA("Highlight") then
-                        highlight.FillColor = color
-                        highlight.OutlineColor = color
-                    end
-                end
+            if cache.Highlight then
+                cache.Highlight.FillColor = color
+                cache.Highlight.OutlineColor = color
             end
         end
     else
