@@ -54,27 +54,29 @@ return function(Library, ESP)
    -- // Visuals Section
    local PlayerESP = Visuals:Section({Name = "player esp", Side = "Left"})
    local LocalCharacter = Visuals:Section({Name = "local character", Side = "Right"})
-   local World = Visuals:Section({Name = "world", Side = "Right"})
-   local Other = Visuals:Section({Name = "other", Side = "Right"})
+   local World = Visuals:Section({Name = "world", Side = "Left"})
+   local Other = Visuals:Section({Name = "other", Side = "Left"})
 
-   -- Player ESP Section with working ESP features
+   -- Player ESP Section
    PlayerESP:Toggle({
-       Name = "enabled", 
-       Default = false, 
-       Pointer = "ESP_Enabled", 
+       Name = "enabled",
+       Default = false,
+       Pointer = "ESP_Enabled",
        callback = function(state)
-           if ESP and type(ESP.Toggle) == "function" then
+           if ESP then
                ESP:Toggle(state)
            end
        end
    })
 
    PlayerESP:Toggle({
-       Name = "self", 
-       Default = false, 
-       Pointer = "ESP_Self", 
+       Name = "self",
+       Default = false,
+       Pointer = "ESP_Self",
        callback = function(state)
-           if ESP then ESP.SelfESP = state end
+           if ESP then
+               ESP.TeamMates = state
+           end
        end
    })
 
@@ -84,20 +86,14 @@ return function(Library, ESP)
        Maximum = 2000,
        Default = 1000,
        Suffix = "m",
-       Pointer = "ESP_MaxDistance",
-       callback = function(value)
-           if ESP then ESP.MaxDistance = value end
-       end
+       Pointer = "ESP_MaxDistance"
    })
 
    PlayerESP:Dropdown({
        Name = "distance mode",
        Options = {"Dynamic", "Static"},
        Default = "Dynamic",
-       Pointer = "ESP_DistanceMode",
-       callback = function(value)
-           if ESP then ESP.DistanceMode = value end
-       end
+       Pointer = "ESP_DistanceMode"
    })
 
    PlayerESP:Slider({
@@ -106,22 +102,14 @@ return function(Library, ESP)
        Maximum = 1,
        Default = 1,
        Decimals = 0.1,
-       Pointer = "ESP_OutlineTransparency",
-       callback = function(value)
-           if ESP then ESP.OutlineTransparency = value end
-       end
+       Pointer = "ESP_OutlineTransparency"
    })
 
    PlayerESP:Dropdown({
        Name = "text font",
        Options = {"UI", "System", "Plex", "Monospace"},
        Default = "UI",
-       Pointer = "ESP_TextFont",
-       callback = function(value)
-           if ESP and Drawing and Drawing.Fonts then
-               ESP.TextFont = Drawing.Fonts[value]
-           end
-       end
+       Pointer = "ESP_TextFont"
    })
 
    PlayerESP:Slider({
@@ -129,44 +117,41 @@ return function(Library, ESP)
        Minimum = 8,
        Maximum = 24,
        Default = 14,
-       Pointer = "ESP_TextSize",
-       callback = function(value)
-           if ESP then ESP.TextSize = value end
-       end
+       Pointer = "ESP_TextSize"
    })
 
-   PlayerESP:Label({Name = "esp features", Middle = false})
+   PlayerESP:Label({Name = "esp features"})
 
    -- ESP Features with working functionality
-   local function createESPFeature(name, property, default_color)
-       PlayerESP:Toggle({
-           Name = name,
-           Default = false,
-           Pointer = "ESP_" .. property,
-           callback = function(state)
-               if ESP then ESP[property] = state end
-           end
-       })
-       :Colorpicker({
-           Info = name .. " Color",
-           Default = default_color,
-           Pointer = "ESP_" .. property .. "Color",
-           callback = function(color)
-               if ESP then ESP[property .. "Color"] = color end
-           end
-       })
-   end
+   PlayerESP:Toggle({Name = "names", Default = false, Pointer = "ESP_Names", callback = function(state) if ESP then ESP.Names = state end end})
+   :Colorpicker({Info = "Names Color", Default = Color3.fromRGB(255, 255, 255), callback = function(color) if ESP then ESP.Color = color end end})
 
-   createESPFeature("names", "Names", Color3.fromRGB(255, 255, 255))
-   createESPFeature("box", "Boxes", Color3.fromRGB(255, 255, 255))
-   createESPFeature("health bar", "HealthBars", Color3.fromRGB(0, 255, 0))
-   createESPFeature("armor bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
-   createESPFeature("distance", "Distance", Color3.fromRGB(255, 255, 255))
-   createESPFeature("weapon", "Weapon", Color3.fromRGB(255, 255, 255))
-   createESPFeature("flags", "Flags", Color3.fromRGB(255, 255, 255))
-   createESPFeature("skeleton", "Skeleton", Color3.fromRGB(255, 255, 255))
-   createESPFeature("bullet tracers", "BulletTracers", Color3.fromRGB(139, 0, 0))
-   createESPFeature("head circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
+   PlayerESP:Toggle({Name = "box", Default = false, Pointer = "ESP_Boxes", callback = function(state) if ESP then ESP.Boxes = state end end})
+   :Colorpicker({Info = "Box Color", Default = Color3.fromRGB(255, 255, 255), callback = function(color) if ESP then ESP.Color = color end end})
+
+   PlayerESP:Toggle({Name = "health bar", Default = false, Pointer = "ESP_HealthBar", callback = function(state) if ESP then ESP.HealthBars = state end end})
+   :Colorpicker({Info = "Health Bar Color", Default = Color3.fromRGB(0, 255, 0)})
+
+   PlayerESP:Toggle({Name = "armor bar", Default = false, Pointer = "ESP_ArmorBar"})
+   :Colorpicker({Info = "Armor Bar Color", Default = Color3.fromRGB(0, 255, 255)})
+
+   PlayerESP:Toggle({Name = "distance", Default = false, Pointer = "ESP_Distance"})
+   :Colorpicker({Info = "Distance Color", Default = Color3.fromRGB(255, 255, 255)})
+
+   PlayerESP:Toggle({Name = "weapon", Default = false, Pointer = "ESP_Weapon"})
+   :Colorpicker({Info = "Weapon Color", Default = Color3.fromRGB(255, 255, 255)})
+
+   PlayerESP:Toggle({Name = "flags", Default = false, Pointer = "ESP_Flags"})
+   :Colorpicker({Info = "Flags Color", Default = Color3.fromRGB(255, 255, 255)})
+
+   PlayerESP:Toggle({Name = "skeleton", Default = false, Pointer = "ESP_Skeleton"})
+   :Colorpicker({Info = "Skeleton Color", Default = Color3.fromRGB(255, 255, 255)})
+
+   PlayerESP:Toggle({Name = "bullet tracers", Default = false, Pointer = "ESP_BulletTracers"})
+   :Colorpicker({Info = "Tracers Color", Default = Color3.fromRGB(139, 0, 0)})
+
+   PlayerESP:Toggle({Name = "head circle", Default = false, Pointer = "ESP_HeadCircle"})
+   :Colorpicker({Info = "Head Circle Color", Default = Color3.fromRGB(255, 255, 255)})
 
    PlayerESP:Slider({
        Name = "tracer duration",
@@ -175,10 +160,7 @@ return function(Library, ESP)
        Default = 1.5,
        Decimals = 0.1,
        Suffix = "s",
-       Pointer = "ESP_TracerDuration",
-       callback = function(value)
-           if ESP then ESP.TracerDuration = value end
-       end
+       Pointer = "ESP_TracerDuration"
    })
 
    -- Local Character Section
