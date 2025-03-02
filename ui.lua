@@ -196,17 +196,14 @@ Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", functi
 Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
 Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
--- Try using Library's built-in toggle method
-local UIToggle = Settings_Main:Keybind({
+-- Keybind with toggle callback
+Settings_Main:Keybind({
     Name = "Toggle UI",
     Default = Enum.KeyCode.End,
     Flag = "UIToggle",
     Mode = "Toggle",
     Callback = function()
-        print("Toggle UI keybind pressed")
-        if Library and type(Library.Toggle) == "function" then
-            Library:Toggle()
-        end
+        Window:Toggle()
     end
 })
 
@@ -214,6 +211,6 @@ local UIToggle = Settings_Main:Keybind({
 Window:Initialize()
 
 -- Set up the global toggle keybind
-Library.UIKeybind = UIToggle -- Try using UIKeybind instead of KeybindFrame
-print("UI initialized with toggle keybind: " .. tostring(Library.ToggleKeybind))
+Library.UIKeybind = Enum.KeyCode.End
+print("UI initialized with toggle keybind: " .. tostring(Library.UIKeybind))
 end
