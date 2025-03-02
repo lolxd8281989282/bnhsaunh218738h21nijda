@@ -109,11 +109,32 @@ return function(Library, ESP)
  -- Rest of ESP features
  createESPFeature("name", "Names", Color3.fromRGB(255, 255, 255))
  createESPFeature("distance", "Distance", Color3.fromRGB(255, 255, 255))
- createESPFeature("chams", "Chams", Color3.fromRGB(147, 112, 219))
  createESPFeature("skeleton", "Bone", Color3.fromRGB(255, 255, 255))
  createESPFeature("head circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
  createESPFeature("highlight", "Highlight", Color3.fromRGB(255, 255, 255))
  createESPFeature("armor bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
+
+ -- Add chams toggle with proper callback
+ PlayerESP:Toggle({
+     Name = "chams",
+     Default = false,
+     Pointer = "ESP_Chams",
+     callback = function(state)
+         if ESP and type(ESP.ToggleFeature) == "function" then
+             ESP:ToggleFeature("Chams", state)
+         end
+     end
+ })
+ :Colorpicker({
+     Info = "Chams Color",
+     Default = Color3.fromRGB(147, 112, 219),
+     Pointer = "ESP_ChamsColor",
+     callback = function(color)
+         if ESP and type(ESP.UpdateColor) == "function" then
+             ESP:UpdateColor("Chams", color)
+         end
+     end
+ })
 
  -- Fixed healthbar implementation with correct property name
  PlayerESP:Toggle({
