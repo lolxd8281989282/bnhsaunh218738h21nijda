@@ -97,29 +97,29 @@ return function(Library, ESP)
  createESPFeature("distance", "Distance", Color3.fromRGB(255, 255, 255))
  createESPFeature("chams", "Chams", Color3.fromRGB(255, 255, 255))
  createESPFeature("material", "Material", Color3.fromRGB(255, 255, 255))
- createESPFeature("skeleton", "Skeleton", Color3.fromRGB(255, 255, 255))
+ createESPFeature("skeleton", "Bone", Color3.fromRGB(255, 255, 255)) -- Changed from "Skeleton" to "Bone"
  createESPFeature("head circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
  createESPFeature("highlight", "Highlight", Color3.fromRGB(255, 255, 255))
  createESPFeature("armor bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
 
- -- Fixed healthbar implementation
+ -- Fixed healthbar implementation with correct property name
  PlayerESP:Toggle({
      Name = "health bar",
      Default = false,
-     Pointer = "ESP_HealthBar",
+     Pointer = "ESP_HealthBars", -- Changed from HealthBar to HealthBars
      callback = function(state)
          if ESP and type(ESP.ToggleFeature) == "function" then
-             ESP:ToggleFeature("HealthBar", state)
+             ESP:ToggleFeature("HealthBars", state) -- Changed from HealthBar to HealthBars
          end
      end
  })
  :Colorpicker({
      Info = "Health Bar Color",
      Default = Color3.fromRGB(0, 255, 0),
-     Pointer = "ESP_HealthBarColor",
+     Pointer = "ESP_HealthBarsColor", -- Changed from HealthBarColor to HealthBarsColor
      callback = function(color)
          if ESP and type(ESP.UpdateColor) == "function" then
-             ESP:UpdateColor("HealthBar", color)
+             ESP:UpdateColor("HealthBars", color) -- Changed from HealthBar to HealthBars
          end
      end
  })
