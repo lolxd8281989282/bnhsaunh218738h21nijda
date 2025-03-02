@@ -196,19 +196,27 @@ return function(Library, ESP)
  Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
  Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
- -- Keybind with toggle callback
- Settings_Main:Keybind({
+-- Updated keybind implementation based on library documentation
+local UIToggle = Settings_Main:Keybind({
     Name = "Toggle UI",
     Default = Enum.KeyCode.End,
-    Flag = "ToggleUI",
+    Flag = "UIToggle",
+    Mode = "Toggle", -- Add this line
     Callback = function()
-        print("Toggle UI keybind pressed") -- Add this debug line
-        Window:Toggle()
+        print("Toggle UI keybind pressed")
+        if Window.Visible then
+            Window:Hide()
+        else
+            Window:Show()
+        end
     end
 })
 
  -- // Initialisation
  Window:Initialize()
+
+ -- Set up the global toggle keybind
+ Library.KeybindFrame = UIToggle
  Library.ToggleKeybind = Enum.KeyCode.End
 print("UI initialized with toggle keybind: " .. tostring(Library.ToggleKeybind))
 end
