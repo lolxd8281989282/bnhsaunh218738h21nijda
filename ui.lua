@@ -196,16 +196,34 @@ return function(Library, ESP)
  Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
  Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
- -- Add keybind option to settings
- Settings_Main:Keybind({
-     Name = "Toggle UI",
-     Default = "RightShift",
-     Pointer = "ToggleUIKey",
-     Mode = "Toggle",
-     Callback = function(key)
+ -- Add keybind option to settings with proper implementation
+ local function updateToggleKey(key)
+     if key then
          Window:SetKey(key)
      end
+ end
+
+ Settings_Main:Keybind({
+     Name = "Toggle UI",
+     Default = "End", -- Set default to End key
+     Pointer = "UI_ToggleKey",
+     KeyNames = {
+         -- Include all possible keys
+         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+         "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Zero",
+         "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+         "Insert", "Home", "PageUp", "PageDown", "Delete", "End",
+         "LeftBracket", "RightBracket", "BackSlash", "Semicolon", "Quote", "Comma", "Period", "Slash",
+         "Tab", "CapsLock", "LeftShift", "RightShift", "LeftControl", "RightControl", "LeftAlt", "RightAlt",
+         "Space"
+     },
+     AllowKeyboard = true,
+     AllowMouse = false, -- Disable mouse buttons for toggle
+     OnKeyChanged = updateToggleKey
  })
+
+ -- Initialize with default End key
+ updateToggleKey("End")
 
  -- // Initialisation
  Window:Initialize()
