@@ -10,7 +10,7 @@ return function(Library, ESP)
    end
 
    -- Remove assertions since we'll handle ESP differently according to documentation
-   local Window = Library:New({Name = "dracula.lol [private beta]", Accent = Color3.fromRGB(255, 255, 255)})
+   local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
 
    -- // Pages
    local Main = Window:Page({Name = "aim-assist"})
@@ -86,7 +86,7 @@ return function(Library, ESP)
    Target_UI:Toggle({Name = "Hit Logs", Default = false, Pointer = "TargetUI_HitLogs"})
    Target_UI:Toggle({Name = "Hit Sound", Default = false, Pointer = "TargetUI_HitSound"})
 
-   -- ESP Section with updated implementation
+   -- ESP Section with simplified toggle
    ESP_Section:Toggle({
        Name = "Enabled", 
        Default = false, 
@@ -98,73 +98,11 @@ return function(Library, ESP)
        end
    })
 
-   ESP_Section:Toggle({
-       Name = "Team Check", 
-       Default = false, 
-       Pointer = "ESP_TeamCheck", 
-       callback = function(state)
-           if ESP then
-               ESP.TeamCheck = state
-           end
-       end
-   })
-
-   ESP_Section:Toggle({
-       Name = "Use Team Color", 
-       Default = false, 
-       Pointer = "ESP_UseTeamColor", 
-       callback = function(state)
-           if ESP then
-               ESP.UseTeamColor = state
-           end
-       end
-   })
-
-   ESP_Section:Slider({
-       Name = "Render Distance", 
-       Minimum = 0, 
-       Maximum = 2000, 
-       Default = 1000, 
-       Suffix = "m", 
-       Pointer = "ESP_RenderDistance", 
-       callback = function(value)
-           if ESP then
-               ESP.RenderDistance = value
-           end
-       end
-   })
-
-   ESP_Section:Colorpicker({
-       Name = "ESP Color", 
-       Info = "Default ESP Color", 
-       Default = Color3.fromRGB(255, 255, 255), 
-       Pointer = "ESP_Color", 
-       callback = function(color)
-           if ESP then
-               ESP.Color = color
-           end
-       end
-   })
-
-   local function createESPFeature(name, property)
-       ESP_Section:Toggle({
-           Name = name, 
-           Default = false, 
-           Pointer = "ESP_" .. property, 
-           callback = function(state)
-               if ESP then
-                   ESP[property] = state
-               end
-           end
-       })
-   end
-
-   createESPFeature("Boxes", "Boxes")
-   createESPFeature("Names", "Names")
-   createESPFeature("Health Bars", "HealthBars")
-   createESPFeature("Distance", "Distance")
-   createESPFeature("Tracers", "Tracers")
-   createESPFeature("Chams", "Chams")
+   -- Rest of ESP settings
+   ESP_Section:Toggle({Name = "Boxes", Default = false, Pointer = "ESP_Boxes", callback = function(state) if ESP then ESP.Boxes = state end end})
+   ESP_Section:Toggle({Name = "Names", Default = false, Pointer = "ESP_Names", callback = function(state) if ESP then ESP.Names = state end end})
+   ESP_Section:Toggle({Name = "Tracers", Default = false, Pointer = "ESP_Tracers", callback = function(state) if ESP then ESP.Tracers = state end end})
+   ESP_Section:Colorpicker({Name = "ESP Color", Info = "ESP Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "ESP_Color", callback = function(color) if ESP then ESP.Color = color end end})
 
    -- Atmosphere Section
    Atmosphere:Toggle({Name = "Enabled", Default = false, Pointer = "Atmosphere_Enabled"})
