@@ -190,33 +190,30 @@ return function(Library, ESP)
  HUD:Toggle({Name = "show chat", Default = false, Pointer = "HUD_ShowChat"})
 
  -- // Settings Section
- local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
- Settings_Main:ConfigBox({})
- Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
- Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
- Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
+local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
+Settings_Main:ConfigBox({})
+Settings_Main:ButtonHolder({Buttons = {{"Load", function() end}, {"Save", function() end}}})
+Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
+Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
--- Updated keybind implementation based on library documentation
+-- Try using Library's built-in toggle method
 local UIToggle = Settings_Main:Keybind({
     Name = "Toggle UI",
     Default = Enum.KeyCode.End,
     Flag = "UIToggle",
-    Mode = "Toggle", -- Add this line
+    Mode = "Toggle",
     Callback = function()
         print("Toggle UI keybind pressed")
-        if Window.Visible then
-            Window:Hide()
-        else
-            Window:Show()
+        if Library and type(Library.Toggle) == "function" then
+            Library:Toggle()
         end
     end
 })
 
- -- // Initialisation
- Window:Initialize()
+-- // Initialisation
+Window:Initialize()
 
- -- Set up the global toggle keybind
- Library.KeybindFrame = UIToggle
- Library.ToggleKeybind = Enum.KeyCode.End
+-- Set up the global toggle keybind
+Library.UIKeybind = UIToggle -- Try using UIKeybind instead of KeybindFrame
 print("UI initialized with toggle keybind: " .. tostring(Library.ToggleKeybind))
 end
