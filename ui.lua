@@ -184,10 +184,9 @@ return function(Library, ESP)
  Game:Toggle({Name = "hit sound", Default = false, Pointer = "Game_HitSound"})
  Game:Toggle({Name = "hit chams", Default = false, Pointer = "Game_HitChams"})
 
- -- HUD Section (Moved)
+ -- HUD Section (Updated - removed aspect ratio slider)
  HUD:Toggle({Name = "server position indicator", Default = false, Pointer = "HUD_ServerPos"})
  HUD:Toggle({Name = "center panel", Default = false, Pointer = "HUD_CenterPanel"})
- HUD:Slider({Name = "aspect ratio", Minimum = 0, Maximum = 2, Default = 1, Decimals = 0.1, Suffix = "x", Pointer = "HUD_AspectRatio"})
  HUD:Toggle({Name = "show chat", Default = false, Pointer = "HUD_ShowChat"})
 
  -- // Settings Section
