@@ -109,7 +109,7 @@ return function(Library, ESP)
  -- Rest of ESP features
  createESPFeature("name", "Names", Color3.fromRGB(255, 255, 255))
  createESPFeature("distance", "Distance", Color3.fromRGB(255, 255, 255))
- createESPFeature("chams", "Chams", Color3.fromRGB(255, 255, 255))
+ createESPFeature("chams", "Chams", Color3.fromRGB(147, 112, 219))
  createESPFeature("skeleton", "Bone", Color3.fromRGB(255, 255, 255))
  createESPFeature("head circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
  createESPFeature("highlight", "Highlight", Color3.fromRGB(255, 255, 255))
