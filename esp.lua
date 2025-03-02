@@ -24,8 +24,8 @@ local ESP = {
     HeadCircleColor = Color3.fromRGB(255, 255, 255),
     ChamsColor = Color3.fromRGB(147, 112, 219),
     BulletTracersColor = Color3.fromRGB(139, 0, 0),
-    TextSize = 14,
-    TextFont = Drawing.Fonts.UI,
+    TextSize = 11,
+    TextFont = Drawing.Fonts.Code,
     MaxDistance = 1000,
     OutlineTransparency = 1,
     TracerDuration = 1.5,
@@ -70,12 +70,12 @@ function ESPObject.new(player)
     
     self.Drawings = {
         Box = CreateDrawing("Square", {Thickness = 1, Filled = false, Transparency = 1, Color = ESP.BoxColor, Visible = false}),
-        Name = CreateDrawing("Text", {Text = player.Name, Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.NameColor, Visible = false}),
+        Name = CreateDrawing("Text", {Text = player.Name, Size = 11, Font = Drawing.Fonts.Code, Center = true, Outline = true, Color = ESP.NameColor, Visible = false}),
         HealthBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.HealthBarColor, Transparency = 1, Visible = false}),
         ArmorBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.ArmorBarColor, Transparency = 1, Visible = false}),
-        Distance = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.DistanceColor, Visible = false}),
-        Weapon = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.WeaponColor, Visible = false}),
-        Flags = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.FlagsColor, Visible = false}),
+        Distance = CreateDrawing("Text", {Size = 11, Font = Drawing.Fonts.Code, Center = true, Outline = true, Color = ESP.DistanceColor, Visible = false}),
+        Weapon = CreateDrawing("Text", {Size = 11, Font = Drawing.Fonts.Code, Center = true, Outline = true, Color = ESP.WeaponColor, Visible = false}),
+        Flags = CreateDrawing("Text", {Size = 11, Font = Drawing.Fonts.Code, Center = true, Outline = true, Color = ESP.FlagsColor, Visible = false}),
         Bone = CreateDrawing("Line", {Thickness = 1, Color = ESP.BoneColor, Visible = false}),
         HeadCircle = CreateDrawing("Circle", {Thickness = 1, Color = ESP.HeadCircleColor, Visible = false, NumSides = 30}),
         BulletTracer = CreateDrawing("Line", {Thickness = 1, Color = ESP.BulletTracersColor, Visible = false})
@@ -377,7 +377,6 @@ function ESP:UpdateChams()
             end
         end
     end
-end
 
 -- Bullet Tracer Implementation
 function ESP:CreateBulletTracer(origin, destination)
