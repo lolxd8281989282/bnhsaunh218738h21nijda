@@ -59,32 +59,6 @@ local function GetDistanceFromCamera(position)
     return (CurrentCamera.CFrame.Position - position).Magnitude
 end
 
-local function LerpColor(color1, color2, alpha)
-    return Color3.new(
-        color1.R + (color2.R - color1.R) * alpha,
-        color1.G + (color2.G - color1.G) * alpha,
-        color1.B + (color2.B - color1.B) * alpha
-    )
-end
-
-local function CreateHealthGradient(health)
-    if health > 0.5 then
-        -- Lerp between green and yellow
-        return LerpColor(
-            Color3.fromRGB(255, 255, 0),  -- Yellow
-            Color3.fromRGB(0, 255, 0),    -- Green
-            (health - 0.5) * 2
-        )
-    else
-        -- Lerp between red and yellow
-        return LerpColor(
-            Color3.fromRGB(255, 0, 0),    -- Red
-            Color3.fromRGB(255, 255, 0),  -- Yellow
-            health * 2
-        )
-    end
-end
-
 -- ESP Object
 local ESPObject = {}
 ESPObject.__index = ESPObject
@@ -94,33 +68,11 @@ function ESPObject.new(player)
     self.Player = player
     self.Character = player.Character or player.CharacterAdded:Wait()
     
-    -- Create 10 segments for health bar gradient
-    local healthSegments = {}
-    for i = 1, 10 do
-        healthSegments[i] = CreateDrawing("Line", {
-            Thickness = 2,
-            Color = Color3.fromRGB(0, 255, 0),
-            Transparency = 1,
-            Visible = false
-        })
-    end
-    
-    -- Create 10 segments for armor bar gradient
-    local armorSegments = {}
-    for i = 1, 10 do
-        armorSegments[i] = CreateDrawing("Line", {
-            Thickness = 2,
-            Color = Color3.fromRGB(0, 150, 255),
-            Transparency = 1,
-            Visible = false
-        })
-    end
-    
     self.Drawings = {
         Box = CreateDrawing("Square", {Thickness = 1, Filled = false, Transparency = 1, Color = ESP.BoxColor, Visible = false}),
         Name = CreateDrawing("Text", {Text = player.Name, Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.NameColor, Visible = false}),
-        HealthSegments = healthSegments,
-        ArmorSegments = armorSegments,
+        HealthBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.HealthBarColor, Transparency = 1, Visible = false}),
+        ArmorBar = CreateDrawing("Line", {Thickness = 2, Color = ESP.ArmorBarColor, Transparency = 1, Visible = false}),
         Distance = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.DistanceColor, Visible = false}),
         Weapon = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.WeaponColor, Visible = false}),
         Flags = CreateDrawing("Text", {Size = ESP.TextSize, Font = ESP.TextFont, Center = true, Outline = true, Color = ESP.FlagsColor, Visible = false}),
@@ -208,32 +160,27 @@ function ESPObject:Update()
     -- Update Health Bar
     if ESP.ShowHealthBars and humanoid then
         local health = humanoid.Health / humanoid.MaxHealth
-        local segmentHeight = (size * 1.8) / #self.Drawings.HealthSegments
+        self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
+        self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2)
+        self.Drawings.HealthBar.Color = ESP.HealthBarColor
+        self.Drawings.HealthBar.Visible = true
         
-        for i, segment in ipairs(self.Drawings.HealthSegments) do
-            local segmentHealth = health * #self.Drawings.HealthSegments
-            if i <= segmentHealth then
-                local topHealth = (i / #self.Drawings.HealthSegments)
-                local bottomHealth = ((i - 1) / #self.Drawings.HealthSegments)
-                
-                segment.From = Vector2.new(
-                    position.X - size * 1.5 / 2 - 5,
-                    position.Y + size * 1.8 / 2 - (i - 1) * segmentHeight
-                )
-                segment.To = Vector2.new(
-                    position.X - size * 1.5 / 2 - 5,
-                    position.Y + size * 1.8 / 2 - i * segmentHeight
-                )
-                segment.Color = CreateHealthGradient(topHealth)
-                segment.Visible = true
-            else
-                segment.Visible = false
-            end
+        -- Create gradient effect
+        if health > 0.5 then
+            self.Drawings.HealthBar.Color = Color3.fromRGB(
+                255 * (2 - 2 * health), -- R
+                255,                    -- G
+                0                       -- B
+            )
+        else
+            self.Drawings.HealthBar.Color = Color3.fromRGB(
+                255,                    -- R
+                255 * (2 * health),     -- G
+                0                       -- B
+            )
         end
     else
-        for _, segment in ipairs(self.Drawings.HealthSegments) do
-            segment.Visible = false
-        end
+        self.Drawings.HealthBar.Visible = false
     end
 
     -- Update Armor Bar
@@ -241,29 +188,13 @@ function ESPObject:Update()
         local armor = humanoid:GetAttribute("Armor") or 0
         local maxArmor = humanoid:GetAttribute("MaxArmor") or 100
         local armorPercentage = armor / maxArmor
-        local segmentHeight = (size * 1.8) / #self.Drawings.ArmorSegments
         
-        for i, segment in ipairs(self.Drawings.ArmorSegments) do
-            local segmentArmor = armorPercentage * #self.Drawings.ArmorSegments
-            if i <= segmentArmor then
-                segment.From = Vector2.new(
-                    position.X - size * 1.5 / 2 - 10,
-                    position.Y + size * 1.8 / 2 - (i - 1) * segmentHeight
-                )
-                segment.To = Vector2.new(
-                    position.X - size * 1.5 / 2 - 10,
-                    position.Y + size * 1.8 / 2 - i * segmentHeight
-                )
-                segment.Color = Color3.fromRGB(0, 150, 255)
-                segment.Visible = true
-            else
-                segment.Visible = false
-            end
-        end
+        self.Drawings.ArmorBar.From = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y + size * 1.8 / 2)
+        self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y - size * 1.8 / 2 * armorPercentage)
+        self.Drawings.ArmorBar.Color = ESP.ArmorBarColor
+        self.Drawings.ArmorBar.Visible = true
     else
-        for _, segment in ipairs(self.Drawings.ArmorSegments) do
-            segment.Visible = false
-        end
+        self.Drawings.ArmorBar.Visible = false
     end
 
     -- Update Distance
@@ -331,25 +262,13 @@ end
 
 function ESPObject:Hide()
     for _, drawing in pairs(self.Drawings) do
-        if type(drawing) == "table" then
-            for _, segment in ipairs(drawing) do
-                segment.Visible = false
-            end
-        else
-            drawing.Visible = false
-        end
+        drawing.Visible = false
     end
 end
 
 function ESPObject:Remove()
     for _, drawing in pairs(self.Drawings) do
-        if type(drawing) == "table" then
-            for _, segment in ipairs(drawing) do
-                segment:Remove()
-            end
-        else
-            drawing:Remove()
-        end
+        drawing:Remove()
     end
     ESP.Objects[self.Player] = nil
 end
@@ -366,7 +285,6 @@ function ESP:CreateChams(player)
             highlight.FillTransparency = 0.5
             highlight.OutlineTransparency = 0.3
             highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            
             highlight.Parent = character
 
             -- Function to apply transparency to character parts
@@ -549,13 +467,9 @@ function ESP:UpdateColor(feature, color)
     if feature == "Chams" then
         self.ChamsColor = color
         for _, cache in pairs(self.ChamsCache) do
-            if cache.ChamsFolder then
-                for _, highlight in pairs(cache.ChamsFolder:GetChildren()) do
-                    if highlight:IsA("Highlight") then
-                        highlight.FillColor = color
-                        highlight.OutlineColor = color
-                    end
-                end
+            if cache.Highlight then
+                cache.Highlight.FillColor = color
+                cache.Highlight.OutlineColor = color
             end
         end
     else
