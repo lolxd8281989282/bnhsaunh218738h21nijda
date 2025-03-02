@@ -257,46 +257,48 @@ function ESPObject:Remove()
 end
 
 -- Chams Functions
+-- Update the CreateChams function to properly handle character parts
 function ESP:CreateChams(player)
     if not self.ChamsCache[player] then
         local character = player.Character
         if character then
-            -- Create a folder to hold individual part highlights
-            local chamsFolder = Instance.new("Folder")
-            chamsFolder.Name = "ChamsFolder"
-            chamsFolder.Parent = character
+            -- Create highlight for the whole character
+            local highlight = Instance.new("Highlight")
+            highlight.FillColor = self.ChamsColor
+            highlight.OutlineColor = self.ChamsColor
+            highlight.FillTransparency = 0.5
+            highlight.OutlineTransparency = 0.3
+            highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            highlight.Parent = character
 
-            -- Function to create highlight for a body part
-            local function createPartHighlight(part)
-                if part:IsA("BasePart") and part.Parent == character and 
-                   part.Name ~= "Head" and not part:IsA("Accessory") and 
-                   not part.Parent:IsA("Accessory") and not part.Parent:IsA("Tool") then
-                    local highlight = Instance.new("Highlight")
-                    highlight.FillColor = self.ChamsColor
-                    highlight.OutlineColor = self.ChamsColor
-                    highlight.FillTransparency = 0.5
-                    highlight.OutlineTransparency = 1
-                    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                    highlight.Adornee = part
-                    highlight.Parent = chamsFolder
-                    part.Transparency = 0.8
+            -- Function to apply transparency to character parts
+            local function updatePartTransparency(part)
+                if part:IsA("BasePart") then
+                    -- Check if the part belongs to a tool
+                    local tool = part:FindFirstAncestorWhichIsA("Tool")
+                    if not tool then
+                        -- If not part of a tool, apply transparency
+                        part.Transparency = 0.8
+                    end
                 end
             end
-            
-            -- Apply highlights to existing body parts
-            for _, part in pairs(character:GetChildren()) do
-                createPartHighlight(part)
+
+            -- Apply initial transparency to all parts except tools
+            for _, part in pairs(character:GetDescendants()) do
+                updatePartTransparency(part)
             end
-            
+
             -- Handle new parts being added
-            local descendantConnection = character.ChildAdded:Connect(function(part)
-                createPartHighlight(part)
-            end)
+            local connections = {}
             
+            connections[1] = character.DescendantAdded:Connect(function(child)
+                updatePartTransparency(child)
+            end)
+
             -- Store in cache
             self.ChamsCache[player] = {
-                ChamsFolder = chamsFolder,
-                Connection = descendantConnection
+                Highlight = highlight,
+                Connections = connections
             }
 
             -- Handle character changes
@@ -312,22 +314,24 @@ function ESP:CreateChams(player)
     end
 end
 
+-- Update RemoveChams to properly clean up
 function ESP:RemoveChams(player)
     local cache = self.ChamsCache[player]
     if cache then
-        if cache.Connection then
-            cache.Connection:Disconnect()
+        if cache.Connections then
+            for _, connection in pairs(cache.Connections) do
+                connection:Disconnect()
+            end
         end
-        if cache.ChamsFolder then
-            cache.ChamsFolder:Destroy()
+        if cache.Highlight then
+            cache.Highlight:Destroy()
         end
         
-        -- Reset transparency for body parts
+        -- Reset transparency for all parts
         local character = player.Character
         if character then
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") and part.Name ~= "Head" and 
-                   not part:IsA("Accessory") and not part.Parent:IsA("Tool") then
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
                     part.Transparency = 0
                 end
             end
@@ -337,6 +341,7 @@ function ESP:RemoveChams(player)
     end
 end
 
+-- Update UpdateChams to properly update colors
 function ESP:UpdateChams()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -346,14 +351,11 @@ function ESP:UpdateChams()
                 else
                     -- Update existing chams
                     local cache = self.ChamsCache[player]
-                    if cache.ChamsFolder then
-                        for _, highlight in pairs(cache.ChamsFolder:GetChildren()) do
-                            if highlight:IsA("Highlight") then
-                                highlight.FillColor = self.ChamsColor
-                                highlight.OutlineColor = self.ChamsColor
-                                highlight.FillTransparency = 0.3 + math.sin(tick() * 2) * 0.2
-                            end
-                        end
+                    if cache.Highlight then
+                        cache.Highlight.FillColor = self.ChamsColor
+                        cache.Highlight.OutlineColor = self.ChamsColor
+                        cache.Highlight.FillTransparency = 0.5
+                        cache.Highlight.OutlineTransparency = 0.3
                     end
                 end
             else
