@@ -160,24 +160,20 @@ function ESPObject:Update()
     -- Update Health Bar
     if ESP.ShowHealthBars and humanoid then
         local health = humanoid.Health / humanoid.MaxHealth
+        local barHeight = size * 1.8
         self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
-        self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2)
-        self.Drawings.HealthBar.Color = ESP.HealthBarColor
+        self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2 - barHeight * health)
         self.Drawings.HealthBar.Visible = true
         
-        -- Create gradient effect
-        if health > 0.5 then
-            self.Drawings.HealthBar.Color = Color3.fromRGB(
-                255 * (2 - 2 * health), -- R
-                255,                    -- G
-                0                       -- B
-            )
+        -- Set color based on health percentage
+        if health > 0.75 then
+            self.Drawings.HealthBar.Color = Color3.fromRGB(0, 255, 0) -- Green
+        elseif health > 0.5 then
+            self.Drawings.HealthBar.Color = Color3.fromRGB(255, 255, 0) -- Yellow
+        elseif health > 0.25 then
+            self.Drawings.HealthBar.Color = Color3.fromRGB(255, 165, 0) -- Orange
         else
-            self.Drawings.HealthBar.Color = Color3.fromRGB(
-                255,                    -- R
-                255 * (2 * health),     -- G
-                0                       -- B
-            )
+            self.Drawings.HealthBar.Color = Color3.fromRGB(255, 0, 0) -- Red
         end
     else
         self.Drawings.HealthBar.Visible = false
@@ -188,9 +184,10 @@ function ESPObject:Update()
         local armor = humanoid:GetAttribute("Armor") or 0
         local maxArmor = humanoid:GetAttribute("MaxArmor") or 100
         local armorPercentage = armor / maxArmor
+        local barHeight = size * 1.8
         
         self.Drawings.ArmorBar.From = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y + size * 1.8 / 2)
-        self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y - size * 1.8 / 2 * armorPercentage)
+        self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 10, position.Y + size * 1.8 / 2 - barHeight * armorPercentage)
         self.Drawings.ArmorBar.Color = ESP.ArmorBarColor
         self.Drawings.ArmorBar.Visible = true
     else
