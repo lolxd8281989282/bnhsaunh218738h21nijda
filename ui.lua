@@ -196,10 +196,13 @@ return function(Library, ESP)
  Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
  Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
- -- Simple keybind implementation
+ -- Keybind with toggle callback
  Settings_Main:Keybind({
      Name = "Toggle UI",
-     Default = Enum.KeyCode.End
+     Default = Enum.KeyCode.End,
+     Callback = function()
+         Window:Toggle() -- This should toggle the UI visibility
+     end
  })
 
  -- // Initialisation
