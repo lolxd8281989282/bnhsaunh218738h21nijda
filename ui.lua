@@ -1,6 +1,4 @@
-local Library = {}
-
-function Library.Initialize(Library, ESP)
+return function(Library, ESP)
     if ESP then
         if not ESP.Toggle then
             ESP.Toggle = function(self, state)
@@ -198,23 +196,6 @@ function Library.Initialize(Library, ESP)
     Settings_Main:Label({Name = "Unloading will fully unload\neverything, so save your\nconfig before unloading.", Middle = true})
     Settings_Main:Button({Name = "Unload", Callback = function() Window:Unload() end})
 
-    -- Keybind with toggle callback
-    Settings_Main:Keybind({
-        Name = "Toggle UI",
-        Default = Enum.KeyCode.End,
-        Flag = "UIToggle",
-        Mode = "Toggle",
-        Callback = function()
-            Window:Toggle()
-        end
-    })
-
     -- // Initialisation
     Window:Initialize()
-
-    -- Set up the global toggle keybind
-    Library.UIKeybind = Enum.KeyCode.End
-    Library:Toggle()
 end
-
-return Library
