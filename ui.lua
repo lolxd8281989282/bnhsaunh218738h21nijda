@@ -22,51 +22,37 @@ return function(Library, ESP)
    local Players = Window:Page({Name = "players-list"})
    local Settings = Window:Page({Name = "settings"})
 
-   -- // Sections
-   local TargetAim = Main:Section({Name = "Target Aim", Side = "Left"})
-   local FOV = Main:Section({Name = "Field of View", Side = "Right"})
-   local Prediction = Main:Section({Name = "Prediction", Side = "Left"})
-   local GunMods = Main:Section({Name = "Gun Exploits (Da Hood Only)", Side = "Right"})
+   -- // Sections for aim-assist
+   local General = Main:Section({Name = "general", Side = "Left"})
+   local HVH = Main:Section({Name = "hvh", Side = "Right"})
+   local Visualization = Main:Section({Name = "visualization", Side = "Left"})
 
-   -- // Target Aim Section
-   TargetAim:Toggle({Name = "Enabled", Default = false, Pointer = "TargetEnabled"})
-   :Keybind({Default = Enum.KeyCode.E, KeybindName = "Target", Mode = "Toggle", Pointer = "TargetBind"})
-   TargetAim:Dropdown({Name = "Method", Options = {"Silent", "Sticky"}, Default = "Silent", Pointer = "TargetMethod"})
-   TargetAim:Toggle({Name = "Index (Mouse M1)", Default = false, Pointer = "TargetIndex"})
-   TargetAim:Toggle({Name = "Notifications", Default = false, Pointer = "TargetNotifications"})
-   TargetAim:Toggle({Name = "Resolver", Default = false, Pointer = "TargetResolver"})
-   :Keybind({Default = Enum.KeyCode.T, KeybindName = "Resolver", Mode = "Toggle", Pointer = "ResolverBind"})
-   TargetAim:Dropdown({Name = "Target Hit Part:", Options = {"Head", "Neck", "Body", "Right Arm", "Left Arm", "Pelvis", "Right Leg", "Left Leg"}, Default = "Head", Pointer = "TargetAim"})
-   TargetAim:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "TargetJumpOffset"})
+   -- // General Section
+   General:Toggle({Name = "ragebot", Default = false, Pointer = "General_Ragebot"})
+   General:Toggle({Name = "auto fire", Default = false, Pointer = "General_AutoFire"})
+   General:Toggle({Name = "defensive", Default = false, Pointer = "General_Defensive"})
+   General:Toggle({Name = "auto equip", Default = false, Pointer = "General_AutoEquip"})
+   General:Dropdown({Name = "target hitbox", Options = {"head", "torso", "random"}, Default = "head", Pointer = "Target_Hitbox"})
+   General:Dropdown({Name = "prediction", Options = {"auto", "manual"}, Default = "auto", Pointer = "Prediction_Mode"})
+   General:Dropdown({Name = "shot delay", Options = {"none", "custom"}, Default = "none", Pointer = "Shot_Delay"})
+   General:Slider({Name = "field of view", Minimum = 0, Maximum = 100, Default = 100, Suffix = "", Pointer = "FOV_Value"})
+   General:Slider({Name = "fire cooldown", Minimum = 0, Maximum = 1000, Default = 5, Suffix = "ms", Pointer = "Fire_Cooldown"})
+   General:Toggle({Name = "target selection", Default = false, Pointer = "Target_Selection"})
 
-   -- // Field of View Section
-   FOV:Dropdown({Name = "Mode", Options = {"Static", "Dynamic"}, Default = "Static", Pointer = "FOVMode"})
-   FOV:Toggle({Name = "Visible", Default = false, Pointer = "FOVVisible"})
-   FOV:Toggle({Name = "Filled", Default = false, Pointer = "FOVFilled"})
-   FOV:Colorpicker({Name = "FOV Color", Info = "Field of View Color", Default = Color3.fromRGB(255, 255, 255), Pointer = "FOVColor"})
-   FOV:Slider({Name = "Size", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Smoothness"})
-   FOV:Slider({Name = "Visibility", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Visibility"})
-   FOV:Slider({Name = "Fluctuation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Fluctuation"})
-   FOV:Slider({Name = "Transparency", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Transparency"})
-   FOV:Slider({Name = "Rotation", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "FOVMain_Rotation"})
-   FOV:Toggle({Name = "Auto Select", Default = false, Pointer = "FOVAutoSelect"})
+   -- // HVH Section
+   HVH:Toggle({Name = "velocity desync", Default = false, Pointer = "HVH_VelocityDesync"})
+   HVH:Toggle({Name = "auto lockout", Default = false, Pointer = "HVH_AutoLockout"})
+   HVH:Toggle({Name = "follow target", Default = false, Pointer = "HVH_FollowTarget"})
+   HVH:Toggle({Name = "auto stomp", Default = false, Pointer = "HVH_AutoStomp"})
+   HVH:Toggle({Name = "auto ammo", Default = false, Pointer = "HVH_AutoAmmo"})
+   HVH:Toggle({Name = "auto armor", Default = false, Pointer = "HVH_AutoArmor"})
+   HVH:Toggle({Name = "anti stomp", Default = false, Pointer = "HVH_AntiStomp"})
+   HVH:Toggle({Name = "void hide", Default = false, Pointer = "HVH_VoidHide"})
 
-   -- // Prediction Section
-   Prediction:Toggle({Name = "Use Prediction", Default = false, Pointer = "PredictionEnabled"})
-   Prediction:Toggle({Name = "Ping Based", Default = false, Pointer = "PredictionPingBased"})
-   Prediction:Label({Name = "X Axis Prediction"})
-   Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionX"})
-   Prediction:Label({Name = "Y Axis Prediction"})
-   Prediction:Slider({Name = "Value", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "PredictionY"})
-   Prediction:Toggle({Name = "Strafe", Default = false, Pointer = "PredictionStrafe"})
-   Prediction:Toggle({Name = "Destroy Cheaters Bypass", Default = false, Pointer = "PredictionBypass"})
-   Prediction:Toggle({Name = "Vehicle Strafe", Default = false, Pointer = "PredictionVehicle"})
-
-   -- // Gun Exploits Section
-   GunMods:Toggle({Name = "No Recoil", Default = false, Pointer = "GunNoRecoil"})
-   GunMods:Toggle({Name = "Rapid Fire", Default = false, Pointer = "GunRapidFire"})
-   GunMods:Slider({Name = "Fire Rate Modification", Minimum = 1, Maximum = 30, Default = 1.5, Decimals = 0.1, Pointer = "GunFireRate"})
-   GunMods:Toggle({Name = "Apply To Current Gun", Default = false, Pointer = "GunApplyCurrent"})
+   -- // Visualization Section
+   Visualization:Toggle({Name = "3d target circle", Default = false, Pointer = "Vis_3DTargetCircle"})
+   Visualization:Toggle({Name = "view target", Default = false, Pointer = "Vis_ViewTarget"})
+   Visualization:Toggle({Name = "face target", Default = false, Pointer = "Vis_FaceTarget"})
 
    -- // Visuals Section
    local Target_UI = Visuals:Section({Name = "Target UI", Side = "Left"})
