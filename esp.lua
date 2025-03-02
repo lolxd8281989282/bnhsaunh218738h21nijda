@@ -22,6 +22,7 @@ local ESP = {
     BoneColor = Color3.fromRGB(255, 255, 255),
     HeadCircleColor = Color3.fromRGB(255, 255, 255),
     BulletTracersColor = Color3.fromRGB(139, 0, 0),
+    ChamsColor = Color3.fromRGB(147, 112, 219), -- Purple color for chams
     TextSize = 14,
     TextFont = Drawing.Fonts.UI,
     MaxDistance = 1000,
@@ -77,9 +78,20 @@ function ESPObject.new(player)
         BulletTracer = CreateDrawing("Line", {Thickness = 1, Color = ESP.BulletTracersColor, Visible = false})
     }
     
+    -- Chams
+    self.Chams = Instance.new("Highlight")
+    self.Chams.FillColor = ESP.ChamsColor
+    self.Chams.OutlineColor = ESP.ChamsColor
+    self.Chams.FillTransparency = 0.5
+    self.Chams.OutlineTransparency = 1
+    self.Chams.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    self.Chams.Enabled = false
+    self.Chams.Parent = self.Character
+    
     -- Handle character changes
     player.CharacterAdded:Connect(function(char)
         self.Character = char
+        self.Chams.Parent = char
     end)
     
     return self
@@ -119,11 +131,11 @@ function ESPObject:Update()
 
     local size = (CurrentCamera:WorldToViewportPoint(humanoidRootPart.Position - Vector3.new(0, 3, 0)).Y - CurrentCamera:WorldToViewportPoint(humanoidRootPart.Position + Vector3.new(0, 2.6, 0)).Y) / 2
 
-    -- Update Box with proper color
+    -- Update Box
     if ESP.ShowBoxes then
         self.Drawings.Box.Size = Vector2.new(size * 1.5, size * 1.8)
         self.Drawings.Box.Position = Vector2.new(position.X - size * 1.5 / 2, position.Y - size * 1.8 / 2)
-        self.Drawings.Box.Color = ESP.BoxColor -- Apply box color directly from ESP settings
+        self.Drawings.Box.Color = ESP.BoxColor
         self.Drawings.Box.Visible = true
     else
         self.Drawings.Box.Visible = false
@@ -132,7 +144,7 @@ function ESPObject:Update()
     -- Update Head Circle
     if ESP.ShowHeadCircle and head then
         local headPos = CurrentCamera:WorldToViewportPoint(head.Position)
-        if headPos.Z > 0 then  -- Only show if head is in front of camera
+        if headPos.Z > 0 then
             self.Drawings.HeadCircle.Position = Vector2.new(headPos.X, headPos.Y)
             self.Drawings.HeadCircle.Radius = size * 0.5
             self.Drawings.HeadCircle.Color = ESP.HeadCircleColor
@@ -144,21 +156,21 @@ function ESPObject:Update()
         self.Drawings.HeadCircle.Visible = false
     end
 
-    -- Update Name with proper color
+    -- Update Name
     if ESP.ShowNames then
         self.Drawings.Name.Position = Vector2.new(position.X, position.Y - size * 1.8 / 2 - 15)
-        self.Drawings.Name.Color = ESP.NameColor -- Apply name color directly from ESP settings
+        self.Drawings.Name.Color = ESP.NameColor
         self.Drawings.Name.Visible = true
     else
         self.Drawings.Name.Visible = false
     end
 
-    -- Update Health Bar with proper color
+    -- Update Health Bar
     if ESP.ShowHealthBars and humanoid then
         local health = humanoid.Health / humanoid.MaxHealth
         self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
         self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2 * health)
-        self.Drawings.HealthBar.Color = ESP.HealthBarColor -- Apply health bar color directly from ESP settings
+        self.Drawings.HealthBar.Color = ESP.HealthBarColor
         self.Drawings.HealthBar.Visible = true
     else
         self.Drawings.HealthBar.Visible = false
@@ -237,6 +249,16 @@ function ESPObject:Update()
         self.Drawings.Bone.Visible = false
     end
 
+    -- Update Chams
+    if ESP.ShowChams then
+        self.Chams.Enabled = true
+        self.Chams.FillColor = ESP.ChamsColor
+        self.Chams.OutlineColor = ESP.ChamsColor
+        self.Chams.FillTransparency = 0.5 + math.sin(tick() * 2) * 0.2 -- Animated transparency
+    else
+        self.Chams.Enabled = false
+    end
+
     return true
 end
 
@@ -244,12 +266,14 @@ function ESPObject:Hide()
     for _, drawing in pairs(self.Drawings) do
         drawing.Visible = false
     end
+    self.Chams.Enabled = false
 end
 
 function ESPObject:Remove()
     for _, drawing in pairs(self.Drawings) do
         drawing:Remove()
     end
+    self.Chams:Destroy()
     ESP.Objects[self.Player] = nil
 end
 
@@ -326,9 +350,7 @@ function ESP:Init()
     return self
 end
 
--- Update the ESP:UpdateColor function to handle the correct property names
 function ESP:UpdateColor(property, color)
-    -- Map UI property names to ESP property names
     local propertyMap = {
         Names = "NameColor",
         Boxes = "BoxColor",
@@ -339,32 +361,30 @@ function ESP:UpdateColor(property, color)
         Flags = "FlagsColor",
         Bone = "BoneColor",
         HeadCircle = "HeadCircleColor",
-        BulletTracers = "BulletTracersColor"
+        BulletTracers = "BulletTracersColor",
+        Chams = "ChamsColor"
     }
 
-    -- Get the correct property name from the map
     local espProperty = propertyMap[property]
     if espProperty then
-        -- Update the color in ESP settings
         self[espProperty] = color
         
-        -- Force refresh all ESP objects
         for _, object in pairs(self.Objects) do
-            -- Update the color in the drawings immediately
             if object.Drawings[property] then
                 object.Drawings[property].Color = color
             end
-            -- Force a full update
+            if property == "Chams" then
+                object.Chams.FillColor = color
+                object.Chams.OutlineColor = color
+            end
             object:Update()
         end
     end
 end
 
--- Modify the Toggle function to handle individual features
 function ESP:ToggleFeature(feature, enabled)
     if self["Show"..feature] ~= nil then
         self["Show"..feature] = enabled
-        -- Force refresh all ESP objects when a feature is toggled
         for _, object in pairs(self.Objects) do
             object:Update()
         end
