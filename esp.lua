@@ -1,5 +1,4 @@
-```typescriptreact file="esp.lua"
-[v0-no-op-code-block-prefix]local ESP = {
+local ESP = {
     Enabled = false,
     TeamCheck = false,
     SelfESP = false,
