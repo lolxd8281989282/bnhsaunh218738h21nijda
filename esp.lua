@@ -261,6 +261,7 @@ function ESP:CreateChams(player)
     if not self.ChamsCache[player] then
         local character = player.Character
         if character then
+            -- Create highlight
             local highlight = Instance.new("Highlight")
             highlight.FillColor = self.ChamsColor
             highlight.OutlineColor = self.ChamsColor
@@ -269,26 +270,80 @@ function ESP:CreateChams(player)
             highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
             highlight.Parent = character
             
+            -- Store original transparency values
+            local transparencyCache = {}
+            
+            -- Function to update part transparency
+            local function updateTransparency(part)
+                if part:IsA("BasePart") then
+                    transparencyCache[part] = part.Transparency
+                    part.Transparency = 0.8
+                end
+            end
+            
+            -- Function to restore part transparency
+            local function restoreTransparency(part)
+                if part:IsA("BasePart") and transparencyCache[part] then
+                    part.Transparency = transparencyCache[part]
+                end
+            end
+            
+            -- Apply transparency to all parts
+            for _, part in pairs(character:GetDescendants()) do
+                updateTransparency(part)
+            end
+            
+            -- Handle new parts being added
+            local descendantConnection = character.DescendantAdded:Connect(function(part)
+                updateTransparency(part)
+            end)
+            
             -- Store in cache
             self.ChamsCache[player] = {
                 Highlight = highlight,
-                Connection = RunService.Heartbeat:Connect(function()
-                    if not self.ShowChams or not self.Enabled then
-                        highlight.Enabled = false
-                        return
-                    end
-                    
-                    highlight.Enabled = true
-                    highlight.FillTransparency = 0.3 + math.sin(tick() * 2) * 0.2
-                    highlight.FillColor = self.ChamsColor
-                    highlight.OutlineColor = self.ChamsColor
-                end)
+                TransparencyCache = transparencyCache,
+                Connections = {
+                    Descendant = descendantConnection,
+                    Heartbeat = RunService.Heartbeat:Connect(function()
+                        if not self.ShowChams or not self.Enabled then
+                            highlight.Enabled = false
+                            -- Restore original transparency
+                            for part, _ in pairs(transparencyCache) do
+                                if part and part.Parent then
+                                    restoreTransparency(part)
+                                end
+                            end
+                            return
+                        end
+                        
+                        highlight.Enabled = true
+                        highlight.FillTransparency = 0.3 + math.sin(tick() * 2) * 0.2
+                        highlight.FillColor = self.ChamsColor
+                        highlight.OutlineColor = self.ChamsColor
+                        
+                        -- Ensure parts remain transparent
+                        for _, part in pairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.Transparency = 0.8
+                            end
+                        end
+                    end)
+                }
             }
 
             -- Handle character changes
             player.CharacterAdded:Connect(function(char)
                 if self.ChamsCache[player] then
-                    self.ChamsCache[player].Highlight.Parent = char
+                    -- Clean up old connections
+                    for _, connection in pairs(self.ChamsCache[player].Connections) do
+                        connection:Disconnect()
+                    end
+                    -- Remove old highlight
+                    if self.ChamsCache[player].Highlight then
+                        self.ChamsCache[player].Highlight:Destroy()
+                    end
+                    -- Create new chams for new character
+                    self:CreateChams(player)
                 end
             end)
         end
@@ -298,25 +353,21 @@ end
 function ESP:RemoveChams(player)
     local cache = self.ChamsCache[player]
     if cache then
-        if cache.Connection then
-            cache.Connection:Disconnect()
+        -- Disconnect all connections
+        for _, connection in pairs(cache.Connections) do
+            connection:Disconnect()
         end
+        -- Remove highlight
         if cache.Highlight then
             cache.Highlight:Destroy()
         end
-        self.ChamsCache[player] = nil
-    end
-end
-
-function ESP:UpdateChams()
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            if self.ShowChams and self.Enabled then
-                self:CreateChams(player)
-            else
-                self:RemoveChams(player)
+        -- Restore original transparency
+        for part, originalTransparency in pairs(cache.TransparencyCache) do
+            if part and part.Parent then
+                part.Transparency = originalTransparency
             end
         end
+        self.ChamsCache[player] = nil
     end
 end
 
