@@ -56,10 +56,9 @@ return function(Library, ESP)
  local LocalCharacter = Visuals:Section({Name = "local character", Side = "Left"})
  local World = Visuals:Section({Name = "world", Side = "Right"})
  local Game = Visuals:Section({Name = "game", Side = "Right"})
- local HUD = Visuals:Section({Name = "hud", Side = "Right"})
- local Other = Visuals:Section({Name = "other", Side = "Left"})
+ local HUD = Visuals:Section({Name = "hud", Side = "Left"})
 
- -- Player ESP Section
+ -- Player ESP Section with fixed healthbar
  PlayerESP:Toggle({Name = "enabled", Default = false, Pointer = "ESP_Enabled",
      callback = function(state)
          if ESP and type(ESP.Toggle) == "function" then
@@ -95,14 +94,36 @@ return function(Library, ESP)
  -- Create ESP features with their respective colors
  createESPFeature("box", "Boxes", Color3.fromRGB(255, 255, 255))
  createESPFeature("name", "Names", Color3.fromRGB(255, 255, 255))
- createESPFeature("image", "Image", Color3.fromRGB(255, 255, 255))
+ createESPFeature("distance", "Distance", Color3.fromRGB(255, 255, 255))
  createESPFeature("chams", "Chams", Color3.fromRGB(255, 255, 255))
  createESPFeature("material", "Material", Color3.fromRGB(255, 255, 255))
- createESPFeature("tool text", "ToolText", Color3.fromRGB(255, 255, 255))
- createESPFeature("tool icon", "ToolIcon", Color3.fromRGB(255, 255, 255))
+ createESPFeature("skeleton", "Skeleton", Color3.fromRGB(255, 255, 255))
+ createESPFeature("head circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
  createESPFeature("highlight", "Highlight", Color3.fromRGB(255, 255, 255))
  createESPFeature("armor bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
- createESPFeature("health bar", "HealthBar", Color3.fromRGB(0, 255, 0))
+
+ -- Fixed healthbar implementation
+ PlayerESP:Toggle({
+     Name = "health bar",
+     Default = false,
+     Pointer = "ESP_HealthBar",
+     callback = function(state)
+         if ESP and type(ESP.ToggleFeature) == "function" then
+             ESP:ToggleFeature("HealthBar", state)
+         end
+     end
+ })
+ :Colorpicker({
+     Info = "Health Bar Color",
+     Default = Color3.fromRGB(0, 255, 0),
+     Pointer = "ESP_HealthBarColor",
+     callback = function(color)
+         if ESP and type(ESP.UpdateColor) == "function" then
+             ESP:UpdateColor("HealthBar", color)
+         end
+     end
+ })
+
  createESPFeature("health text", "HealthText", Color3.fromRGB(255, 255, 255))
  PlayerESP:Toggle({Name = "fonts", Default = false, Pointer = "ESP_Fonts"})
  :Colorpicker({Info = "Font Color", Default = Color3.fromRGB(255, 255, 255)})
@@ -136,13 +157,10 @@ return function(Library, ESP)
  World:Toggle({Name = "tint", Default = false, Pointer = "World_Tint"})
  :Colorpicker({Info = "Tint Color", Default = Color3.fromRGB(255, 255, 255)})
 
- -- Game Section
+ -- Game Section (Updated)
  Game:Slider({Name = "player bullet volume", Minimum = 0, Maximum = 1, Default = 0.5, Decimals = 0.1, Suffix = "", Pointer = "Game_BulletVolume"})
- Game:Toggle({Name = "player bullet tracers", Default = false, Pointer = "Game_PlayerTracers"})
- :Colorpicker({Info = "Tracer Color", Default = Color3.fromRGB(255, 255, 255)})
  Game:Toggle({Name = "local bullet tracers", Default = false, Pointer = "Game_LocalTracers"})
  :Colorpicker({Info = "Local Tracer Color", Default = Color3.fromRGB(255, 255, 255)})
- Game:Toggle({Name = "override armor pos", Default = false, Pointer = "Game_ArmorPos"})
  Game:Toggle({Name = "shot notifications", Default = false, Pointer = "Game_ShotNotifs"})
  Game:Toggle({Name = "local bullet sound", Default = false, Pointer = "Game_BulletSound"})
  Game:Toggle({Name = "damage number", Default = false, Pointer = "Game_DamageNumber"})
@@ -153,14 +171,11 @@ return function(Library, ESP)
  Game:Toggle({Name = "hit sound", Default = false, Pointer = "Game_HitSound"})
  Game:Toggle({Name = "hit chams", Default = false, Pointer = "Game_HitChams"})
 
- -- HUD Section
+ -- HUD Section (Moved)
  HUD:Toggle({Name = "server position indicator", Default = false, Pointer = "HUD_ServerPos"})
  HUD:Toggle({Name = "center panel", Default = false, Pointer = "HUD_CenterPanel"})
  HUD:Slider({Name = "aspect ratio", Minimum = 0, Maximum = 2, Default = 1, Decimals = 0.1, Suffix = "x", Pointer = "HUD_AspectRatio"})
  HUD:Toggle({Name = "show chat", Default = false, Pointer = "HUD_ShowChat"})
-
- -- Other Section
- Other:Toggle({Name = "hide player nametags", Default = false, Pointer = "Other_HideNametags"})
 
  -- // Settings Section
  local Settings_Main = Settings:Section({Name = "Main", Side = "Left"})
