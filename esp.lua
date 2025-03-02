@@ -162,8 +162,20 @@ function ESPObject:Update()
         local health = humanoid.Health / humanoid.MaxHealth
         self.Drawings.HealthBar.From = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y + size * 1.8 / 2)
         self.Drawings.HealthBar.To = Vector2.new(position.X - size * 1.5 / 2 - 5, position.Y - size * 1.8 / 2)
-        self.Drawings.HealthBar.Color = Color3.new(1 - health, health, 0) -- Red to Green gradient
-        self.Drawings.HealthBar.Transparency = 1 - health -- Gradient effect
+        
+        -- Green -> Orange -> Red gradient based on health
+        local color
+        if health > 0.5 then
+            -- Interpolate between green and orange (from 100% to 50%)
+            local t = (health - 0.5) * 2 -- normalize to 0-1
+            color = Color3.new(t, 1, 0) -- Green (0,1,0) to Orange (1,1,0)
+        else
+            -- Interpolate between orange and red (from 50% to 0%)
+            local t = health * 2 -- normalize to 0-1
+            color = Color3.new(1, t, 0) -- Orange (1,1,0) to Red (1,0,0)
+        end
+        
+        self.Drawings.HealthBar.Color = color
         self.Drawings.HealthBar.Visible = true
     else
         self.Drawings.HealthBar.Visible = false
@@ -178,8 +190,10 @@ function ESPObject:Update()
             local armorPercentage = armor / maxArmor
             self.Drawings.ArmorBar.From = Vector2.new(position.X - size * 1.5 / 2 - 3, position.Y + size * 1.8 / 2)
             self.Drawings.ArmorBar.To = Vector2.new(position.X - size * 1.5 / 2 - 3, position.Y - size * 1.8 / 2)
-            self.Drawings.ArmorBar.Color = Color3.new(0, 1 - armorPercentage, armorPercentage) -- Blue to Cyan gradient
-            self.Drawings.ArmorBar.Transparency = 1 - armorPercentage -- Gradient effect
+        
+            -- Cyan gradient
+            self.Drawings.ArmorBar.Color = Color3.fromRGB(0, 255, 255)
+            self.Drawings.ArmorBar.Transparency = 1
             self.Drawings.ArmorBar.Visible = true
         else
             self.Drawings.ArmorBar.Visible = false
