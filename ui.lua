@@ -10,7 +10,11 @@ return function(Library, ESP)
    end
 
    -- Remove assertions since we'll handle ESP differently according to documentation
-   local Window = Library:New({Name = "dracula.lol | beta", Accent = Color3.fromRGB(255, 255, 255)})
+   local Window = Library:New({
+       Name = "dracula.lol [private beta]", 
+       Accent = Color3.fromRGB(255, 255, 255),
+       TextXAlignment = Enum.TextXAlignment.Center  -- Center the title text
+   })
 
    -- // Pages
    local Main = Window:Page({Name = "aim-assist"})
@@ -92,7 +96,9 @@ return function(Library, ESP)
        Default = false, 
        Pointer = "ESP_Enabled", 
        callback = function(state)
-           ESP:Toggle(state)
+           if ESP and type(ESP.Toggle) == "function" then
+               ESP:Toggle(state)
+           end
        end
    })
 
@@ -102,7 +108,9 @@ return function(Library, ESP)
        Default = false, 
        Pointer = "ESP_Self", 
        callback = function(state)
-           ESP.Self = state
+           if ESP and type(ESP) == "table" then
+               ESP.SelfESP = state
+           end
        end
    })
 
@@ -180,8 +188,8 @@ return function(Library, ESP)
            Default = false, 
            Pointer = "ESP_" .. property, 
            callback = function(state)
-               if ESP and type(ESP) == "table" then
-                   ESP[property] = state
+               if ESP and type(ESP.ToggleFeature) == "function" then
+                   ESP:ToggleFeature(property, state)
                end
            end
        })
@@ -190,8 +198,8 @@ return function(Library, ESP)
            Default = default_color, 
            Pointer = "ESP_" .. property .. "Color", 
            callback = function(color)
-               if ESP and type(ESP) == "table" then
-                   ESP[property .. "Color"] = color
+               if ESP and type(ESP.UpdateColor) == "function" then
+                   ESP:UpdateColor(property, color)
                end
            end
        })
@@ -200,36 +208,17 @@ return function(Library, ESP)
    -- Create ESP features with their respective colors
    createESPFeature("Names", "Names", Color3.fromRGB(255, 255, 255))
    createESPFeature("Box", "Boxes", Color3.fromRGB(255, 255, 255))
-   createESPFeature("Health Bar", "HealthBar", Color3.fromRGB(0, 255, 0))
+   createESPFeature("Health Bar", "HealthBars", Color3.fromRGB(0, 255, 0))
    createESPFeature("Armor Bar", "ArmorBar", Color3.fromRGB(0, 255, 255))
    createESPFeature("Distance", "Distance", Color3.fromRGB(255, 255, 255))
    createESPFeature("Weapon", "Weapon", Color3.fromRGB(255, 255, 255))
    createESPFeature("Flags", "Flags", Color3.fromRGB(255, 255, 255))
-
-   -- Bullet Tracers
-   ESP_Section:Toggle({
-       Name = "Bullet Tracers", 
-       Default = false, 
-       Pointer = "ESP_BulletTracers", 
-       callback = function(state)
-           if ESP and type(ESP) == "table" then
-               ESP.BulletTracers = state
-           end
-       end
-   })
-   :Colorpicker({
-       Info = "Bullet Tracers Color", 
-       Default = Color3.fromRGB(139, 0, 0), 
-       Pointer = "ESP_BulletTracersColor", 
-       callback = function(color)
-           if ESP and type(ESP) == "table" then
-               ESP.BulletTracersColor = color
-           end
-       end
-   })
+   createESPFeature("Skeleton", "Bone", Color3.fromRGB(255, 255, 255))
+   createESPFeature("Bullet Tracers", "BulletTracers", Color3.fromRGB(139, 0, 0))
+   createESPFeature("Head Circle", "HeadCircle", Color3.fromRGB(255, 255, 255))
 
    ESP_Section:Slider({
-       Name = "Duration", 
+       Name = "Tracer Duration", 
        Minimum = 0.1, 
        Maximum = 5, 
        Default = 1.5, 
